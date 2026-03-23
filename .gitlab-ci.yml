@@ -1,0 +1,56 @@
+stages:
+  - scan
+  - export
+  - correlate
+  - respond
+
+variables:
+  OUTPUT_DIR: "outputs"
+
+scan_security:
+  stage: scan
+  image: python:3.11-slim
+  before_script:
+    - apt-get update
+    - apt-get install -y curl git jq
+    - pip install checkov semgrep
+    - curl -sSfL https://raw.githubusercontent.com/gitleaks/gitleaks/master/install.sh | sh -s -- -b /usr/local/bin
+    - curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+    - mkdir -p ${OUTPUT_DIR}
+  script:
+    - gitleaks dir . --report-format json --report-path ${OUTPUT_DIR}/gitleaks.json || true
+    - trivy fs --scanners secret --format json --output ${OUTPUT_DIR}/trivy.json . || true
+    - checkov -d . -o json > ${OUTPUT_DIR}/checkov.json || true
+    - semgrep scan --config .semgrep.yml --json --output ${OUTPUT_DIR}/semgrep.json . || true
+  artifacts:
+    paths:
+      - outputs/
+
+normalize_and_publish:
+  stage: export
+  image: python:3.11-slim
+  before_script:
+    - pip install kafka-python boto3 psycopg2-binary
+  script:
+    - python scripts/normalize_findings.py
+    - python scripts/kafka_producer.py
+  artifacts:
+    paths:
+      - outputs/normalized_findings.json
+
+correlate_findings:
+  stage: correlate
+  image: python:3.11-slim
+  before_script:
+    - pip install psycopg2-binary boto3
+  script:
+    - python scripts/correlate.py
+    - python scripts/load_to_postgres.py
+
+rules_and_response:
+  stage: respond
+  image: python:3.11-slim
+  before_script:
+    - pip install requests psycopg2-binary
+  script:
+    - python scripts/rules_engine.py

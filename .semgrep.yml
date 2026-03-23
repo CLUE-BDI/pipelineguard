@@ -1,0 +1,11 @@
+rules:
+  - id: plaintext-password-env
+    message: Plaintext password-like value found
+    severity: ERROR
+    languages: [generic]
+    patterns:
+      - pattern-regex: '(?i)(password|passwd|pwd)\s*[:=]\s*["'']?.{8,}["'']?'
+    metadata:
+      mitre:
+        technique: T1552
+        tactic: Credential Access

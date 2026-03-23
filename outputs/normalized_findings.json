@@ -1,0 +1,5038 @@
+{
+  "repo": "local/pipelineguard-demo",
+  "branch": "local",
+  "commit_sha": "dev-local",
+  "pipeline_id": "local-run",
+  "timestamp": "2026-03-23T01:56:19.693158+00:00",
+  "findings": [
+    {
+      "scanner": "checkov",
+      "rule_id": "CKV2_AWS_61",
+      "title": "Ensure that an S3 bucket has a lifecycle configuration",
+      "severity": "medium",
+      "file_path": "/infra/main.tf",
+      "line_start": 5,
+      "line_end": 7,
+      "secret_type": "config/plaintext-secret",
+      "match": [
+        [
+          5,
+          "resource \"aws_s3_bucket\" \"demo\" {\n"
+        ],
+        [
+          6,
+          "  bucket = \"pipelineguard-demo-bucket-123456\"\n"
+        ],
+        [
+          7,
+          "}\n"
+        ]
+      ],
+      "mitre_technique": "T1552",
+      "raw": {
+        "check_id": "CKV2_AWS_61",
+        "bc_check_id": "BC_AWS_LOGGING_35",
+        "check_name": "Ensure that an S3 bucket has a lifecycle configuration",
+        "check_result": {
+          "result": "FAILED",
+          "entity": {
+            "aws_s3_bucket": {
+              "demo": {
+                "__end_line__": 7,
+                "__start_line__": 5,
+                "bucket": [
+                  "pipelineguard-demo-bucket-123456"
+                ],
+                "__address__": "aws_s3_bucket.demo",
+                "__provider_address__": "aws.default"
+              }
+            }
+          },
+          "evaluated_keys": [
+            "resource_type",
+            "lifecycle_rule"
+          ]
+        },
+        "code_block": [
+          [
+            5,
+            "resource \"aws_s3_bucket\" \"demo\" {\n"
+          ],
+          [
+            6,
+            "  bucket = \"pipelineguard-demo-bucket-123456\"\n"
+          ],
+          [
+            7,
+            "}\n"
+          ]
+        ],
+        "file_path": "/infra/main.tf",
+        "file_abs_path": "/home/demo/pipelineguard/infra/main.tf",
+        "repo_file_path": "/infra/main.tf",
+        "file_line_range": [
+          5,
+          7
+        ],
+        "resource": "aws_s3_bucket.demo",
+        "evaluations": null,
+        "check_class": "checkov.common.graph.checks_infra.base_check",
+        "fixed_definition": null,
+        "entity_tags": null,
+        "caller_file_path": null,
+        "caller_file_line_range": null,
+        "resource_address": null,
+        "severity": null,
+        "bc_category": null,
+        "benchmarks": null,
+        "description": null,
+        "short_description": null,
+        "vulnerability_details": null,
+        "connected_node": null,
+        "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/bc-aws-2-61",
+        "details": [],
+        "check_len": null,
+        "definition_context_file_path": "/home/demo/pipelineguard/infra/main.tf"
+      }
+    },
+    {
+      "scanner": "checkov",
+      "rule_id": "CKV_AWS_145",
+      "title": "Ensure that S3 buckets are encrypted with KMS by default",
+      "severity": "medium",
+      "file_path": "/infra/main.tf",
+      "line_start": 5,
+      "line_end": 7,
+      "secret_type": "config/plaintext-secret",
+      "match": [
+        [
+          5,
+          "resource \"aws_s3_bucket\" \"demo\" {\n"
+        ],
+        [
+          6,
+          "  bucket = \"pipelineguard-demo-bucket-123456\"\n"
+        ],
+        [
+          7,
+          "}\n"
+        ]
+      ],
+      "mitre_technique": "T1552",
+      "raw": {
+        "check_id": "CKV_AWS_145",
+        "bc_check_id": "BC_AWS_GENERAL_56",
+        "check_name": "Ensure that S3 buckets are encrypted with KMS by default",
+        "check_result": {
+          "result": "FAILED",
+          "entity": {
+            "aws_s3_bucket": {
+              "demo": {
+                "__end_line__": 7,
+                "__start_line__": 5,
+                "bucket": [
+                  "pipelineguard-demo-bucket-123456"
+                ],
+                "__address__": "aws_s3_bucket.demo",
+                "__provider_address__": "aws.default"
+              }
+            }
+          },
+          "evaluated_keys": [
+            "resource_type",
+            "rule/apply_server_side_encryption_by_default/sse_algorithm",
+            "server_side_encryption_configuration/rule/apply_server_side_encryption_by_default/sse_algorithm"
+          ]
+        },
+        "code_block": [
+          [
+            5,
+            "resource \"aws_s3_bucket\" \"demo\" {\n"
+          ],
+          [
+            6,
+            "  bucket = \"pipelineguard-demo-bucket-123456\"\n"
+          ],
+          [
+            7,
+            "}\n"
+          ]
+        ],
+        "file_path": "/infra/main.tf",
+        "file_abs_path": "/home/demo/pipelineguard/infra/main.tf",
+        "repo_file_path": "/infra/main.tf",
+        "file_line_range": [
+          5,
+          7
+        ],
+        "resource": "aws_s3_bucket.demo",
+        "evaluations": null,
+        "check_class": "checkov.common.graph.checks_infra.base_check",
+        "fixed_definition": null,
+        "entity_tags": null,
+        "caller_file_path": null,
+        "caller_file_line_range": null,
+        "resource_address": null,
+        "severity": null,
+        "bc_category": null,
+        "benchmarks": null,
+        "description": null,
+        "short_description": null,
+        "vulnerability_details": null,
+        "connected_node": null,
+        "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-that-s3-buckets-are-encrypted-with-kms-by-default",
+        "details": [],
+        "check_len": null,
+        "definition_context_file_path": "/home/demo/pipelineguard/infra/main.tf"
+      }
+    },
+    {
+      "scanner": "checkov",
+      "rule_id": "CKV_AWS_21",
+      "title": "Ensure all data stored in the S3 bucket have versioning enabled",
+      "severity": "medium",
+      "file_path": "/infra/main.tf",
+      "line_start": 5,
+      "line_end": 7,
+      "secret_type": "config/plaintext-secret",
+      "match": [
+        [
+          5,
+          "resource \"aws_s3_bucket\" \"demo\" {\n"
+        ],
+        [
+          6,
+          "  bucket = \"pipelineguard-demo-bucket-123456\"\n"
+        ],
+        [
+          7,
+          "}\n"
+        ]
+      ],
+      "mitre_technique": "T1552",
+      "raw": {
+        "check_id": "CKV_AWS_21",
+        "bc_check_id": "BC_AWS_S3_16",
+        "check_name": "Ensure all data stored in the S3 bucket have versioning enabled",
+        "check_result": {
+          "result": "FAILED",
+          "entity": {
+            "aws_s3_bucket": {
+              "demo": {
+                "__end_line__": 7,
+                "__start_line__": 5,
+                "bucket": [
+                  "pipelineguard-demo-bucket-123456"
+                ],
+                "__address__": "aws_s3_bucket.demo",
+                "__provider_address__": "aws.default"
+              }
+            }
+          },
+          "evaluated_keys": [
+            "resource_type",
+            "versioning_configuration/status",
+            "versioning/enabled"
+          ]
+        },
+        "code_block": [
+          [
+            5,
+            "resource \"aws_s3_bucket\" \"demo\" {\n"
+          ],
+          [
+            6,
+            "  bucket = \"pipelineguard-demo-bucket-123456\"\n"
+          ],
+          [
+            7,
+            "}\n"
+          ]
+        ],
+        "file_path": "/infra/main.tf",
+        "file_abs_path": "/home/demo/pipelineguard/infra/main.tf",
+        "repo_file_path": "/infra/main.tf",
+        "file_line_range": [
+          5,
+          7
+        ],
+        "resource": "aws_s3_bucket.demo",
+        "evaluations": null,
+        "check_class": "checkov.common.graph.checks_infra.base_check",
+        "fixed_definition": null,
+        "entity_tags": null,
+        "caller_file_path": null,
+        "caller_file_line_range": null,
+        "resource_address": null,
+        "severity": null,
+        "bc_category": null,
+        "benchmarks": null,
+        "description": null,
+        "short_description": null,
+        "vulnerability_details": null,
+        "connected_node": null,
+        "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/s3-policies/s3-16-enable-versioning",
+        "details": [],
+        "check_len": null,
+        "definition_context_file_path": "/home/demo/pipelineguard/infra/main.tf"
+      }
+    },
+    {
+      "scanner": "checkov",
+      "rule_id": "CKV2_AWS_6",
+      "title": "Ensure that S3 bucket has a Public Access block",
+      "severity": "medium",
+      "file_path": "/infra/main.tf",
+      "line_start": 5,
+      "line_end": 7,
+      "secret_type": "config/plaintext-secret",
+      "match": [
+        [
+          5,
+          "resource \"aws_s3_bucket\" \"demo\" {\n"
+        ],
+        [
+          6,
+          "  bucket = \"pipelineguard-demo-bucket-123456\"\n"
+        ],
+        [
+          7,
+          "}\n"
+        ]
+      ],
+      "mitre_technique": "T1552",
+      "raw": {
+        "check_id": "CKV2_AWS_6",
+        "bc_check_id": "BC_AWS_NETWORKING_52",
+        "check_name": "Ensure that S3 bucket has a Public Access block",
+        "check_result": {
+          "result": "FAILED",
+          "entity": {
+            "aws_s3_bucket": {
+              "demo": {
+                "__end_line__": 7,
+                "__start_line__": 5,
+                "bucket": [
+                  "pipelineguard-demo-bucket-123456"
+                ],
+                "__address__": "aws_s3_bucket.demo",
+                "__provider_address__": "aws.default"
+              }
+            }
+          },
+          "evaluated_keys": [
+            "resource_type",
+            "block_public_policy",
+            "block_public_acls"
+          ]
+        },
+        "code_block": [
+          [
+            5,
+            "resource \"aws_s3_bucket\" \"demo\" {\n"
+          ],
+          [
+            6,
+            "  bucket = \"pipelineguard-demo-bucket-123456\"\n"
+          ],
+          [
+            7,
+            "}\n"
+          ]
+        ],
+        "file_path": "/infra/main.tf",
+        "file_abs_path": "/home/demo/pipelineguard/infra/main.tf",
+        "repo_file_path": "/infra/main.tf",
+        "file_line_range": [
+          5,
+          7
+        ],
+        "resource": "aws_s3_bucket.demo",
+        "evaluations": null,
+        "check_class": "checkov.common.graph.checks_infra.base_check",
+        "fixed_definition": null,
+        "entity_tags": null,
+        "caller_file_path": null,
+        "caller_file_line_range": null,
+        "resource_address": null,
+        "severity": null,
+        "bc_category": null,
+        "benchmarks": null,
+        "description": null,
+        "short_description": null,
+        "vulnerability_details": null,
+        "connected_node": null,
+        "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-networking-policies/s3-bucket-should-have-public-access-blocks-defaults-to-false-if-the-public-access-block-is-not-attached",
+        "details": [],
+        "check_len": null,
+        "definition_context_file_path": "/home/demo/pipelineguard/infra/main.tf"
+      }
+    },
+    {
+      "scanner": "checkov",
+      "rule_id": "CKV_AWS_144",
+      "title": "Ensure that S3 bucket has cross-region replication enabled",
+      "severity": "medium",
+      "file_path": "/infra/main.tf",
+      "line_start": 5,
+      "line_end": 7,
+      "secret_type": "config/plaintext-secret",
+      "match": [
+        [
+          5,
+          "resource \"aws_s3_bucket\" \"demo\" {\n"
+        ],
+        [
+          6,
+          "  bucket = \"pipelineguard-demo-bucket-123456\"\n"
+        ],
+        [
+          7,
+          "}\n"
+        ]
+      ],
+      "mitre_technique": "T1552",
+      "raw": {
+        "check_id": "CKV_AWS_144",
+        "bc_check_id": "BC_AWS_GENERAL_72",
+        "check_name": "Ensure that S3 bucket has cross-region replication enabled",
+        "check_result": {
+          "result": "FAILED",
+          "entity": {
+            "aws_s3_bucket": {
+              "demo": {
+                "__end_line__": 7,
+                "__start_line__": 5,
+                "bucket": [
+                  "pipelineguard-demo-bucket-123456"
+                ],
+                "__address__": "aws_s3_bucket.demo",
+                "__provider_address__": "aws.default"
+              }
+            }
+          },
+          "evaluated_keys": [
+            "resource_type",
+            "rule/*/status",
+            "replication_configuration/rules/*/status"
+          ]
+        },
+        "code_block": [
+          [
+            5,
+            "resource \"aws_s3_bucket\" \"demo\" {\n"
+          ],
+          [
+            6,
+            "  bucket = \"pipelineguard-demo-bucket-123456\"\n"
+          ],
+          [
+            7,
+            "}\n"
+          ]
+        ],
+        "file_path": "/infra/main.tf",
+        "file_abs_path": "/home/demo/pipelineguard/infra/main.tf",
+        "repo_file_path": "/infra/main.tf",
+        "file_line_range": [
+          5,
+          7
+        ],
+        "resource": "aws_s3_bucket.demo",
+        "evaluations": null,
+        "check_class": "checkov.common.graph.checks_infra.base_check",
+        "fixed_definition": null,
+        "entity_tags": null,
+        "caller_file_path": null,
+        "caller_file_line_range": null,
+        "resource_address": null,
+        "severity": null,
+        "bc_category": null,
+        "benchmarks": null,
+        "description": null,
+        "short_description": null,
+        "vulnerability_details": null,
+        "connected_node": null,
+        "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-general-policies/ensure-that-s3-bucket-has-cross-region-replication-enabled",
+        "details": [],
+        "check_len": null,
+        "definition_context_file_path": "/home/demo/pipelineguard/infra/main.tf"
+      }
+    },
+    {
+      "scanner": "checkov",
+      "rule_id": "CKV2_AWS_62",
+      "title": "Ensure S3 buckets should have event notifications enabled",
+      "severity": "medium",
+      "file_path": "/infra/main.tf",
+      "line_start": 5,
+      "line_end": 7,
+      "secret_type": "config/plaintext-secret",
+      "match": [
+        [
+          5,
+          "resource \"aws_s3_bucket\" \"demo\" {\n"
+        ],
+        [
+          6,
+          "  bucket = \"pipelineguard-demo-bucket-123456\"\n"
+        ],
+        [
+          7,
+          "}\n"
+        ]
+      ],
+      "mitre_technique": "T1552",
+      "raw": {
+        "check_id": "CKV2_AWS_62",
+        "bc_check_id": "BC_AWS_LOGGING_36",
+        "check_name": "Ensure S3 buckets should have event notifications enabled",
+        "check_result": {
+          "result": "FAILED",
+          "entity": {
+            "aws_s3_bucket": {
+              "demo": {
+                "__end_line__": 7,
+                "__start_line__": 5,
+                "bucket": [
+                  "pipelineguard-demo-bucket-123456"
+                ],
+                "__address__": "aws_s3_bucket.demo",
+                "__provider_address__": "aws.default"
+              }
+            }
+          },
+          "evaluated_keys": [
+            "resource_type"
+          ]
+        },
+        "code_block": [
+          [
+            5,
+            "resource \"aws_s3_bucket\" \"demo\" {\n"
+          ],
+          [
+            6,
+            "  bucket = \"pipelineguard-demo-bucket-123456\"\n"
+          ],
+          [
+            7,
+            "}\n"
+          ]
+        ],
+        "file_path": "/infra/main.tf",
+        "file_abs_path": "/home/demo/pipelineguard/infra/main.tf",
+        "repo_file_path": "/infra/main.tf",
+        "file_line_range": [
+          5,
+          7
+        ],
+        "resource": "aws_s3_bucket.demo",
+        "evaluations": null,
+        "check_class": "checkov.common.graph.checks_infra.base_check",
+        "fixed_definition": null,
+        "entity_tags": null,
+        "caller_file_path": null,
+        "caller_file_line_range": null,
+        "resource_address": null,
+        "severity": null,
+        "bc_category": null,
+        "benchmarks": null,
+        "description": null,
+        "short_description": null,
+        "vulnerability_details": null,
+        "connected_node": null,
+        "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/aws-logging-policies/bc-aws-2-62",
+        "details": [],
+        "check_len": null,
+        "definition_context_file_path": "/home/demo/pipelineguard/infra/main.tf"
+      }
+    },
+    {
+      "scanner": "checkov",
+      "rule_id": "CKV_AWS_18",
+      "title": "Ensure the S3 bucket has access logging enabled",
+      "severity": "medium",
+      "file_path": "/infra/main.tf",
+      "line_start": 5,
+      "line_end": 7,
+      "secret_type": "config/plaintext-secret",
+      "match": [
+        [
+          5,
+          "resource \"aws_s3_bucket\" \"demo\" {\n"
+        ],
+        [
+          6,
+          "  bucket = \"pipelineguard-demo-bucket-123456\"\n"
+        ],
+        [
+          7,
+          "}\n"
+        ]
+      ],
+      "mitre_technique": "T1552",
+      "raw": {
+        "check_id": "CKV_AWS_18",
+        "bc_check_id": "BC_AWS_S3_13",
+        "check_name": "Ensure the S3 bucket has access logging enabled",
+        "check_result": {
+          "result": "FAILED",
+          "entity": {
+            "aws_s3_bucket": {
+              "demo": {
+                "__end_line__": 7,
+                "__start_line__": 5,
+                "bucket": [
+                  "pipelineguard-demo-bucket-123456"
+                ],
+                "__address__": "aws_s3_bucket.demo",
+                "__provider_address__": "aws.default"
+              }
+            }
+          },
+          "evaluated_keys": [
+            "logging",
+            "resource_type"
+          ]
+        },
+        "code_block": [
+          [
+            5,
+            "resource \"aws_s3_bucket\" \"demo\" {\n"
+          ],
+          [
+            6,
+            "  bucket = \"pipelineguard-demo-bucket-123456\"\n"
+          ],
+          [
+            7,
+            "}\n"
+          ]
+        ],
+        "file_path": "/infra/main.tf",
+        "file_abs_path": "/home/demo/pipelineguard/infra/main.tf",
+        "repo_file_path": "/infra/main.tf",
+        "file_line_range": [
+          5,
+          7
+        ],
+        "resource": "aws_s3_bucket.demo",
+        "evaluations": null,
+        "check_class": "checkov.common.graph.checks_infra.base_check",
+        "fixed_definition": null,
+        "entity_tags": null,
+        "caller_file_path": null,
+        "caller_file_line_range": null,
+        "resource_address": null,
+        "severity": null,
+        "bc_category": null,
+        "benchmarks": null,
+        "description": null,
+        "short_description": null,
+        "vulnerability_details": null,
+        "connected_node": null,
+        "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/aws-policies/s3-policies/s3-13-enable-logging",
+        "details": [],
+        "check_len": null,
+        "definition_context_file_path": "/home/demo/pipelineguard/infra/main.tf"
+      }
+    },
+    {
+      "scanner": "checkov",
+      "rule_id": "CKV_K8S_43",
+      "title": "Image should use digest",
+      "severity": "medium",
+      "file_path": "/k8s/deployment.yaml",
+      "line_start": 1,
+      "line_end": 20,
+      "secret_type": "config/plaintext-secret",
+      "match": [
+        [
+          1,
+          "apiVersion: apps/v1\n"
+        ],
+        [
+          2,
+          "kind: Deployment\n"
+        ],
+        [
+          3,
+          "metadata:\n"
+        ],
+        [
+          4,
+          "  name: demo-app\n"
+        ],
+        [
+          5,
+          "spec:\n"
+        ],
+        [
+          6,
+          "  replicas: 1\n"
+        ],
+        [
+          7,
+          "  selector:\n"
+        ],
+        [
+          8,
+          "    matchLabels:\n"
+        ],
+        [
+          9,
+          "      app: demo-app\n"
+        ],
+        [
+          10,
+          "  template:\n"
+        ],
+        [
+          11,
+          "    metadata:\n"
+        ],
+        [
+          12,
+          "      labels:\n"
+        ],
+        [
+          13,
+          "        app: demo-app\n"
+        ],
+        [
+          14,
+          "    spec:\n"
+        ],
+        [
+          15,
+          "      containers:\n"
+        ],
+        [
+          16,
+          "        - name: demo-app\n"
+        ],
+        [
+          17,
+          "          image: nginx:latest\n"
+        ],
+        [
+          18,
+          "          env:\n"
+        ],
+        [
+          19,
+          "            - name: DB_PASSWORD\n"
+        ],
+        [
+          20,
+          "              value: \"InlinePassword123!\""
+        ]
+      ],
+      "mitre_technique": "T1552",
+      "raw": {
+        "check_id": "CKV_K8S_43",
+        "bc_check_id": "BC_K8S_39",
+        "check_name": "Image should use digest",
+        "check_result": {
+          "result": "FAILED",
+          "evaluated_keys": [
+            "spec/template/spec/containers/[0]/image"
+          ]
+        },
+        "code_block": [
+          [
+            1,
+            "apiVersion: apps/v1\n"
+          ],
+          [
+            2,
+            "kind: Deployment\n"
+          ],
+          [
+            3,
+            "metadata:\n"
+          ],
+          [
+            4,
+            "  name: demo-app\n"
+          ],
+          [
+            5,
+            "spec:\n"
+          ],
+          [
+            6,
+            "  replicas: 1\n"
+          ],
+          [
+            7,
+            "  selector:\n"
+          ],
+          [
+            8,
+            "    matchLabels:\n"
+          ],
+          [
+            9,
+            "      app: demo-app\n"
+          ],
+          [
+            10,
+            "  template:\n"
+          ],
+          [
+            11,
+            "    metadata:\n"
+          ],
+          [
+            12,
+            "      labels:\n"
+          ],
+          [
+            13,
+            "        app: demo-app\n"
+          ],
+          [
+            14,
+            "    spec:\n"
+          ],
+          [
+            15,
+            "      containers:\n"
+          ],
+          [
+            16,
+            "        - name: demo-app\n"
+          ],
+          [
+            17,
+            "          image: nginx:latest\n"
+          ],
+          [
+            18,
+            "          env:\n"
+          ],
+          [
+            19,
+            "            - name: DB_PASSWORD\n"
+          ],
+          [
+            20,
+            "              value: \"InlinePassword123!\""
+          ]
+        ],
+        "file_path": "/k8s/deployment.yaml",
+        "file_abs_path": "/home/demo/pipelineguard/k8s/deployment.yaml",
+        "repo_file_path": "/k8s/deployment.yaml",
+        "file_line_range": [
+          1,
+          20
+        ],
+        "resource": "Deployment.default.demo-app",
+        "evaluations": {},
+        "check_class": "checkov.kubernetes.checks.resource.k8s.ImageDigest",
+        "fixed_definition": null,
+        "entity_tags": null,
+        "caller_file_path": null,
+        "caller_file_line_range": null,
+        "resource_address": null,
+        "severity": null,
+        "bc_category": null,
+        "benchmarks": null,
+        "description": null,
+        "short_description": null,
+        "vulnerability_details": null,
+        "connected_node": null,
+        "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-39",
+        "details": [],
+        "check_len": null,
+        "definition_context_file_path": null
+      }
+    },
+    {
+      "scanner": "checkov",
+      "rule_id": "CKV_K8S_11",
+      "title": "CPU limits should be set",
+      "severity": "medium",
+      "file_path": "/k8s/deployment.yaml",
+      "line_start": 1,
+      "line_end": 20,
+      "secret_type": "config/plaintext-secret",
+      "match": [
+        [
+          1,
+          "apiVersion: apps/v1\n"
+        ],
+        [
+          2,
+          "kind: Deployment\n"
+        ],
+        [
+          3,
+          "metadata:\n"
+        ],
+        [
+          4,
+          "  name: demo-app\n"
+        ],
+        [
+          5,
+          "spec:\n"
+        ],
+        [
+          6,
+          "  replicas: 1\n"
+        ],
+        [
+          7,
+          "  selector:\n"
+        ],
+        [
+          8,
+          "    matchLabels:\n"
+        ],
+        [
+          9,
+          "      app: demo-app\n"
+        ],
+        [
+          10,
+          "  template:\n"
+        ],
+        [
+          11,
+          "    metadata:\n"
+        ],
+        [
+          12,
+          "      labels:\n"
+        ],
+        [
+          13,
+          "        app: demo-app\n"
+        ],
+        [
+          14,
+          "    spec:\n"
+        ],
+        [
+          15,
+          "      containers:\n"
+        ],
+        [
+          16,
+          "        - name: demo-app\n"
+        ],
+        [
+          17,
+          "          image: nginx:latest\n"
+        ],
+        [
+          18,
+          "          env:\n"
+        ],
+        [
+          19,
+          "            - name: DB_PASSWORD\n"
+        ],
+        [
+          20,
+          "              value: \"InlinePassword123!\""
+        ]
+      ],
+      "mitre_technique": "T1552",
+      "raw": {
+        "check_id": "CKV_K8S_11",
+        "bc_check_id": "BC_K8S_10",
+        "check_name": "CPU limits should be set",
+        "check_result": {
+          "result": "FAILED",
+          "evaluated_keys": [
+            "spec/template/spec/containers/[0]/resources/limits/cpu"
+          ]
+        },
+        "code_block": [
+          [
+            1,
+            "apiVersion: apps/v1\n"
+          ],
+          [
+            2,
+            "kind: Deployment\n"
+          ],
+          [
+            3,
+            "metadata:\n"
+          ],
+          [
+            4,
+            "  name: demo-app\n"
+          ],
+          [
+            5,
+            "spec:\n"
+          ],
+          [
+            6,
+            "  replicas: 1\n"
+          ],
+          [
+            7,
+            "  selector:\n"
+          ],
+          [
+            8,
+            "    matchLabels:\n"
+          ],
+          [
+            9,
+            "      app: demo-app\n"
+          ],
+          [
+            10,
+            "  template:\n"
+          ],
+          [
+            11,
+            "    metadata:\n"
+          ],
+          [
+            12,
+            "      labels:\n"
+          ],
+          [
+            13,
+            "        app: demo-app\n"
+          ],
+          [
+            14,
+            "    spec:\n"
+          ],
+          [
+            15,
+            "      containers:\n"
+          ],
+          [
+            16,
+            "        - name: demo-app\n"
+          ],
+          [
+            17,
+            "          image: nginx:latest\n"
+          ],
+          [
+            18,
+            "          env:\n"
+          ],
+          [
+            19,
+            "            - name: DB_PASSWORD\n"
+          ],
+          [
+            20,
+            "              value: \"InlinePassword123!\""
+          ]
+        ],
+        "file_path": "/k8s/deployment.yaml",
+        "file_abs_path": "/home/demo/pipelineguard/k8s/deployment.yaml",
+        "repo_file_path": "/k8s/deployment.yaml",
+        "file_line_range": [
+          1,
+          20
+        ],
+        "resource": "Deployment.default.demo-app",
+        "evaluations": {},
+        "check_class": "checkov.kubernetes.checks.resource.k8s.CPULimits",
+        "fixed_definition": null,
+        "entity_tags": null,
+        "caller_file_path": null,
+        "caller_file_line_range": null,
+        "resource_address": null,
+        "severity": null,
+        "bc_category": null,
+        "benchmarks": null,
+        "description": null,
+        "short_description": null,
+        "vulnerability_details": null,
+        "connected_node": null,
+        "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-10",
+        "details": [],
+        "check_len": null,
+        "definition_context_file_path": null
+      }
+    },
+    {
+      "scanner": "checkov",
+      "rule_id": "CKV_K8S_37",
+      "title": "Minimize the admission of containers with capabilities assigned",
+      "severity": "medium",
+      "file_path": "/k8s/deployment.yaml",
+      "line_start": 1,
+      "line_end": 20,
+      "secret_type": "config/plaintext-secret",
+      "match": [
+        [
+          1,
+          "apiVersion: apps/v1\n"
+        ],
+        [
+          2,
+          "kind: Deployment\n"
+        ],
+        [
+          3,
+          "metadata:\n"
+        ],
+        [
+          4,
+          "  name: demo-app\n"
+        ],
+        [
+          5,
+          "spec:\n"
+        ],
+        [
+          6,
+          "  replicas: 1\n"
+        ],
+        [
+          7,
+          "  selector:\n"
+        ],
+        [
+          8,
+          "    matchLabels:\n"
+        ],
+        [
+          9,
+          "      app: demo-app\n"
+        ],
+        [
+          10,
+          "  template:\n"
+        ],
+        [
+          11,
+          "    metadata:\n"
+        ],
+        [
+          12,
+          "      labels:\n"
+        ],
+        [
+          13,
+          "        app: demo-app\n"
+        ],
+        [
+          14,
+          "    spec:\n"
+        ],
+        [
+          15,
+          "      containers:\n"
+        ],
+        [
+          16,
+          "        - name: demo-app\n"
+        ],
+        [
+          17,
+          "          image: nginx:latest\n"
+        ],
+        [
+          18,
+          "          env:\n"
+        ],
+        [
+          19,
+          "            - name: DB_PASSWORD\n"
+        ],
+        [
+          20,
+          "              value: \"InlinePassword123!\""
+        ]
+      ],
+      "mitre_technique": "T1552",
+      "raw": {
+        "check_id": "CKV_K8S_37",
+        "bc_check_id": "BC_K8S_34",
+        "check_name": "Minimize the admission of containers with capabilities assigned",
+        "check_result": {
+          "result": "FAILED",
+          "evaluated_keys": [
+            "spec/template/spec/containers/[0]/securityContext/capabilities/drop"
+          ]
+        },
+        "code_block": [
+          [
+            1,
+            "apiVersion: apps/v1\n"
+          ],
+          [
+            2,
+            "kind: Deployment\n"
+          ],
+          [
+            3,
+            "metadata:\n"
+          ],
+          [
+            4,
+            "  name: demo-app\n"
+          ],
+          [
+            5,
+            "spec:\n"
+          ],
+          [
+            6,
+            "  replicas: 1\n"
+          ],
+          [
+            7,
+            "  selector:\n"
+          ],
+          [
+            8,
+            "    matchLabels:\n"
+          ],
+          [
+            9,
+            "      app: demo-app\n"
+          ],
+          [
+            10,
+            "  template:\n"
+          ],
+          [
+            11,
+            "    metadata:\n"
+          ],
+          [
+            12,
+            "      labels:\n"
+          ],
+          [
+            13,
+            "        app: demo-app\n"
+          ],
+          [
+            14,
+            "    spec:\n"
+          ],
+          [
+            15,
+            "      containers:\n"
+          ],
+          [
+            16,
+            "        - name: demo-app\n"
+          ],
+          [
+            17,
+            "          image: nginx:latest\n"
+          ],
+          [
+            18,
+            "          env:\n"
+          ],
+          [
+            19,
+            "            - name: DB_PASSWORD\n"
+          ],
+          [
+            20,
+            "              value: \"InlinePassword123!\""
+          ]
+        ],
+        "file_path": "/k8s/deployment.yaml",
+        "file_abs_path": "/home/demo/pipelineguard/k8s/deployment.yaml",
+        "repo_file_path": "/k8s/deployment.yaml",
+        "file_line_range": [
+          1,
+          20
+        ],
+        "resource": "Deployment.default.demo-app",
+        "evaluations": {},
+        "check_class": "checkov.kubernetes.checks.resource.k8s.MinimizeCapabilities",
+        "fixed_definition": null,
+        "entity_tags": null,
+        "caller_file_path": null,
+        "caller_file_line_range": null,
+        "resource_address": null,
+        "severity": null,
+        "bc_category": null,
+        "benchmarks": null,
+        "description": null,
+        "short_description": null,
+        "vulnerability_details": null,
+        "connected_node": null,
+        "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-34",
+        "details": [],
+        "check_len": null,
+        "definition_context_file_path": null
+      }
+    },
+    {
+      "scanner": "checkov",
+      "rule_id": "CKV_K8S_23",
+      "title": "Minimize the admission of root containers",
+      "severity": "medium",
+      "file_path": "/k8s/deployment.yaml",
+      "line_start": 1,
+      "line_end": 20,
+      "secret_type": "config/plaintext-secret",
+      "match": [
+        [
+          1,
+          "apiVersion: apps/v1\n"
+        ],
+        [
+          2,
+          "kind: Deployment\n"
+        ],
+        [
+          3,
+          "metadata:\n"
+        ],
+        [
+          4,
+          "  name: demo-app\n"
+        ],
+        [
+          5,
+          "spec:\n"
+        ],
+        [
+          6,
+          "  replicas: 1\n"
+        ],
+        [
+          7,
+          "  selector:\n"
+        ],
+        [
+          8,
+          "    matchLabels:\n"
+        ],
+        [
+          9,
+          "      app: demo-app\n"
+        ],
+        [
+          10,
+          "  template:\n"
+        ],
+        [
+          11,
+          "    metadata:\n"
+        ],
+        [
+          12,
+          "      labels:\n"
+        ],
+        [
+          13,
+          "        app: demo-app\n"
+        ],
+        [
+          14,
+          "    spec:\n"
+        ],
+        [
+          15,
+          "      containers:\n"
+        ],
+        [
+          16,
+          "        - name: demo-app\n"
+        ],
+        [
+          17,
+          "          image: nginx:latest\n"
+        ],
+        [
+          18,
+          "          env:\n"
+        ],
+        [
+          19,
+          "            - name: DB_PASSWORD\n"
+        ],
+        [
+          20,
+          "              value: \"InlinePassword123!\""
+        ]
+      ],
+      "mitre_technique": "T1552",
+      "raw": {
+        "check_id": "CKV_K8S_23",
+        "bc_check_id": "BC_K8S_22",
+        "check_name": "Minimize the admission of root containers",
+        "check_result": {
+          "result": "FAILED",
+          "evaluated_keys": []
+        },
+        "code_block": [
+          [
+            1,
+            "apiVersion: apps/v1\n"
+          ],
+          [
+            2,
+            "kind: Deployment\n"
+          ],
+          [
+            3,
+            "metadata:\n"
+          ],
+          [
+            4,
+            "  name: demo-app\n"
+          ],
+          [
+            5,
+            "spec:\n"
+          ],
+          [
+            6,
+            "  replicas: 1\n"
+          ],
+          [
+            7,
+            "  selector:\n"
+          ],
+          [
+            8,
+            "    matchLabels:\n"
+          ],
+          [
+            9,
+            "      app: demo-app\n"
+          ],
+          [
+            10,
+            "  template:\n"
+          ],
+          [
+            11,
+            "    metadata:\n"
+          ],
+          [
+            12,
+            "      labels:\n"
+          ],
+          [
+            13,
+            "        app: demo-app\n"
+          ],
+          [
+            14,
+            "    spec:\n"
+          ],
+          [
+            15,
+            "      containers:\n"
+          ],
+          [
+            16,
+            "        - name: demo-app\n"
+          ],
+          [
+            17,
+            "          image: nginx:latest\n"
+          ],
+          [
+            18,
+            "          env:\n"
+          ],
+          [
+            19,
+            "            - name: DB_PASSWORD\n"
+          ],
+          [
+            20,
+            "              value: \"InlinePassword123!\""
+          ]
+        ],
+        "file_path": "/k8s/deployment.yaml",
+        "file_abs_path": "/home/demo/pipelineguard/k8s/deployment.yaml",
+        "repo_file_path": "/k8s/deployment.yaml",
+        "file_line_range": [
+          1,
+          20
+        ],
+        "resource": "Deployment.default.demo-app",
+        "evaluations": {},
+        "check_class": "checkov.kubernetes.checks.resource.k8s.RootContainers",
+        "fixed_definition": null,
+        "entity_tags": null,
+        "caller_file_path": null,
+        "caller_file_line_range": null,
+        "resource_address": null,
+        "severity": null,
+        "bc_category": null,
+        "benchmarks": null,
+        "description": null,
+        "short_description": null,
+        "vulnerability_details": null,
+        "connected_node": null,
+        "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-22",
+        "details": [],
+        "check_len": null,
+        "definition_context_file_path": null
+      }
+    },
+    {
+      "scanner": "checkov",
+      "rule_id": "CKV_K8S_8",
+      "title": "Liveness Probe Should be Configured",
+      "severity": "medium",
+      "file_path": "/k8s/deployment.yaml",
+      "line_start": 1,
+      "line_end": 20,
+      "secret_type": "config/plaintext-secret",
+      "match": [
+        [
+          1,
+          "apiVersion: apps/v1\n"
+        ],
+        [
+          2,
+          "kind: Deployment\n"
+        ],
+        [
+          3,
+          "metadata:\n"
+        ],
+        [
+          4,
+          "  name: demo-app\n"
+        ],
+        [
+          5,
+          "spec:\n"
+        ],
+        [
+          6,
+          "  replicas: 1\n"
+        ],
+        [
+          7,
+          "  selector:\n"
+        ],
+        [
+          8,
+          "    matchLabels:\n"
+        ],
+        [
+          9,
+          "      app: demo-app\n"
+        ],
+        [
+          10,
+          "  template:\n"
+        ],
+        [
+          11,
+          "    metadata:\n"
+        ],
+        [
+          12,
+          "      labels:\n"
+        ],
+        [
+          13,
+          "        app: demo-app\n"
+        ],
+        [
+          14,
+          "    spec:\n"
+        ],
+        [
+          15,
+          "      containers:\n"
+        ],
+        [
+          16,
+          "        - name: demo-app\n"
+        ],
+        [
+          17,
+          "          image: nginx:latest\n"
+        ],
+        [
+          18,
+          "          env:\n"
+        ],
+        [
+          19,
+          "            - name: DB_PASSWORD\n"
+        ],
+        [
+          20,
+          "              value: \"InlinePassword123!\""
+        ]
+      ],
+      "mitre_technique": "T1552",
+      "raw": {
+        "check_id": "CKV_K8S_8",
+        "bc_check_id": "BC_K8S_7",
+        "check_name": "Liveness Probe Should be Configured",
+        "check_result": {
+          "result": "FAILED",
+          "evaluated_keys": [
+            "spec/template/spec/containers/[0]/livenessProbe"
+          ]
+        },
+        "code_block": [
+          [
+            1,
+            "apiVersion: apps/v1\n"
+          ],
+          [
+            2,
+            "kind: Deployment\n"
+          ],
+          [
+            3,
+            "metadata:\n"
+          ],
+          [
+            4,
+            "  name: demo-app\n"
+          ],
+          [
+            5,
+            "spec:\n"
+          ],
+          [
+            6,
+            "  replicas: 1\n"
+          ],
+          [
+            7,
+            "  selector:\n"
+          ],
+          [
+            8,
+            "    matchLabels:\n"
+          ],
+          [
+            9,
+            "      app: demo-app\n"
+          ],
+          [
+            10,
+            "  template:\n"
+          ],
+          [
+            11,
+            "    metadata:\n"
+          ],
+          [
+            12,
+            "      labels:\n"
+          ],
+          [
+            13,
+            "        app: demo-app\n"
+          ],
+          [
+            14,
+            "    spec:\n"
+          ],
+          [
+            15,
+            "      containers:\n"
+          ],
+          [
+            16,
+            "        - name: demo-app\n"
+          ],
+          [
+            17,
+            "          image: nginx:latest\n"
+          ],
+          [
+            18,
+            "          env:\n"
+          ],
+          [
+            19,
+            "            - name: DB_PASSWORD\n"
+          ],
+          [
+            20,
+            "              value: \"InlinePassword123!\""
+          ]
+        ],
+        "file_path": "/k8s/deployment.yaml",
+        "file_abs_path": "/home/demo/pipelineguard/k8s/deployment.yaml",
+        "repo_file_path": "/k8s/deployment.yaml",
+        "file_line_range": [
+          1,
+          20
+        ],
+        "resource": "Deployment.default.demo-app",
+        "evaluations": {},
+        "check_class": "checkov.kubernetes.checks.resource.k8s.LivenessProbe",
+        "fixed_definition": null,
+        "entity_tags": null,
+        "caller_file_path": null,
+        "caller_file_line_range": null,
+        "resource_address": null,
+        "severity": null,
+        "bc_category": null,
+        "benchmarks": null,
+        "description": null,
+        "short_description": null,
+        "vulnerability_details": null,
+        "connected_node": null,
+        "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-7",
+        "details": [],
+        "check_len": null,
+        "definition_context_file_path": null
+      }
+    },
+    {
+      "scanner": "checkov",
+      "rule_id": "CKV_K8S_22",
+      "title": "Use read-only filesystem for containers where possible",
+      "severity": "medium",
+      "file_path": "/k8s/deployment.yaml",
+      "line_start": 1,
+      "line_end": 20,
+      "secret_type": "config/plaintext-secret",
+      "match": [
+        [
+          1,
+          "apiVersion: apps/v1\n"
+        ],
+        [
+          2,
+          "kind: Deployment\n"
+        ],
+        [
+          3,
+          "metadata:\n"
+        ],
+        [
+          4,
+          "  name: demo-app\n"
+        ],
+        [
+          5,
+          "spec:\n"
+        ],
+        [
+          6,
+          "  replicas: 1\n"
+        ],
+        [
+          7,
+          "  selector:\n"
+        ],
+        [
+          8,
+          "    matchLabels:\n"
+        ],
+        [
+          9,
+          "      app: demo-app\n"
+        ],
+        [
+          10,
+          "  template:\n"
+        ],
+        [
+          11,
+          "    metadata:\n"
+        ],
+        [
+          12,
+          "      labels:\n"
+        ],
+        [
+          13,
+          "        app: demo-app\n"
+        ],
+        [
+          14,
+          "    spec:\n"
+        ],
+        [
+          15,
+          "      containers:\n"
+        ],
+        [
+          16,
+          "        - name: demo-app\n"
+        ],
+        [
+          17,
+          "          image: nginx:latest\n"
+        ],
+        [
+          18,
+          "          env:\n"
+        ],
+        [
+          19,
+          "            - name: DB_PASSWORD\n"
+        ],
+        [
+          20,
+          "              value: \"InlinePassword123!\""
+        ]
+      ],
+      "mitre_technique": "T1552",
+      "raw": {
+        "check_id": "CKV_K8S_22",
+        "bc_check_id": "BC_K8S_21",
+        "check_name": "Use read-only filesystem for containers where possible",
+        "check_result": {
+          "result": "FAILED",
+          "evaluated_keys": [
+            "spec/template/spec/containers/[0]/securityContext/readOnlyRootFilesystem"
+          ]
+        },
+        "code_block": [
+          [
+            1,
+            "apiVersion: apps/v1\n"
+          ],
+          [
+            2,
+            "kind: Deployment\n"
+          ],
+          [
+            3,
+            "metadata:\n"
+          ],
+          [
+            4,
+            "  name: demo-app\n"
+          ],
+          [
+            5,
+            "spec:\n"
+          ],
+          [
+            6,
+            "  replicas: 1\n"
+          ],
+          [
+            7,
+            "  selector:\n"
+          ],
+          [
+            8,
+            "    matchLabels:\n"
+          ],
+          [
+            9,
+            "      app: demo-app\n"
+          ],
+          [
+            10,
+            "  template:\n"
+          ],
+          [
+            11,
+            "    metadata:\n"
+          ],
+          [
+            12,
+            "      labels:\n"
+          ],
+          [
+            13,
+            "        app: demo-app\n"
+          ],
+          [
+            14,
+            "    spec:\n"
+          ],
+          [
+            15,
+            "      containers:\n"
+          ],
+          [
+            16,
+            "        - name: demo-app\n"
+          ],
+          [
+            17,
+            "          image: nginx:latest\n"
+          ],
+          [
+            18,
+            "          env:\n"
+          ],
+          [
+            19,
+            "            - name: DB_PASSWORD\n"
+          ],
+          [
+            20,
+            "              value: \"InlinePassword123!\""
+          ]
+        ],
+        "file_path": "/k8s/deployment.yaml",
+        "file_abs_path": "/home/demo/pipelineguard/k8s/deployment.yaml",
+        "repo_file_path": "/k8s/deployment.yaml",
+        "file_line_range": [
+          1,
+          20
+        ],
+        "resource": "Deployment.default.demo-app",
+        "evaluations": {},
+        "check_class": "checkov.kubernetes.checks.resource.k8s.ReadOnlyFilesystem",
+        "fixed_definition": null,
+        "entity_tags": null,
+        "caller_file_path": null,
+        "caller_file_line_range": null,
+        "resource_address": null,
+        "severity": null,
+        "bc_category": null,
+        "benchmarks": null,
+        "description": null,
+        "short_description": null,
+        "vulnerability_details": null,
+        "connected_node": null,
+        "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-21",
+        "details": [],
+        "check_len": null,
+        "definition_context_file_path": null
+      }
+    },
+    {
+      "scanner": "checkov",
+      "rule_id": "CKV_K8S_9",
+      "title": "Readiness Probe Should be Configured",
+      "severity": "medium",
+      "file_path": "/k8s/deployment.yaml",
+      "line_start": 1,
+      "line_end": 20,
+      "secret_type": "config/plaintext-secret",
+      "match": [
+        [
+          1,
+          "apiVersion: apps/v1\n"
+        ],
+        [
+          2,
+          "kind: Deployment\n"
+        ],
+        [
+          3,
+          "metadata:\n"
+        ],
+        [
+          4,
+          "  name: demo-app\n"
+        ],
+        [
+          5,
+          "spec:\n"
+        ],
+        [
+          6,
+          "  replicas: 1\n"
+        ],
+        [
+          7,
+          "  selector:\n"
+        ],
+        [
+          8,
+          "    matchLabels:\n"
+        ],
+        [
+          9,
+          "      app: demo-app\n"
+        ],
+        [
+          10,
+          "  template:\n"
+        ],
+        [
+          11,
+          "    metadata:\n"
+        ],
+        [
+          12,
+          "      labels:\n"
+        ],
+        [
+          13,
+          "        app: demo-app\n"
+        ],
+        [
+          14,
+          "    spec:\n"
+        ],
+        [
+          15,
+          "      containers:\n"
+        ],
+        [
+          16,
+          "        - name: demo-app\n"
+        ],
+        [
+          17,
+          "          image: nginx:latest\n"
+        ],
+        [
+          18,
+          "          env:\n"
+        ],
+        [
+          19,
+          "            - name: DB_PASSWORD\n"
+        ],
+        [
+          20,
+          "              value: \"InlinePassword123!\""
+        ]
+      ],
+      "mitre_technique": "T1552",
+      "raw": {
+        "check_id": "CKV_K8S_9",
+        "bc_check_id": "BC_K8S_8",
+        "check_name": "Readiness Probe Should be Configured",
+        "check_result": {
+          "result": "FAILED",
+          "evaluated_keys": [
+            "spec/template/spec/containers/[0]/readinessProbe"
+          ]
+        },
+        "code_block": [
+          [
+            1,
+            "apiVersion: apps/v1\n"
+          ],
+          [
+            2,
+            "kind: Deployment\n"
+          ],
+          [
+            3,
+            "metadata:\n"
+          ],
+          [
+            4,
+            "  name: demo-app\n"
+          ],
+          [
+            5,
+            "spec:\n"
+          ],
+          [
+            6,
+            "  replicas: 1\n"
+          ],
+          [
+            7,
+            "  selector:\n"
+          ],
+          [
+            8,
+            "    matchLabels:\n"
+          ],
+          [
+            9,
+            "      app: demo-app\n"
+          ],
+          [
+            10,
+            "  template:\n"
+          ],
+          [
+            11,
+            "    metadata:\n"
+          ],
+          [
+            12,
+            "      labels:\n"
+          ],
+          [
+            13,
+            "        app: demo-app\n"
+          ],
+          [
+            14,
+            "    spec:\n"
+          ],
+          [
+            15,
+            "      containers:\n"
+          ],
+          [
+            16,
+            "        - name: demo-app\n"
+          ],
+          [
+            17,
+            "          image: nginx:latest\n"
+          ],
+          [
+            18,
+            "          env:\n"
+          ],
+          [
+            19,
+            "            - name: DB_PASSWORD\n"
+          ],
+          [
+            20,
+            "              value: \"InlinePassword123!\""
+          ]
+        ],
+        "file_path": "/k8s/deployment.yaml",
+        "file_abs_path": "/home/demo/pipelineguard/k8s/deployment.yaml",
+        "repo_file_path": "/k8s/deployment.yaml",
+        "file_line_range": [
+          1,
+          20
+        ],
+        "resource": "Deployment.default.demo-app",
+        "evaluations": {},
+        "check_class": "checkov.kubernetes.checks.resource.k8s.ReadinessProbe",
+        "fixed_definition": null,
+        "entity_tags": null,
+        "caller_file_path": null,
+        "caller_file_line_range": null,
+        "resource_address": null,
+        "severity": null,
+        "bc_category": null,
+        "benchmarks": null,
+        "description": null,
+        "short_description": null,
+        "vulnerability_details": null,
+        "connected_node": null,
+        "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-8",
+        "details": [],
+        "check_len": null,
+        "definition_context_file_path": null
+      }
+    },
+    {
+      "scanner": "checkov",
+      "rule_id": "CKV_K8S_31",
+      "title": "Ensure that the seccomp profile is set to docker/default or runtime/default",
+      "severity": "medium",
+      "file_path": "/k8s/deployment.yaml",
+      "line_start": 1,
+      "line_end": 20,
+      "secret_type": "config/plaintext-secret",
+      "match": [
+        [
+          1,
+          "apiVersion: apps/v1\n"
+        ],
+        [
+          2,
+          "kind: Deployment\n"
+        ],
+        [
+          3,
+          "metadata:\n"
+        ],
+        [
+          4,
+          "  name: demo-app\n"
+        ],
+        [
+          5,
+          "spec:\n"
+        ],
+        [
+          6,
+          "  replicas: 1\n"
+        ],
+        [
+          7,
+          "  selector:\n"
+        ],
+        [
+          8,
+          "    matchLabels:\n"
+        ],
+        [
+          9,
+          "      app: demo-app\n"
+        ],
+        [
+          10,
+          "  template:\n"
+        ],
+        [
+          11,
+          "    metadata:\n"
+        ],
+        [
+          12,
+          "      labels:\n"
+        ],
+        [
+          13,
+          "        app: demo-app\n"
+        ],
+        [
+          14,
+          "    spec:\n"
+        ],
+        [
+          15,
+          "      containers:\n"
+        ],
+        [
+          16,
+          "        - name: demo-app\n"
+        ],
+        [
+          17,
+          "          image: nginx:latest\n"
+        ],
+        [
+          18,
+          "          env:\n"
+        ],
+        [
+          19,
+          "            - name: DB_PASSWORD\n"
+        ],
+        [
+          20,
+          "              value: \"InlinePassword123!\""
+        ]
+      ],
+      "mitre_technique": "T1552",
+      "raw": {
+        "check_id": "CKV_K8S_31",
+        "bc_check_id": "BC_K8S_29",
+        "check_name": "Ensure that the seccomp profile is set to docker/default or runtime/default",
+        "check_result": {
+          "result": "FAILED",
+          "evaluated_keys": []
+        },
+        "code_block": [
+          [
+            1,
+            "apiVersion: apps/v1\n"
+          ],
+          [
+            2,
+            "kind: Deployment\n"
+          ],
+          [
+            3,
+            "metadata:\n"
+          ],
+          [
+            4,
+            "  name: demo-app\n"
+          ],
+          [
+            5,
+            "spec:\n"
+          ],
+          [
+            6,
+            "  replicas: 1\n"
+          ],
+          [
+            7,
+            "  selector:\n"
+          ],
+          [
+            8,
+            "    matchLabels:\n"
+          ],
+          [
+            9,
+            "      app: demo-app\n"
+          ],
+          [
+            10,
+            "  template:\n"
+          ],
+          [
+            11,
+            "    metadata:\n"
+          ],
+          [
+            12,
+            "      labels:\n"
+          ],
+          [
+            13,
+            "        app: demo-app\n"
+          ],
+          [
+            14,
+            "    spec:\n"
+          ],
+          [
+            15,
+            "      containers:\n"
+          ],
+          [
+            16,
+            "        - name: demo-app\n"
+          ],
+          [
+            17,
+            "          image: nginx:latest\n"
+          ],
+          [
+            18,
+            "          env:\n"
+          ],
+          [
+            19,
+            "            - name: DB_PASSWORD\n"
+          ],
+          [
+            20,
+            "              value: \"InlinePassword123!\""
+          ]
+        ],
+        "file_path": "/k8s/deployment.yaml",
+        "file_abs_path": "/home/demo/pipelineguard/k8s/deployment.yaml",
+        "repo_file_path": "/k8s/deployment.yaml",
+        "file_line_range": [
+          1,
+          20
+        ],
+        "resource": "Deployment.default.demo-app",
+        "evaluations": {},
+        "check_class": "checkov.kubernetes.checks.resource.k8s.Seccomp",
+        "fixed_definition": null,
+        "entity_tags": null,
+        "caller_file_path": null,
+        "caller_file_line_range": null,
+        "resource_address": null,
+        "severity": null,
+        "bc_category": null,
+        "benchmarks": null,
+        "description": null,
+        "short_description": null,
+        "vulnerability_details": null,
+        "connected_node": null,
+        "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-29",
+        "details": [],
+        "check_len": null,
+        "definition_context_file_path": null
+      }
+    },
+    {
+      "scanner": "checkov",
+      "rule_id": "CKV_K8S_21",
+      "title": "The default namespace should not be used",
+      "severity": "medium",
+      "file_path": "/k8s/deployment.yaml",
+      "line_start": 1,
+      "line_end": 20,
+      "secret_type": "config/plaintext-secret",
+      "match": [
+        [
+          1,
+          "apiVersion: apps/v1\n"
+        ],
+        [
+          2,
+          "kind: Deployment\n"
+        ],
+        [
+          3,
+          "metadata:\n"
+        ],
+        [
+          4,
+          "  name: demo-app\n"
+        ],
+        [
+          5,
+          "spec:\n"
+        ],
+        [
+          6,
+          "  replicas: 1\n"
+        ],
+        [
+          7,
+          "  selector:\n"
+        ],
+        [
+          8,
+          "    matchLabels:\n"
+        ],
+        [
+          9,
+          "      app: demo-app\n"
+        ],
+        [
+          10,
+          "  template:\n"
+        ],
+        [
+          11,
+          "    metadata:\n"
+        ],
+        [
+          12,
+          "      labels:\n"
+        ],
+        [
+          13,
+          "        app: demo-app\n"
+        ],
+        [
+          14,
+          "    spec:\n"
+        ],
+        [
+          15,
+          "      containers:\n"
+        ],
+        [
+          16,
+          "        - name: demo-app\n"
+        ],
+        [
+          17,
+          "          image: nginx:latest\n"
+        ],
+        [
+          18,
+          "          env:\n"
+        ],
+        [
+          19,
+          "            - name: DB_PASSWORD\n"
+        ],
+        [
+          20,
+          "              value: \"InlinePassword123!\""
+        ]
+      ],
+      "mitre_technique": "T1552",
+      "raw": {
+        "check_id": "CKV_K8S_21",
+        "bc_check_id": "BC_K8S_20",
+        "check_name": "The default namespace should not be used",
+        "check_result": {
+          "result": "FAILED",
+          "evaluated_keys": []
+        },
+        "code_block": [
+          [
+            1,
+            "apiVersion: apps/v1\n"
+          ],
+          [
+            2,
+            "kind: Deployment\n"
+          ],
+          [
+            3,
+            "metadata:\n"
+          ],
+          [
+            4,
+            "  name: demo-app\n"
+          ],
+          [
+            5,
+            "spec:\n"
+          ],
+          [
+            6,
+            "  replicas: 1\n"
+          ],
+          [
+            7,
+            "  selector:\n"
+          ],
+          [
+            8,
+            "    matchLabels:\n"
+          ],
+          [
+            9,
+            "      app: demo-app\n"
+          ],
+          [
+            10,
+            "  template:\n"
+          ],
+          [
+            11,
+            "    metadata:\n"
+          ],
+          [
+            12,
+            "      labels:\n"
+          ],
+          [
+            13,
+            "        app: demo-app\n"
+          ],
+          [
+            14,
+            "    spec:\n"
+          ],
+          [
+            15,
+            "      containers:\n"
+          ],
+          [
+            16,
+            "        - name: demo-app\n"
+          ],
+          [
+            17,
+            "          image: nginx:latest\n"
+          ],
+          [
+            18,
+            "          env:\n"
+          ],
+          [
+            19,
+            "            - name: DB_PASSWORD\n"
+          ],
+          [
+            20,
+            "              value: \"InlinePassword123!\""
+          ]
+        ],
+        "file_path": "/k8s/deployment.yaml",
+        "file_abs_path": "/home/demo/pipelineguard/k8s/deployment.yaml",
+        "repo_file_path": "/k8s/deployment.yaml",
+        "file_line_range": [
+          1,
+          20
+        ],
+        "resource": "Deployment.default.demo-app",
+        "evaluations": {},
+        "check_class": "checkov.kubernetes.checks.resource.k8s.DefaultNamespace",
+        "fixed_definition": null,
+        "entity_tags": null,
+        "caller_file_path": null,
+        "caller_file_line_range": null,
+        "resource_address": null,
+        "severity": null,
+        "bc_category": null,
+        "benchmarks": null,
+        "description": null,
+        "short_description": null,
+        "vulnerability_details": null,
+        "connected_node": null,
+        "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-20",
+        "details": [],
+        "check_len": null,
+        "definition_context_file_path": null
+      }
+    },
+    {
+      "scanner": "checkov",
+      "rule_id": "CKV_K8S_12",
+      "title": "Memory requests should be set",
+      "severity": "medium",
+      "file_path": "/k8s/deployment.yaml",
+      "line_start": 1,
+      "line_end": 20,
+      "secret_type": "config/plaintext-secret",
+      "match": [
+        [
+          1,
+          "apiVersion: apps/v1\n"
+        ],
+        [
+          2,
+          "kind: Deployment\n"
+        ],
+        [
+          3,
+          "metadata:\n"
+        ],
+        [
+          4,
+          "  name: demo-app\n"
+        ],
+        [
+          5,
+          "spec:\n"
+        ],
+        [
+          6,
+          "  replicas: 1\n"
+        ],
+        [
+          7,
+          "  selector:\n"
+        ],
+        [
+          8,
+          "    matchLabels:\n"
+        ],
+        [
+          9,
+          "      app: demo-app\n"
+        ],
+        [
+          10,
+          "  template:\n"
+        ],
+        [
+          11,
+          "    metadata:\n"
+        ],
+        [
+          12,
+          "      labels:\n"
+        ],
+        [
+          13,
+          "        app: demo-app\n"
+        ],
+        [
+          14,
+          "    spec:\n"
+        ],
+        [
+          15,
+          "      containers:\n"
+        ],
+        [
+          16,
+          "        - name: demo-app\n"
+        ],
+        [
+          17,
+          "          image: nginx:latest\n"
+        ],
+        [
+          18,
+          "          env:\n"
+        ],
+        [
+          19,
+          "            - name: DB_PASSWORD\n"
+        ],
+        [
+          20,
+          "              value: \"InlinePassword123!\""
+        ]
+      ],
+      "mitre_technique": "T1552",
+      "raw": {
+        "check_id": "CKV_K8S_12",
+        "bc_check_id": "BC_K8S_11",
+        "check_name": "Memory requests should be set",
+        "check_result": {
+          "result": "FAILED",
+          "evaluated_keys": [
+            "spec/template/spec/containers/[0]/resources/requests/memory"
+          ]
+        },
+        "code_block": [
+          [
+            1,
+            "apiVersion: apps/v1\n"
+          ],
+          [
+            2,
+            "kind: Deployment\n"
+          ],
+          [
+            3,
+            "metadata:\n"
+          ],
+          [
+            4,
+            "  name: demo-app\n"
+          ],
+          [
+            5,
+            "spec:\n"
+          ],
+          [
+            6,
+            "  replicas: 1\n"
+          ],
+          [
+            7,
+            "  selector:\n"
+          ],
+          [
+            8,
+            "    matchLabels:\n"
+          ],
+          [
+            9,
+            "      app: demo-app\n"
+          ],
+          [
+            10,
+            "  template:\n"
+          ],
+          [
+            11,
+            "    metadata:\n"
+          ],
+          [
+            12,
+            "      labels:\n"
+          ],
+          [
+            13,
+            "        app: demo-app\n"
+          ],
+          [
+            14,
+            "    spec:\n"
+          ],
+          [
+            15,
+            "      containers:\n"
+          ],
+          [
+            16,
+            "        - name: demo-app\n"
+          ],
+          [
+            17,
+            "          image: nginx:latest\n"
+          ],
+          [
+            18,
+            "          env:\n"
+          ],
+          [
+            19,
+            "            - name: DB_PASSWORD\n"
+          ],
+          [
+            20,
+            "              value: \"InlinePassword123!\""
+          ]
+        ],
+        "file_path": "/k8s/deployment.yaml",
+        "file_abs_path": "/home/demo/pipelineguard/k8s/deployment.yaml",
+        "repo_file_path": "/k8s/deployment.yaml",
+        "file_line_range": [
+          1,
+          20
+        ],
+        "resource": "Deployment.default.demo-app",
+        "evaluations": {},
+        "check_class": "checkov.kubernetes.checks.resource.k8s.MemoryRequests",
+        "fixed_definition": null,
+        "entity_tags": null,
+        "caller_file_path": null,
+        "caller_file_line_range": null,
+        "resource_address": null,
+        "severity": null,
+        "bc_category": null,
+        "benchmarks": null,
+        "description": null,
+        "short_description": null,
+        "vulnerability_details": null,
+        "connected_node": null,
+        "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-11",
+        "details": [],
+        "check_len": null,
+        "definition_context_file_path": null
+      }
+    },
+    {
+      "scanner": "checkov",
+      "rule_id": "CKV_K8S_30",
+      "title": "Apply security context to your containers",
+      "severity": "medium",
+      "file_path": "/k8s/deployment.yaml",
+      "line_start": 1,
+      "line_end": 20,
+      "secret_type": "config/plaintext-secret",
+      "match": [
+        [
+          1,
+          "apiVersion: apps/v1\n"
+        ],
+        [
+          2,
+          "kind: Deployment\n"
+        ],
+        [
+          3,
+          "metadata:\n"
+        ],
+        [
+          4,
+          "  name: demo-app\n"
+        ],
+        [
+          5,
+          "spec:\n"
+        ],
+        [
+          6,
+          "  replicas: 1\n"
+        ],
+        [
+          7,
+          "  selector:\n"
+        ],
+        [
+          8,
+          "    matchLabels:\n"
+        ],
+        [
+          9,
+          "      app: demo-app\n"
+        ],
+        [
+          10,
+          "  template:\n"
+        ],
+        [
+          11,
+          "    metadata:\n"
+        ],
+        [
+          12,
+          "      labels:\n"
+        ],
+        [
+          13,
+          "        app: demo-app\n"
+        ],
+        [
+          14,
+          "    spec:\n"
+        ],
+        [
+          15,
+          "      containers:\n"
+        ],
+        [
+          16,
+          "        - name: demo-app\n"
+        ],
+        [
+          17,
+          "          image: nginx:latest\n"
+        ],
+        [
+          18,
+          "          env:\n"
+        ],
+        [
+          19,
+          "            - name: DB_PASSWORD\n"
+        ],
+        [
+          20,
+          "              value: \"InlinePassword123!\""
+        ]
+      ],
+      "mitre_technique": "T1552",
+      "raw": {
+        "check_id": "CKV_K8S_30",
+        "bc_check_id": "BC_K8S_28",
+        "check_name": "Apply security context to your containers",
+        "check_result": {
+          "result": "FAILED",
+          "evaluated_keys": [
+            "spec/template/spec/containers/[0]/securityContext"
+          ]
+        },
+        "code_block": [
+          [
+            1,
+            "apiVersion: apps/v1\n"
+          ],
+          [
+            2,
+            "kind: Deployment\n"
+          ],
+          [
+            3,
+            "metadata:\n"
+          ],
+          [
+            4,
+            "  name: demo-app\n"
+          ],
+          [
+            5,
+            "spec:\n"
+          ],
+          [
+            6,
+            "  replicas: 1\n"
+          ],
+          [
+            7,
+            "  selector:\n"
+          ],
+          [
+            8,
+            "    matchLabels:\n"
+          ],
+          [
+            9,
+            "      app: demo-app\n"
+          ],
+          [
+            10,
+            "  template:\n"
+          ],
+          [
+            11,
+            "    metadata:\n"
+          ],
+          [
+            12,
+            "      labels:\n"
+          ],
+          [
+            13,
+            "        app: demo-app\n"
+          ],
+          [
+            14,
+            "    spec:\n"
+          ],
+          [
+            15,
+            "      containers:\n"
+          ],
+          [
+            16,
+            "        - name: demo-app\n"
+          ],
+          [
+            17,
+            "          image: nginx:latest\n"
+          ],
+          [
+            18,
+            "          env:\n"
+          ],
+          [
+            19,
+            "            - name: DB_PASSWORD\n"
+          ],
+          [
+            20,
+            "              value: \"InlinePassword123!\""
+          ]
+        ],
+        "file_path": "/k8s/deployment.yaml",
+        "file_abs_path": "/home/demo/pipelineguard/k8s/deployment.yaml",
+        "repo_file_path": "/k8s/deployment.yaml",
+        "file_line_range": [
+          1,
+          20
+        ],
+        "resource": "Deployment.default.demo-app",
+        "evaluations": {},
+        "check_class": "checkov.kubernetes.checks.resource.k8s.ContainerSecurityContext",
+        "fixed_definition": null,
+        "entity_tags": null,
+        "caller_file_path": null,
+        "caller_file_line_range": null,
+        "resource_address": null,
+        "severity": null,
+        "bc_category": null,
+        "benchmarks": null,
+        "description": null,
+        "short_description": null,
+        "vulnerability_details": null,
+        "connected_node": null,
+        "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-28",
+        "details": [],
+        "check_len": null,
+        "definition_context_file_path": null
+      }
+    },
+    {
+      "scanner": "checkov",
+      "rule_id": "CKV_K8S_20",
+      "title": "Containers should not run with allowPrivilegeEscalation",
+      "severity": "medium",
+      "file_path": "/k8s/deployment.yaml",
+      "line_start": 1,
+      "line_end": 20,
+      "secret_type": "config/plaintext-secret",
+      "match": [
+        [
+          1,
+          "apiVersion: apps/v1\n"
+        ],
+        [
+          2,
+          "kind: Deployment\n"
+        ],
+        [
+          3,
+          "metadata:\n"
+        ],
+        [
+          4,
+          "  name: demo-app\n"
+        ],
+        [
+          5,
+          "spec:\n"
+        ],
+        [
+          6,
+          "  replicas: 1\n"
+        ],
+        [
+          7,
+          "  selector:\n"
+        ],
+        [
+          8,
+          "    matchLabels:\n"
+        ],
+        [
+          9,
+          "      app: demo-app\n"
+        ],
+        [
+          10,
+          "  template:\n"
+        ],
+        [
+          11,
+          "    metadata:\n"
+        ],
+        [
+          12,
+          "      labels:\n"
+        ],
+        [
+          13,
+          "        app: demo-app\n"
+        ],
+        [
+          14,
+          "    spec:\n"
+        ],
+        [
+          15,
+          "      containers:\n"
+        ],
+        [
+          16,
+          "        - name: demo-app\n"
+        ],
+        [
+          17,
+          "          image: nginx:latest\n"
+        ],
+        [
+          18,
+          "          env:\n"
+        ],
+        [
+          19,
+          "            - name: DB_PASSWORD\n"
+        ],
+        [
+          20,
+          "              value: \"InlinePassword123!\""
+        ]
+      ],
+      "mitre_technique": "T1552",
+      "raw": {
+        "check_id": "CKV_K8S_20",
+        "bc_check_id": "BC_K8S_19",
+        "check_name": "Containers should not run with allowPrivilegeEscalation",
+        "check_result": {
+          "result": "FAILED",
+          "evaluated_keys": [
+            "spec/template/spec/containers/[0]/securityContext/allowPrivilegeEscalation"
+          ]
+        },
+        "code_block": [
+          [
+            1,
+            "apiVersion: apps/v1\n"
+          ],
+          [
+            2,
+            "kind: Deployment\n"
+          ],
+          [
+            3,
+            "metadata:\n"
+          ],
+          [
+            4,
+            "  name: demo-app\n"
+          ],
+          [
+            5,
+            "spec:\n"
+          ],
+          [
+            6,
+            "  replicas: 1\n"
+          ],
+          [
+            7,
+            "  selector:\n"
+          ],
+          [
+            8,
+            "    matchLabels:\n"
+          ],
+          [
+            9,
+            "      app: demo-app\n"
+          ],
+          [
+            10,
+            "  template:\n"
+          ],
+          [
+            11,
+            "    metadata:\n"
+          ],
+          [
+            12,
+            "      labels:\n"
+          ],
+          [
+            13,
+            "        app: demo-app\n"
+          ],
+          [
+            14,
+            "    spec:\n"
+          ],
+          [
+            15,
+            "      containers:\n"
+          ],
+          [
+            16,
+            "        - name: demo-app\n"
+          ],
+          [
+            17,
+            "          image: nginx:latest\n"
+          ],
+          [
+            18,
+            "          env:\n"
+          ],
+          [
+            19,
+            "            - name: DB_PASSWORD\n"
+          ],
+          [
+            20,
+            "              value: \"InlinePassword123!\""
+          ]
+        ],
+        "file_path": "/k8s/deployment.yaml",
+        "file_abs_path": "/home/demo/pipelineguard/k8s/deployment.yaml",
+        "repo_file_path": "/k8s/deployment.yaml",
+        "file_line_range": [
+          1,
+          20
+        ],
+        "resource": "Deployment.default.demo-app",
+        "evaluations": {},
+        "check_class": "checkov.kubernetes.checks.resource.k8s.AllowPrivilegeEscalation",
+        "fixed_definition": null,
+        "entity_tags": null,
+        "caller_file_path": null,
+        "caller_file_line_range": null,
+        "resource_address": null,
+        "severity": null,
+        "bc_category": null,
+        "benchmarks": null,
+        "description": null,
+        "short_description": null,
+        "vulnerability_details": null,
+        "connected_node": null,
+        "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-19",
+        "details": [],
+        "check_len": null,
+        "definition_context_file_path": null
+      }
+    },
+    {
+      "scanner": "checkov",
+      "rule_id": "CKV_K8S_28",
+      "title": "Minimize the admission of containers with the NET_RAW capability",
+      "severity": "medium",
+      "file_path": "/k8s/deployment.yaml",
+      "line_start": 1,
+      "line_end": 20,
+      "secret_type": "config/plaintext-secret",
+      "match": [
+        [
+          1,
+          "apiVersion: apps/v1\n"
+        ],
+        [
+          2,
+          "kind: Deployment\n"
+        ],
+        [
+          3,
+          "metadata:\n"
+        ],
+        [
+          4,
+          "  name: demo-app\n"
+        ],
+        [
+          5,
+          "spec:\n"
+        ],
+        [
+          6,
+          "  replicas: 1\n"
+        ],
+        [
+          7,
+          "  selector:\n"
+        ],
+        [
+          8,
+          "    matchLabels:\n"
+        ],
+        [
+          9,
+          "      app: demo-app\n"
+        ],
+        [
+          10,
+          "  template:\n"
+        ],
+        [
+          11,
+          "    metadata:\n"
+        ],
+        [
+          12,
+          "      labels:\n"
+        ],
+        [
+          13,
+          "        app: demo-app\n"
+        ],
+        [
+          14,
+          "    spec:\n"
+        ],
+        [
+          15,
+          "      containers:\n"
+        ],
+        [
+          16,
+          "        - name: demo-app\n"
+        ],
+        [
+          17,
+          "          image: nginx:latest\n"
+        ],
+        [
+          18,
+          "          env:\n"
+        ],
+        [
+          19,
+          "            - name: DB_PASSWORD\n"
+        ],
+        [
+          20,
+          "              value: \"InlinePassword123!\""
+        ]
+      ],
+      "mitre_technique": "T1552",
+      "raw": {
+        "check_id": "CKV_K8S_28",
+        "bc_check_id": "BC_K8S_27",
+        "check_name": "Minimize the admission of containers with the NET_RAW capability",
+        "check_result": {
+          "result": "FAILED",
+          "evaluated_keys": [
+            "spec/template/spec/containers/[0]/securityContext/capabilities/drop"
+          ]
+        },
+        "code_block": [
+          [
+            1,
+            "apiVersion: apps/v1\n"
+          ],
+          [
+            2,
+            "kind: Deployment\n"
+          ],
+          [
+            3,
+            "metadata:\n"
+          ],
+          [
+            4,
+            "  name: demo-app\n"
+          ],
+          [
+            5,
+            "spec:\n"
+          ],
+          [
+            6,
+            "  replicas: 1\n"
+          ],
+          [
+            7,
+            "  selector:\n"
+          ],
+          [
+            8,
+            "    matchLabels:\n"
+          ],
+          [
+            9,
+            "      app: demo-app\n"
+          ],
+          [
+            10,
+            "  template:\n"
+          ],
+          [
+            11,
+            "    metadata:\n"
+          ],
+          [
+            12,
+            "      labels:\n"
+          ],
+          [
+            13,
+            "        app: demo-app\n"
+          ],
+          [
+            14,
+            "    spec:\n"
+          ],
+          [
+            15,
+            "      containers:\n"
+          ],
+          [
+            16,
+            "        - name: demo-app\n"
+          ],
+          [
+            17,
+            "          image: nginx:latest\n"
+          ],
+          [
+            18,
+            "          env:\n"
+          ],
+          [
+            19,
+            "            - name: DB_PASSWORD\n"
+          ],
+          [
+            20,
+            "              value: \"InlinePassword123!\""
+          ]
+        ],
+        "file_path": "/k8s/deployment.yaml",
+        "file_abs_path": "/home/demo/pipelineguard/k8s/deployment.yaml",
+        "repo_file_path": "/k8s/deployment.yaml",
+        "file_line_range": [
+          1,
+          20
+        ],
+        "resource": "Deployment.default.demo-app",
+        "evaluations": {},
+        "check_class": "checkov.kubernetes.checks.resource.k8s.DropCapabilities",
+        "fixed_definition": null,
+        "entity_tags": null,
+        "caller_file_path": null,
+        "caller_file_line_range": null,
+        "resource_address": null,
+        "severity": null,
+        "bc_category": null,
+        "benchmarks": null,
+        "description": null,
+        "short_description": null,
+        "vulnerability_details": null,
+        "connected_node": null,
+        "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-27",
+        "details": [],
+        "check_len": null,
+        "definition_context_file_path": null
+      }
+    },
+    {
+      "scanner": "checkov",
+      "rule_id": "CKV_K8S_10",
+      "title": "CPU requests should be set",
+      "severity": "medium",
+      "file_path": "/k8s/deployment.yaml",
+      "line_start": 1,
+      "line_end": 20,
+      "secret_type": "config/plaintext-secret",
+      "match": [
+        [
+          1,
+          "apiVersion: apps/v1\n"
+        ],
+        [
+          2,
+          "kind: Deployment\n"
+        ],
+        [
+          3,
+          "metadata:\n"
+        ],
+        [
+          4,
+          "  name: demo-app\n"
+        ],
+        [
+          5,
+          "spec:\n"
+        ],
+        [
+          6,
+          "  replicas: 1\n"
+        ],
+        [
+          7,
+          "  selector:\n"
+        ],
+        [
+          8,
+          "    matchLabels:\n"
+        ],
+        [
+          9,
+          "      app: demo-app\n"
+        ],
+        [
+          10,
+          "  template:\n"
+        ],
+        [
+          11,
+          "    metadata:\n"
+        ],
+        [
+          12,
+          "      labels:\n"
+        ],
+        [
+          13,
+          "        app: demo-app\n"
+        ],
+        [
+          14,
+          "    spec:\n"
+        ],
+        [
+          15,
+          "      containers:\n"
+        ],
+        [
+          16,
+          "        - name: demo-app\n"
+        ],
+        [
+          17,
+          "          image: nginx:latest\n"
+        ],
+        [
+          18,
+          "          env:\n"
+        ],
+        [
+          19,
+          "            - name: DB_PASSWORD\n"
+        ],
+        [
+          20,
+          "              value: \"InlinePassword123!\""
+        ]
+      ],
+      "mitre_technique": "T1552",
+      "raw": {
+        "check_id": "CKV_K8S_10",
+        "bc_check_id": "BC_K8S_9",
+        "check_name": "CPU requests should be set",
+        "check_result": {
+          "result": "FAILED",
+          "evaluated_keys": [
+            "spec/template/spec/containers/[0]/resources/requests/cpu"
+          ]
+        },
+        "code_block": [
+          [
+            1,
+            "apiVersion: apps/v1\n"
+          ],
+          [
+            2,
+            "kind: Deployment\n"
+          ],
+          [
+            3,
+            "metadata:\n"
+          ],
+          [
+            4,
+            "  name: demo-app\n"
+          ],
+          [
+            5,
+            "spec:\n"
+          ],
+          [
+            6,
+            "  replicas: 1\n"
+          ],
+          [
+            7,
+            "  selector:\n"
+          ],
+          [
+            8,
+            "    matchLabels:\n"
+          ],
+          [
+            9,
+            "      app: demo-app\n"
+          ],
+          [
+            10,
+            "  template:\n"
+          ],
+          [
+            11,
+            "    metadata:\n"
+          ],
+          [
+            12,
+            "      labels:\n"
+          ],
+          [
+            13,
+            "        app: demo-app\n"
+          ],
+          [
+            14,
+            "    spec:\n"
+          ],
+          [
+            15,
+            "      containers:\n"
+          ],
+          [
+            16,
+            "        - name: demo-app\n"
+          ],
+          [
+            17,
+            "          image: nginx:latest\n"
+          ],
+          [
+            18,
+            "          env:\n"
+          ],
+          [
+            19,
+            "            - name: DB_PASSWORD\n"
+          ],
+          [
+            20,
+            "              value: \"InlinePassword123!\""
+          ]
+        ],
+        "file_path": "/k8s/deployment.yaml",
+        "file_abs_path": "/home/demo/pipelineguard/k8s/deployment.yaml",
+        "repo_file_path": "/k8s/deployment.yaml",
+        "file_line_range": [
+          1,
+          20
+        ],
+        "resource": "Deployment.default.demo-app",
+        "evaluations": {},
+        "check_class": "checkov.kubernetes.checks.resource.k8s.CPURequests",
+        "fixed_definition": null,
+        "entity_tags": null,
+        "caller_file_path": null,
+        "caller_file_line_range": null,
+        "resource_address": null,
+        "severity": null,
+        "bc_category": null,
+        "benchmarks": null,
+        "description": null,
+        "short_description": null,
+        "vulnerability_details": null,
+        "connected_node": null,
+        "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-9",
+        "details": [],
+        "check_len": null,
+        "definition_context_file_path": null
+      }
+    },
+    {
+      "scanner": "checkov",
+      "rule_id": "CKV_K8S_14",
+      "title": "Image Tag should be fixed - not latest or blank",
+      "severity": "medium",
+      "file_path": "/k8s/deployment.yaml",
+      "line_start": 1,
+      "line_end": 20,
+      "secret_type": "config/plaintext-secret",
+      "match": [
+        [
+          1,
+          "apiVersion: apps/v1\n"
+        ],
+        [
+          2,
+          "kind: Deployment\n"
+        ],
+        [
+          3,
+          "metadata:\n"
+        ],
+        [
+          4,
+          "  name: demo-app\n"
+        ],
+        [
+          5,
+          "spec:\n"
+        ],
+        [
+          6,
+          "  replicas: 1\n"
+        ],
+        [
+          7,
+          "  selector:\n"
+        ],
+        [
+          8,
+          "    matchLabels:\n"
+        ],
+        [
+          9,
+          "      app: demo-app\n"
+        ],
+        [
+          10,
+          "  template:\n"
+        ],
+        [
+          11,
+          "    metadata:\n"
+        ],
+        [
+          12,
+          "      labels:\n"
+        ],
+        [
+          13,
+          "        app: demo-app\n"
+        ],
+        [
+          14,
+          "    spec:\n"
+        ],
+        [
+          15,
+          "      containers:\n"
+        ],
+        [
+          16,
+          "        - name: demo-app\n"
+        ],
+        [
+          17,
+          "          image: nginx:latest\n"
+        ],
+        [
+          18,
+          "          env:\n"
+        ],
+        [
+          19,
+          "            - name: DB_PASSWORD\n"
+        ],
+        [
+          20,
+          "              value: \"InlinePassword123!\""
+        ]
+      ],
+      "mitre_technique": "T1552",
+      "raw": {
+        "check_id": "CKV_K8S_14",
+        "bc_check_id": "BC_K8S_13",
+        "check_name": "Image Tag should be fixed - not latest or blank",
+        "check_result": {
+          "result": "FAILED",
+          "evaluated_keys": [
+            "spec/template/spec/containers/[0]/image"
+          ]
+        },
+        "code_block": [
+          [
+            1,
+            "apiVersion: apps/v1\n"
+          ],
+          [
+            2,
+            "kind: Deployment\n"
+          ],
+          [
+            3,
+            "metadata:\n"
+          ],
+          [
+            4,
+            "  name: demo-app\n"
+          ],
+          [
+            5,
+            "spec:\n"
+          ],
+          [
+            6,
+            "  replicas: 1\n"
+          ],
+          [
+            7,
+            "  selector:\n"
+          ],
+          [
+            8,
+            "    matchLabels:\n"
+          ],
+          [
+            9,
+            "      app: demo-app\n"
+          ],
+          [
+            10,
+            "  template:\n"
+          ],
+          [
+            11,
+            "    metadata:\n"
+          ],
+          [
+            12,
+            "      labels:\n"
+          ],
+          [
+            13,
+            "        app: demo-app\n"
+          ],
+          [
+            14,
+            "    spec:\n"
+          ],
+          [
+            15,
+            "      containers:\n"
+          ],
+          [
+            16,
+            "        - name: demo-app\n"
+          ],
+          [
+            17,
+            "          image: nginx:latest\n"
+          ],
+          [
+            18,
+            "          env:\n"
+          ],
+          [
+            19,
+            "            - name: DB_PASSWORD\n"
+          ],
+          [
+            20,
+            "              value: \"InlinePassword123!\""
+          ]
+        ],
+        "file_path": "/k8s/deployment.yaml",
+        "file_abs_path": "/home/demo/pipelineguard/k8s/deployment.yaml",
+        "repo_file_path": "/k8s/deployment.yaml",
+        "file_line_range": [
+          1,
+          20
+        ],
+        "resource": "Deployment.default.demo-app",
+        "evaluations": {},
+        "check_class": "checkov.kubernetes.checks.resource.k8s.ImageTagFixed",
+        "fixed_definition": null,
+        "entity_tags": null,
+        "caller_file_path": null,
+        "caller_file_line_range": null,
+        "resource_address": null,
+        "severity": null,
+        "bc_category": null,
+        "benchmarks": null,
+        "description": null,
+        "short_description": null,
+        "vulnerability_details": null,
+        "connected_node": null,
+        "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-13",
+        "details": [],
+        "check_len": null,
+        "definition_context_file_path": null
+      }
+    },
+    {
+      "scanner": "checkov",
+      "rule_id": "CKV_K8S_40",
+      "title": "Containers should run as a high UID to avoid host conflict",
+      "severity": "medium",
+      "file_path": "/k8s/deployment.yaml",
+      "line_start": 1,
+      "line_end": 20,
+      "secret_type": "config/plaintext-secret",
+      "match": [
+        [
+          1,
+          "apiVersion: apps/v1\n"
+        ],
+        [
+          2,
+          "kind: Deployment\n"
+        ],
+        [
+          3,
+          "metadata:\n"
+        ],
+        [
+          4,
+          "  name: demo-app\n"
+        ],
+        [
+          5,
+          "spec:\n"
+        ],
+        [
+          6,
+          "  replicas: 1\n"
+        ],
+        [
+          7,
+          "  selector:\n"
+        ],
+        [
+          8,
+          "    matchLabels:\n"
+        ],
+        [
+          9,
+          "      app: demo-app\n"
+        ],
+        [
+          10,
+          "  template:\n"
+        ],
+        [
+          11,
+          "    metadata:\n"
+        ],
+        [
+          12,
+          "      labels:\n"
+        ],
+        [
+          13,
+          "        app: demo-app\n"
+        ],
+        [
+          14,
+          "    spec:\n"
+        ],
+        [
+          15,
+          "      containers:\n"
+        ],
+        [
+          16,
+          "        - name: demo-app\n"
+        ],
+        [
+          17,
+          "          image: nginx:latest\n"
+        ],
+        [
+          18,
+          "          env:\n"
+        ],
+        [
+          19,
+          "            - name: DB_PASSWORD\n"
+        ],
+        [
+          20,
+          "              value: \"InlinePassword123!\""
+        ]
+      ],
+      "mitre_technique": "T1552",
+      "raw": {
+        "check_id": "CKV_K8S_40",
+        "bc_check_id": "BC_K8S_37",
+        "check_name": "Containers should run as a high UID to avoid host conflict",
+        "check_result": {
+          "result": "FAILED",
+          "evaluated_keys": []
+        },
+        "code_block": [
+          [
+            1,
+            "apiVersion: apps/v1\n"
+          ],
+          [
+            2,
+            "kind: Deployment\n"
+          ],
+          [
+            3,
+            "metadata:\n"
+          ],
+          [
+            4,
+            "  name: demo-app\n"
+          ],
+          [
+            5,
+            "spec:\n"
+          ],
+          [
+            6,
+            "  replicas: 1\n"
+          ],
+          [
+            7,
+            "  selector:\n"
+          ],
+          [
+            8,
+            "    matchLabels:\n"
+          ],
+          [
+            9,
+            "      app: demo-app\n"
+          ],
+          [
+            10,
+            "  template:\n"
+          ],
+          [
+            11,
+            "    metadata:\n"
+          ],
+          [
+            12,
+            "      labels:\n"
+          ],
+          [
+            13,
+            "        app: demo-app\n"
+          ],
+          [
+            14,
+            "    spec:\n"
+          ],
+          [
+            15,
+            "      containers:\n"
+          ],
+          [
+            16,
+            "        - name: demo-app\n"
+          ],
+          [
+            17,
+            "          image: nginx:latest\n"
+          ],
+          [
+            18,
+            "          env:\n"
+          ],
+          [
+            19,
+            "            - name: DB_PASSWORD\n"
+          ],
+          [
+            20,
+            "              value: \"InlinePassword123!\""
+          ]
+        ],
+        "file_path": "/k8s/deployment.yaml",
+        "file_abs_path": "/home/demo/pipelineguard/k8s/deployment.yaml",
+        "repo_file_path": "/k8s/deployment.yaml",
+        "file_line_range": [
+          1,
+          20
+        ],
+        "resource": "Deployment.default.demo-app",
+        "evaluations": {},
+        "check_class": "checkov.kubernetes.checks.resource.k8s.RootContainersHighUID",
+        "fixed_definition": null,
+        "entity_tags": null,
+        "caller_file_path": null,
+        "caller_file_line_range": null,
+        "resource_address": null,
+        "severity": null,
+        "bc_category": null,
+        "benchmarks": null,
+        "description": null,
+        "short_description": null,
+        "vulnerability_details": null,
+        "connected_node": null,
+        "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-37",
+        "details": [],
+        "check_len": null,
+        "definition_context_file_path": null
+      }
+    },
+    {
+      "scanner": "checkov",
+      "rule_id": "CKV_K8S_38",
+      "title": "Ensure that Service Account Tokens are only mounted where necessary",
+      "severity": "medium",
+      "file_path": "/k8s/deployment.yaml",
+      "line_start": 1,
+      "line_end": 20,
+      "secret_type": "config/plaintext-secret",
+      "match": [
+        [
+          1,
+          "apiVersion: apps/v1\n"
+        ],
+        [
+          2,
+          "kind: Deployment\n"
+        ],
+        [
+          3,
+          "metadata:\n"
+        ],
+        [
+          4,
+          "  name: demo-app\n"
+        ],
+        [
+          5,
+          "spec:\n"
+        ],
+        [
+          6,
+          "  replicas: 1\n"
+        ],
+        [
+          7,
+          "  selector:\n"
+        ],
+        [
+          8,
+          "    matchLabels:\n"
+        ],
+        [
+          9,
+          "      app: demo-app\n"
+        ],
+        [
+          10,
+          "  template:\n"
+        ],
+        [
+          11,
+          "    metadata:\n"
+        ],
+        [
+          12,
+          "      labels:\n"
+        ],
+        [
+          13,
+          "        app: demo-app\n"
+        ],
+        [
+          14,
+          "    spec:\n"
+        ],
+        [
+          15,
+          "      containers:\n"
+        ],
+        [
+          16,
+          "        - name: demo-app\n"
+        ],
+        [
+          17,
+          "          image: nginx:latest\n"
+        ],
+        [
+          18,
+          "          env:\n"
+        ],
+        [
+          19,
+          "            - name: DB_PASSWORD\n"
+        ],
+        [
+          20,
+          "              value: \"InlinePassword123!\""
+        ]
+      ],
+      "mitre_technique": "T1552",
+      "raw": {
+        "check_id": "CKV_K8S_38",
+        "bc_check_id": "BC_K8S_35",
+        "check_name": "Ensure that Service Account Tokens are only mounted where necessary",
+        "check_result": {
+          "result": "FAILED",
+          "evaluated_keys": []
+        },
+        "code_block": [
+          [
+            1,
+            "apiVersion: apps/v1\n"
+          ],
+          [
+            2,
+            "kind: Deployment\n"
+          ],
+          [
+            3,
+            "metadata:\n"
+          ],
+          [
+            4,
+            "  name: demo-app\n"
+          ],
+          [
+            5,
+            "spec:\n"
+          ],
+          [
+            6,
+            "  replicas: 1\n"
+          ],
+          [
+            7,
+            "  selector:\n"
+          ],
+          [
+            8,
+            "    matchLabels:\n"
+          ],
+          [
+            9,
+            "      app: demo-app\n"
+          ],
+          [
+            10,
+            "  template:\n"
+          ],
+          [
+            11,
+            "    metadata:\n"
+          ],
+          [
+            12,
+            "      labels:\n"
+          ],
+          [
+            13,
+            "        app: demo-app\n"
+          ],
+          [
+            14,
+            "    spec:\n"
+          ],
+          [
+            15,
+            "      containers:\n"
+          ],
+          [
+            16,
+            "        - name: demo-app\n"
+          ],
+          [
+            17,
+            "          image: nginx:latest\n"
+          ],
+          [
+            18,
+            "          env:\n"
+          ],
+          [
+            19,
+            "            - name: DB_PASSWORD\n"
+          ],
+          [
+            20,
+            "              value: \"InlinePassword123!\""
+          ]
+        ],
+        "file_path": "/k8s/deployment.yaml",
+        "file_abs_path": "/home/demo/pipelineguard/k8s/deployment.yaml",
+        "repo_file_path": "/k8s/deployment.yaml",
+        "file_line_range": [
+          1,
+          20
+        ],
+        "resource": "Deployment.default.demo-app",
+        "evaluations": {},
+        "check_class": "checkov.kubernetes.checks.resource.k8s.ServiceAccountTokens",
+        "fixed_definition": null,
+        "entity_tags": null,
+        "caller_file_path": null,
+        "caller_file_line_range": null,
+        "resource_address": null,
+        "severity": null,
+        "bc_category": null,
+        "benchmarks": null,
+        "description": null,
+        "short_description": null,
+        "vulnerability_details": null,
+        "connected_node": null,
+        "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-35",
+        "details": [],
+        "check_len": null,
+        "definition_context_file_path": null
+      }
+    },
+    {
+      "scanner": "checkov",
+      "rule_id": "CKV_K8S_29",
+      "title": "Apply security context to your pods and containers",
+      "severity": "medium",
+      "file_path": "/k8s/deployment.yaml",
+      "line_start": 1,
+      "line_end": 20,
+      "secret_type": "config/plaintext-secret",
+      "match": [
+        [
+          1,
+          "apiVersion: apps/v1\n"
+        ],
+        [
+          2,
+          "kind: Deployment\n"
+        ],
+        [
+          3,
+          "metadata:\n"
+        ],
+        [
+          4,
+          "  name: demo-app\n"
+        ],
+        [
+          5,
+          "spec:\n"
+        ],
+        [
+          6,
+          "  replicas: 1\n"
+        ],
+        [
+          7,
+          "  selector:\n"
+        ],
+        [
+          8,
+          "    matchLabels:\n"
+        ],
+        [
+          9,
+          "      app: demo-app\n"
+        ],
+        [
+          10,
+          "  template:\n"
+        ],
+        [
+          11,
+          "    metadata:\n"
+        ],
+        [
+          12,
+          "      labels:\n"
+        ],
+        [
+          13,
+          "        app: demo-app\n"
+        ],
+        [
+          14,
+          "    spec:\n"
+        ],
+        [
+          15,
+          "      containers:\n"
+        ],
+        [
+          16,
+          "        - name: demo-app\n"
+        ],
+        [
+          17,
+          "          image: nginx:latest\n"
+        ],
+        [
+          18,
+          "          env:\n"
+        ],
+        [
+          19,
+          "            - name: DB_PASSWORD\n"
+        ],
+        [
+          20,
+          "              value: \"InlinePassword123!\""
+        ]
+      ],
+      "mitre_technique": "T1552",
+      "raw": {
+        "check_id": "CKV_K8S_29",
+        "bc_check_id": "BC_K8S_43",
+        "check_name": "Apply security context to your pods and containers",
+        "check_result": {
+          "result": "FAILED",
+          "evaluated_keys": []
+        },
+        "code_block": [
+          [
+            1,
+            "apiVersion: apps/v1\n"
+          ],
+          [
+            2,
+            "kind: Deployment\n"
+          ],
+          [
+            3,
+            "metadata:\n"
+          ],
+          [
+            4,
+            "  name: demo-app\n"
+          ],
+          [
+            5,
+            "spec:\n"
+          ],
+          [
+            6,
+            "  replicas: 1\n"
+          ],
+          [
+            7,
+            "  selector:\n"
+          ],
+          [
+            8,
+            "    matchLabels:\n"
+          ],
+          [
+            9,
+            "      app: demo-app\n"
+          ],
+          [
+            10,
+            "  template:\n"
+          ],
+          [
+            11,
+            "    metadata:\n"
+          ],
+          [
+            12,
+            "      labels:\n"
+          ],
+          [
+            13,
+            "        app: demo-app\n"
+          ],
+          [
+            14,
+            "    spec:\n"
+          ],
+          [
+            15,
+            "      containers:\n"
+          ],
+          [
+            16,
+            "        - name: demo-app\n"
+          ],
+          [
+            17,
+            "          image: nginx:latest\n"
+          ],
+          [
+            18,
+            "          env:\n"
+          ],
+          [
+            19,
+            "            - name: DB_PASSWORD\n"
+          ],
+          [
+            20,
+            "              value: \"InlinePassword123!\""
+          ]
+        ],
+        "file_path": "/k8s/deployment.yaml",
+        "file_abs_path": "/home/demo/pipelineguard/k8s/deployment.yaml",
+        "repo_file_path": "/k8s/deployment.yaml",
+        "file_line_range": [
+          1,
+          20
+        ],
+        "resource": "Deployment.default.demo-app",
+        "evaluations": {},
+        "check_class": "checkov.kubernetes.checks.resource.k8s.PodSecurityContext",
+        "fixed_definition": null,
+        "entity_tags": null,
+        "caller_file_path": null,
+        "caller_file_line_range": null,
+        "resource_address": null,
+        "severity": null,
+        "bc_category": null,
+        "benchmarks": null,
+        "description": null,
+        "short_description": null,
+        "vulnerability_details": null,
+        "connected_node": null,
+        "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/ensure-securitycontext-is-applied-to-pods-and-containers",
+        "details": [],
+        "check_len": null,
+        "definition_context_file_path": null
+      }
+    },
+    {
+      "scanner": "checkov",
+      "rule_id": "CKV_K8S_13",
+      "title": "Memory limits should be set",
+      "severity": "medium",
+      "file_path": "/k8s/deployment.yaml",
+      "line_start": 1,
+      "line_end": 20,
+      "secret_type": "config/plaintext-secret",
+      "match": [
+        [
+          1,
+          "apiVersion: apps/v1\n"
+        ],
+        [
+          2,
+          "kind: Deployment\n"
+        ],
+        [
+          3,
+          "metadata:\n"
+        ],
+        [
+          4,
+          "  name: demo-app\n"
+        ],
+        [
+          5,
+          "spec:\n"
+        ],
+        [
+          6,
+          "  replicas: 1\n"
+        ],
+        [
+          7,
+          "  selector:\n"
+        ],
+        [
+          8,
+          "    matchLabels:\n"
+        ],
+        [
+          9,
+          "      app: demo-app\n"
+        ],
+        [
+          10,
+          "  template:\n"
+        ],
+        [
+          11,
+          "    metadata:\n"
+        ],
+        [
+          12,
+          "      labels:\n"
+        ],
+        [
+          13,
+          "        app: demo-app\n"
+        ],
+        [
+          14,
+          "    spec:\n"
+        ],
+        [
+          15,
+          "      containers:\n"
+        ],
+        [
+          16,
+          "        - name: demo-app\n"
+        ],
+        [
+          17,
+          "          image: nginx:latest\n"
+        ],
+        [
+          18,
+          "          env:\n"
+        ],
+        [
+          19,
+          "            - name: DB_PASSWORD\n"
+        ],
+        [
+          20,
+          "              value: \"InlinePassword123!\""
+        ]
+      ],
+      "mitre_technique": "T1552",
+      "raw": {
+        "check_id": "CKV_K8S_13",
+        "bc_check_id": "BC_K8S_12",
+        "check_name": "Memory limits should be set",
+        "check_result": {
+          "result": "FAILED",
+          "evaluated_keys": [
+            "spec/template/spec/containers/[0]/resources/limits/memory"
+          ]
+        },
+        "code_block": [
+          [
+            1,
+            "apiVersion: apps/v1\n"
+          ],
+          [
+            2,
+            "kind: Deployment\n"
+          ],
+          [
+            3,
+            "metadata:\n"
+          ],
+          [
+            4,
+            "  name: demo-app\n"
+          ],
+          [
+            5,
+            "spec:\n"
+          ],
+          [
+            6,
+            "  replicas: 1\n"
+          ],
+          [
+            7,
+            "  selector:\n"
+          ],
+          [
+            8,
+            "    matchLabels:\n"
+          ],
+          [
+            9,
+            "      app: demo-app\n"
+          ],
+          [
+            10,
+            "  template:\n"
+          ],
+          [
+            11,
+            "    metadata:\n"
+          ],
+          [
+            12,
+            "      labels:\n"
+          ],
+          [
+            13,
+            "        app: demo-app\n"
+          ],
+          [
+            14,
+            "    spec:\n"
+          ],
+          [
+            15,
+            "      containers:\n"
+          ],
+          [
+            16,
+            "        - name: demo-app\n"
+          ],
+          [
+            17,
+            "          image: nginx:latest\n"
+          ],
+          [
+            18,
+            "          env:\n"
+          ],
+          [
+            19,
+            "            - name: DB_PASSWORD\n"
+          ],
+          [
+            20,
+            "              value: \"InlinePassword123!\""
+          ]
+        ],
+        "file_path": "/k8s/deployment.yaml",
+        "file_abs_path": "/home/demo/pipelineguard/k8s/deployment.yaml",
+        "repo_file_path": "/k8s/deployment.yaml",
+        "file_line_range": [
+          1,
+          20
+        ],
+        "resource": "Deployment.default.demo-app",
+        "evaluations": {},
+        "check_class": "checkov.kubernetes.checks.resource.k8s.MemoryLimits",
+        "fixed_definition": null,
+        "entity_tags": null,
+        "caller_file_path": null,
+        "caller_file_line_range": null,
+        "resource_address": null,
+        "severity": null,
+        "bc_category": null,
+        "benchmarks": null,
+        "description": null,
+        "short_description": null,
+        "vulnerability_details": null,
+        "connected_node": null,
+        "guideline": "https://docs.prismacloud.io/en/enterprise-edition/policy-reference/kubernetes-policies/kubernetes-policy-index/bc-k8s-12",
+        "details": [],
+        "check_len": null,
+        "definition_context_file_path": null
+      }
+    },
+    {
+      "scanner": "checkov",
+      "rule_id": "CKV2_K8S_6",
+      "title": "Minimize the admission of pods which lack an associated NetworkPolicy",
+      "severity": "medium",
+      "file_path": "/k8s/deployment.yaml",
+      "line_start": 1,
+      "line_end": 20,
+      "secret_type": "config/plaintext-secret",
+      "match": [
+        [
+          1,
+          "apiVersion: apps/v1\n"
+        ],
+        [
+          2,
+          "kind: Deployment\n"
+        ],
+        [
+          3,
+          "metadata:\n"
+        ],
+        [
+          4,
+          "  name: demo-app\n"
+        ],
+        [
+          5,
+          "spec:\n"
+        ],
+        [
+          6,
+          "  replicas: 1\n"
+        ],
+        [
+          7,
+          "  selector:\n"
+        ],
+        [
+          8,
+          "    matchLabels:\n"
+        ],
+        [
+          9,
+          "      app: demo-app\n"
+        ],
+        [
+          10,
+          "  template:\n"
+        ],
+        [
+          11,
+          "    metadata:\n"
+        ],
+        [
+          12,
+          "      labels:\n"
+        ],
+        [
+          13,
+          "        app: demo-app\n"
+        ],
+        [
+          14,
+          "    spec:\n"
+        ],
+        [
+          15,
+          "      containers:\n"
+        ],
+        [
+          16,
+          "        - name: demo-app\n"
+        ],
+        [
+          17,
+          "          image: nginx:latest\n"
+        ],
+        [
+          18,
+          "          env:\n"
+        ],
+        [
+          19,
+          "            - name: DB_PASSWORD\n"
+        ],
+        [
+          20,
+          "              value: \"InlinePassword123!\""
+        ]
+      ],
+      "mitre_technique": "T1552",
+      "raw": {
+        "check_id": "CKV2_K8S_6",
+        "bc_check_id": null,
+        "check_name": "Minimize the admission of pods which lack an associated NetworkPolicy",
+        "check_result": {
+          "result": "FAILED",
+          "evaluated_keys": [
+            "resource_type"
+          ]
+        },
+        "code_block": [
+          [
+            1,
+            "apiVersion: apps/v1\n"
+          ],
+          [
+            2,
+            "kind: Deployment\n"
+          ],
+          [
+            3,
+            "metadata:\n"
+          ],
+          [
+            4,
+            "  name: demo-app\n"
+          ],
+          [
+            5,
+            "spec:\n"
+          ],
+          [
+            6,
+            "  replicas: 1\n"
+          ],
+          [
+            7,
+            "  selector:\n"
+          ],
+          [
+            8,
+            "    matchLabels:\n"
+          ],
+          [
+            9,
+            "      app: demo-app\n"
+          ],
+          [
+            10,
+            "  template:\n"
+          ],
+          [
+            11,
+            "    metadata:\n"
+          ],
+          [
+            12,
+            "      labels:\n"
+          ],
+          [
+            13,
+            "        app: demo-app\n"
+          ],
+          [
+            14,
+            "    spec:\n"
+          ],
+          [
+            15,
+            "      containers:\n"
+          ],
+          [
+            16,
+            "        - name: demo-app\n"
+          ],
+          [
+            17,
+            "          image: nginx:latest\n"
+          ],
+          [
+            18,
+            "          env:\n"
+          ],
+          [
+            19,
+            "            - name: DB_PASSWORD\n"
+          ],
+          [
+            20,
+            "              value: \"InlinePassword123!\""
+          ]
+        ],
+        "file_path": "/k8s/deployment.yaml",
+        "file_abs_path": "/home/demo/pipelineguard/k8s/deployment.yaml",
+        "repo_file_path": "/k8s/deployment.yaml",
+        "file_line_range": [
+          1,
+          20
+        ],
+        "resource": "Pod.default.demo-app.app-demo-app",
+        "evaluations": {},
+        "check_class": "checkov.common.graph.checks_infra.base_check",
+        "fixed_definition": null,
+        "entity_tags": null,
+        "caller_file_path": null,
+        "caller_file_line_range": null,
+        "resource_address": null,
+        "severity": null,
+        "bc_category": null,
+        "benchmarks": null,
+        "description": null,
+        "short_description": null,
+        "vulnerability_details": null,
+        "connected_node": null,
+        "guideline": null,
+        "details": [],
+        "check_len": null,
+        "definition_context_file_path": null
+      }
+    },
+    {
+      "scanner": "semgrep",
+      "rule_id": "plaintext-password-env",
+      "title": "Plaintext password-like value found",
+      "severity": "error",
+      "file_path": "app/.env",
+      "line_start": 2,
+      "line_end": 2,
+      "secret_type": "pattern/plaintext-secret",
+      "match": "DB_PASSWORD=SuperSecretPassword123!",
+      "mitre_technique": "T1552",
+      "raw": {
+        "check_id": "plaintext-password-env",
+        "end": {
+          "col": 36,
+          "line": 2,
+          "offset": 51
+        },
+        "extra": {
+          "engine_kind": "OSS",
+          "fingerprint": "43f934939e2fe07907e78d99e21902edaeda4803ae62b7faeb66e6e077d88f7d3932c0b0c98efbe0faf4017ef02a472033fe9f7b5949cad3fd7e3e645ce3c00f_0",
+          "is_ignored": false,
+          "lines": "DB_PASSWORD=SuperSecretPassword123!",
+          "message": "Plaintext password-like value found",
+          "metadata": {
+            "mitre": {
+              "tactic": "Credential Access",
+              "technique": "T1552"
+            }
+          },
+          "metavars": {
+            "$1": {
+              "abstract_content": "PASSWORD",
+              "end": {
+                "col": 12,
+                "line": 2,
+                "offset": 27
+              },
+              "start": {
+                "col": 4,
+                "line": 2,
+                "offset": 19
+              }
+            }
+          },
+          "severity": "ERROR",
+          "validation_state": "NO_VALIDATOR"
+        },
+        "path": "app/.env",
+        "start": {
+          "col": 4,
+          "line": 2,
+          "offset": 19
+        }
+      }
+    },
+    {
+      "scanner": "semgrep",
+      "rule_id": "plaintext-password-env",
+      "title": "Plaintext password-like value found",
+      "severity": "error",
+      "file_path": "docker-compose.yml",
+      "line_start": 26,
+      "line_end": 26,
+      "secret_type": "pattern/plaintext-secret",
+      "match": "      POSTGRES_PASSWORD: postgres",
+      "mitre_technique": "T1552",
+      "raw": {
+        "check_id": "plaintext-password-env",
+        "end": {
+          "col": 34,
+          "line": 26,
+          "offset": 616
+        },
+        "extra": {
+          "engine_kind": "OSS",
+          "fingerprint": "f84a1ae75896f8a15f9a6ed32432b92783bc9526f152930bcfd832ac06fd0eb122ada145b9908d8ac0f3a888856e899688c70d97e2fa5a41e1200b741bb5a56c_0",
+          "is_ignored": false,
+          "lines": "      POSTGRES_PASSWORD: postgres",
+          "message": "Plaintext password-like value found",
+          "metadata": {
+            "mitre": {
+              "tactic": "Credential Access",
+              "technique": "T1552"
+            }
+          },
+          "metavars": {
+            "$1": {
+              "abstract_content": "PASSWORD",
+              "end": {
+                "col": 24,
+                "line": 26,
+                "offset": 606
+              },
+              "start": {
+                "col": 16,
+                "line": 26,
+                "offset": 598
+              }
+            }
+          },
+          "severity": "ERROR",
+          "validation_state": "NO_VALIDATOR"
+        },
+        "path": "docker-compose.yml",
+        "start": {
+          "col": 16,
+          "line": 26,
+          "offset": 598
+        }
+      }
+    },
+    {
+      "scanner": "semgrep",
+      "rule_id": "plaintext-password-env",
+      "title": "Plaintext password-like value found",
+      "severity": "error",
+      "file_path": "scripts/load_to_postgres.py",
+      "line_start": 16,
+      "line_end": 16,
+      "secret_type": "pattern/plaintext-secret",
+      "match": "        host=DB_HOST, dbname=DB_NAME, user=DB_USER, password=DB_PASS, port=DB_PORT",
+      "mitre_technique": "T1552",
+      "raw": {
+        "check_id": "plaintext-password-env",
+        "end": {
+          "col": 83,
+          "line": 16,
+          "offset": 491
+        },
+        "extra": {
+          "engine_kind": "OSS",
+          "fingerprint": "ed66b9b43aaf2f0af1cf9b5e008bcd4d7777b0f44453da6adeb462b193c9f88b7765d76a949e14f4778f4c79d963bb0421d27477a33254c9931ebce0e8f5ca46_0",
+          "is_ignored": false,
+          "lines": "        host=DB_HOST, dbname=DB_NAME, user=DB_USER, password=DB_PASS, port=DB_PORT",
+          "message": "Plaintext password-like value found",
+          "metadata": {
+            "mitre": {
+              "tactic": "Credential Access",
+              "technique": "T1552"
+            }
+          },
+          "metavars": {
+            "$1": {
+              "abstract_content": "password",
+              "end": {
+                "col": 61,
+                "line": 16,
+                "offset": 469
+              },
+              "start": {
+                "col": 53,
+                "line": 16,
+                "offset": 461
+              }
+            }
+          },
+          "severity": "ERROR",
+          "validation_state": "NO_VALIDATOR"
+        },
+        "path": "scripts/load_to_postgres.py",
+        "start": {
+          "col": 53,
+          "line": 16,
+          "offset": 461
+        }
+      }
+    }
+  ]
+}
