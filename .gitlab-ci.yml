@@ -41,8 +41,12 @@ default:
     - echo "TARGET_REPO_PATH=$TARGET_REPO_PATH"
     - test -n "$TARGET_REPO_NAME"
     - test -n "$TARGET_REPO_PATH"
+    - git submodule status
+    - ls -la "$CI_PROJECT_DIR/vulnerable-infra-project"
+    - find "$CI_PROJECT_DIR/vulnerable-infra-project" -maxdepth 3 -type f | sort | head -100
 
 variables:
+  GIT_SUBMODULE_STRATEGY: recursive
   UV_PYTHON: "3.12"
   MAX_CRITICAL: "0"
   MAX_HIGH: "999999"

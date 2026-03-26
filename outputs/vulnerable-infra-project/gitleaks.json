@@ -1,0 +1,42 @@
+[
+ {
+  "Description": "GitHub Personal Access Token",
+  "StartLine": 4,
+  "EndLine": 4,
+  "StartColumn": 15,
+  "EndColumn": 54,
+  "Match": "ghp_1234567890abcdefghijklmnopqrstuvwxyz",
+  "Secret": "ghp_1234567890abcdefghijklmnopqrstuvwxyz",
+  "File": "secrets/.env",
+  "SymlinkFile": "",
+  "Commit": "784cb8822bff0066aceddc01ca9bc13a73c07425",
+  "Entropy": 5.171928,
+  "Author": "Md Hasan",
+  "Email": "dezoomcamp081@gmail.com",
+  "Date": "2026-03-25T02:04:45Z",
+  "Message": "initial commit",
+  "Tags": [],
+  "RuleID": "github-pat",
+  "Fingerprint": "784cb8822bff0066aceddc01ca9bc13a73c07425:secrets/.env:github-pat:4"
+ },
+ {
+  "Description": "AWS",
+  "StartLine": 1,
+  "EndLine": 1,
+  "StartColumn": 19,
+  "EndColumn": 38,
+  "Match": "AKIAIOSFODNN7EXAMPLE",
+  "Secret": "AKIAIOSFODNN7EXAMPLE",
+  "File": "secrets/.env",
+  "SymlinkFile": "",
+  "Commit": "784cb8822bff0066aceddc01ca9bc13a73c07425",
+  "Entropy": 3.6841838,
+  "Author": "Md Hasan",
+  "Email": "dezoomcamp081@gmail.com",
+  "Date": "2026-03-25T02:04:45Z",
+  "Message": "initial commit",
+  "Tags": [],
+  "RuleID": "aws-access-token",
+  "Fingerprint": "784cb8822bff0066aceddc01ca9bc13a73c07425:secrets/.env:aws-access-token:1"
+ }
+]
