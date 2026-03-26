@@ -13,7 +13,7 @@ default:
     - export PATH="$HOME/.local/bin:$PATH"
     - uv sync
 
-    # Pin Gitleaks instead of using latest
+    # Gitleaks
     - export GITLEAKS_VERSION="8.30.0"
     - wget -O gitleaks.tar.gz "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
     - tar -xzf gitleaks.tar.gz
@@ -27,6 +27,7 @@ default:
     - apt-get install -y trivy
     - trivy --version
 
+    # PipelineGuard target settings
     - export TARGET_REPO_NAME="vulnerable-infra-project"
     - export TARGET_REPO_PATH="$CI_PROJECT_DIR/vulnerable-infra-project"
     - export PG_REPO="$TARGET_REPO_NAME"
@@ -35,15 +36,17 @@ default:
     - export PG_PIPELINE_ID="${CI_PIPELINE_ID}"
     - export PG_ENVIRONMENT="ci"
 
-    - mkdir -p outputs normalized
+    - mkdir -p outputs normalized .trivycache
     - chmod +x scripts/*.sh || true
+
+    # Sanity/debug
     - echo "TARGET_REPO_NAME=$TARGET_REPO_NAME"
     - echo "TARGET_REPO_PATH=$TARGET_REPO_PATH"
     - test -n "$TARGET_REPO_NAME"
     - test -n "$TARGET_REPO_PATH"
-    - git submodule status
-    - ls -la "$CI_PROJECT_DIR/vulnerable-infra-project"
-    - find "$CI_PROJECT_DIR/vulnerable-infra-project" -maxdepth 3 -type f | sort | head -100
+    - test -d "$TARGET_REPO_PATH"
+    - ls -la "$TARGET_REPO_PATH"
+    - find "$TARGET_REPO_PATH" -maxdepth 3 -type f | sort | head -100
 
 variables:
   GIT_SUBMODULE_STRATEGY: none
@@ -113,10 +116,14 @@ threshold_check:
 publish_artifacts:
   stage: publish
   needs:
-    - job: validate
+    - job: validate_findings
+      artifacts: true
+    - job: threshold_check
       artifacts: true
   script:
+    - echo "Output artifacts:"
     - find outputs -maxdepth 3 -type f | sort
+    - echo "Normalized artifacts:"
     - find normalized -maxdepth 3 -type f | sort
   artifacts:
     when: always
