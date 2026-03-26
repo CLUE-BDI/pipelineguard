@@ -27,8 +27,8 @@ default:
     - apt-get install -y trivy
     - trivy --version
 
-    - export TARGET_REPO_PATH="$CI_PROJECT_DIR"
-    - export TARGET_REPO_NAME="${TARGET_REPO_NAME:-$CI_PROJECT_NAME}"
+    - export TARGET_REPO_NAME="vulnerable-infra-project"
+    - export TARGET_REPO_PATH="$CI_PROJECT_DIR/vulnerable-infra-project"
     - export PG_REPO="$TARGET_REPO_NAME"
     - export PG_BRANCH="${CI_COMMIT_REF_NAME}"
     - export PG_COMMIT_SHA="${CI_COMMIT_SHA}"
