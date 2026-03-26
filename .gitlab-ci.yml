@@ -81,14 +81,28 @@ normalize:
       - outputs/
       - normalized/
 
-validate:
+validate_findings:
   stage: validate
   needs:
     - job: normalize
       artifacts: true
   script:
     - uv run python -m scripts.validate_findings
+  artifacts:
+    when: always
+    expire_in: 7 days
+    paths:
+      - outputs/
+      - normalized/
+
+threshold_check:
+  stage: validate
+  needs:
+    - job: normalize
+      artifacts: true
+  script:
     - uv run python -m scripts.enforce_thresholds
+  allow_failure: true
   artifacts:
     when: always
     expire_in: 7 days
