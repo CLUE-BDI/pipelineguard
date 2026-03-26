@@ -8,24 +8,40 @@ default:
   image: python:3.12-slim
   before_script:
     - apt-get update
-    - apt-get install -y curl git jq ca-certificates
+    - apt-get install -y curl git jq ca-certificates gnupg wget build-essential
     - curl -LsSf https://astral.sh/uv/install.sh | sh
     - export PATH="$HOME/.local/bin:$PATH"
     - uv sync
+
+    - wget -qO gitleaks.tar.gz https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks_linux_x64.tar.gz
+    - tar -xzf gitleaks.tar.gz
+    - install -m 0755 gitleaks /usr/local/bin/gitleaks
+
+    - wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor > /usr/share/keyrings/trivy.gpg
+    - echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb bookworm main" > /etc/apt/sources.list.d/trivy.list
+    - apt-get update
+    - apt-get install -y trivy
+
+    - export TARGET_REPO_PATH="$CI_PROJECT_DIR"
+    - export TARGET_REPO_NAME="${TARGET_REPO_NAME:-$CI_PROJECT_NAME}"
+    - export PG_REPO="$TARGET_REPO_NAME"
+    - export PG_BRANCH="${CI_COMMIT_REF_NAME}"
+    - export PG_COMMIT_SHA="${CI_COMMIT_SHA}"
+    - export PG_PIPELINE_ID="${CI_PIPELINE_ID}"
+    - export PG_ENVIRONMENT="ci"
+
     - mkdir -p outputs normalized
     - chmod +x scripts/*.sh || true
-    - set -a
-    - source config/target.env
-    - set +a
     - echo "TARGET_REPO_NAME=$TARGET_REPO_NAME"
     - echo "TARGET_REPO_PATH=$TARGET_REPO_PATH"
     - test -n "$TARGET_REPO_NAME"
     - test -n "$TARGET_REPO_PATH"
 
 variables:
-  PIP_DISABLE_PIP_VERSION_CHECK: "1"
-  PYTHONDONTWRITEBYTECODE: "1"
-  GIT_STRATEGY: fetch
+  UV_PYTHON: "3.12"
+  MAX_CRITICAL: "0"
+  MAX_HIGH: "999999"
+  FAIL_ON_SECRET: "true"
 
 scan:
   stage: scan
@@ -35,7 +51,7 @@ scan:
     when: always
     expire_in: 7 days
     paths:
-      - outputs/${TARGET_REPO_NAME}/
+      - outputs/
 
 normalize:
   stage: normalize
@@ -48,8 +64,8 @@ normalize:
     when: always
     expire_in: 7 days
     paths:
-      - normalized/${TARGET_REPO_NAME}/
-      - outputs/${TARGET_REPO_NAME}/
+      - outputs/
+      - normalized/
 
 validate:
   stage: validate
@@ -63,8 +79,8 @@ validate:
     when: always
     expire_in: 7 days
     paths:
-      - normalized/${TARGET_REPO_NAME}/
-      - outputs/${TARGET_REPO_NAME}/
+      - outputs/
+      - normalized/
 
 publish_artifacts:
   stage: publish
@@ -72,12 +88,11 @@ publish_artifacts:
     - job: validate
       artifacts: true
   script:
-    - echo "Artifacts ready for export"
-    - find outputs/${TARGET_REPO_NAME} -maxdepth 1 -type f | sort
-    - find normalized/${TARGET_REPO_NAME} -maxdepth 1 -type f | sort
+    - find outputs -maxdepth 3 -type f | sort
+    - find normalized -maxdepth 3 -type f | sort
   artifacts:
     when: always
     expire_in: 14 days
     paths:
-      - outputs/${TARGET_REPO_NAME}/
-      - normalized/${TARGET_REPO_NAME}/
+      - outputs/
+      - normalized/
