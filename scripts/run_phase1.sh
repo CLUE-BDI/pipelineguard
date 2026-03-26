@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-source config/target.env
+# source config/target.env
 
 ./scripts/scan_gitleaks.sh
 ./scripts/scan_trivy.sh
