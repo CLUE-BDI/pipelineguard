@@ -6,4 +6,6 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "checkov>=3.2.510",
+    "jq>=1.11.0",
+    "semgrep>=1.156.0",
 ]

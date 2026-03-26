@@ -1,7 +1,0 @@
-title = "PipelineGuard demo rules"
-
-[[rules]]
-id = "demo-plaintext-password"
-description = "Detect plaintext password assignment"
-regex = '''(?i)(password|passwd|pwd)\s*[:=]\s*['"]?[A-Za-z0-9!@#$%^&*()_+\-=\[\]{};':",.<>/?\\|`~]{8,}['"]?'''
-tags = ["secret", "credential", "T1552"]

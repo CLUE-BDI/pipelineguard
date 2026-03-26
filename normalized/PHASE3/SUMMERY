@@ -1,0 +1,19 @@
+jq -r '.tool' normalized/vulnerable-infra-project/findings.jsonl | sort | uniq -c
+jq -r '.severity' normalized/vulnerable-infra-project/findings.jsonl | sort | uniq -c
+jq -r '.category' normalized/vulnerable-infra-project/findings.jsonl | sort | uniq -c
+     24 checkov
+      2 gitleaks
+      6 semgrep
+     25 trivy
+      1 critical
+     13 high
+      1 info
+     11 low
+     10 medium
+     21 unknown
+      6 code_issue
+      4 container_risk
+      3 iac_misconfiguration
+     36 k8s_misconfiguration
+      2 secret
+      6 vulnerability

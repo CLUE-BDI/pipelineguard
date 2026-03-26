@@ -1,56 +1,83 @@
 stages:
   - scan
-  - export
-  - correlate
-  - respond
+  - normalize
+  - validate
+  - publish
 
-variables:
-  OUTPUT_DIR: "outputs"
-
-scan_security:
-  stage: scan
-  image: python:3.11-slim
+default:
+  image: python:3.12-slim
   before_script:
     - apt-get update
-    - apt-get install -y curl git jq
-    - pip install checkov semgrep
-    - curl -sSfL https://raw.githubusercontent.com/gitleaks/gitleaks/master/install.sh | sh -s -- -b /usr/local/bin
-    - curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
-    - mkdir -p ${OUTPUT_DIR}
+    - apt-get install -y curl git jq ca-certificates
+    - curl -LsSf https://astral.sh/uv/install.sh | sh
+    - export PATH="$HOME/.local/bin:$PATH"
+    - uv sync
+    - mkdir -p outputs normalized
+    - chmod +x scripts/*.sh || true
+    - set -a
+    - source config/target.env
+    - set +a
+    - echo "TARGET_REPO_NAME=$TARGET_REPO_NAME"
+    - echo "TARGET_REPO_PATH=$TARGET_REPO_PATH"
+    - test -n "$TARGET_REPO_NAME"
+    - test -n "$TARGET_REPO_PATH"
+
+variables:
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+  GIT_STRATEGY: fetch
+
+scan:
+  stage: scan
   script:
-    - gitleaks dir . --report-format json --report-path ${OUTPUT_DIR}/gitleaks.json || true
-    - trivy fs --scanners secret --format json --output ${OUTPUT_DIR}/trivy.json . || true
-    - checkov -d . -o json > ${OUTPUT_DIR}/checkov.json || true
-    - semgrep scan --config .semgrep.yml --json --output ${OUTPUT_DIR}/semgrep.json . || true
+    - ./scripts/run_phase1.sh
   artifacts:
+    when: always
+    expire_in: 7 days
     paths:
-      - outputs/
+      - outputs/${TARGET_REPO_NAME}/
 
-normalize_and_publish:
-  stage: export
-  image: python:3.11-slim
-  before_script:
-    - pip install kafka-python boto3 psycopg2-binary
+normalize:
+  stage: normalize
+  needs:
+    - job: scan
+      artifacts: true
   script:
-    - python scripts/normalize_findings.py
-    - python scripts/kafka_producer.py
+    - ./scripts/run_phase2.sh
   artifacts:
+    when: always
+    expire_in: 7 days
     paths:
-      - outputs/normalized_findings.json
+      - normalized/${TARGET_REPO_NAME}/
+      - outputs/${TARGET_REPO_NAME}/
 
-correlate_findings:
-  stage: correlate
-  image: python:3.11-slim
-  before_script:
-    - pip install psycopg2-binary boto3
+validate:
+  stage: validate
+  needs:
+    - job: normalize
+      artifacts: true
   script:
-    - python scripts/correlate.py
-    - python scripts/load_to_postgres.py
+    - uv run python -m scripts.validate_findings
+    - uv run python -m scripts.enforce_thresholds
+  artifacts:
+    when: always
+    expire_in: 7 days
+    paths:
+      - normalized/${TARGET_REPO_NAME}/
+      - outputs/${TARGET_REPO_NAME}/
 
-rules_and_response:
-  stage: respond
-  image: python:3.11-slim
-  before_script:
-    - pip install requests psycopg2-binary
+publish_artifacts:
+  stage: publish
+  needs:
+    - job: validate
+      artifacts: true
   script:
-    - python scripts/rules_engine.py
+    - echo "Artifacts ready for export"
+    - find outputs/${TARGET_REPO_NAME} -maxdepth 1 -type f | sort
+    - find normalized/${TARGET_REPO_NAME} -maxdepth 1 -type f | sort
+  artifacts:
+    when: always
+    expire_in: 14 days
+    paths:
+      - outputs/${TARGET_REPO_NAME}/
+      - normalized/${TARGET_REPO_NAME}/
