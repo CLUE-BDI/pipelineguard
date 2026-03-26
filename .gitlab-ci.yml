@@ -48,6 +48,11 @@ variables:
   MAX_HIGH: "999999"
   FAIL_ON_SECRET: "true"
 
+cache:
+  key: trivy-cache
+  paths:
+    - .trivycache/
+
 scan:
   stage: scan
   script:
