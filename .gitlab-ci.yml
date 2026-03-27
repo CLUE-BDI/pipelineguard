@@ -202,17 +202,24 @@ load_to_bigquery:
     - gcloud config set project "$GCP_PROJECT_ID"
     - export TARGET_REPO_NAME="vulnerable-infra-project"
   script:
-    - if bq ls "${GCP_PROJECT_ID}:${BQ_DATASET}" >/dev/null 2>&1; then
+    - |
+      if bq ls "${GCP_PROJECT_ID}:${BQ_DATASET}" >/dev/null 2>&1; then
         echo "Dataset already exists: ${BQ_DATASET}"
       else
         echo "Creating dataset: ${BQ_DATASET}"
         bq --location=US mk --dataset "${GCP_PROJECT_ID}:${BQ_DATASET}"
       fi
 
-    - bq load --source_format=NEWLINE_DELIMITED_JSON --autodetect \
+    - |
+      bq load \
+        --source_format=NEWLINE_DELIMITED_JSON \
+        --autodetect \
         "${GCP_PROJECT_ID}:${BQ_DATASET}.${BQ_FINDINGS_TABLE}" \
-        "gs://${GCS_BUCKET}/normalized/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/normalized/${TARGET_REPO_NAME}/findings.jsonl"
+        "gs://${GCS_BUCKET}/normalized/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/${TARGET_REPO_NAME}/findings.jsonl"
 
-    - bq load --source_format=NEWLINE_DELIMITED_JSON --autodetect \
+    - |
+      bq load \
+        --source_format=NEWLINE_DELIMITED_JSON \
+        --autodetect \
         "${GCP_PROJECT_ID}:${BQ_DATASET}.${BQ_INCIDENTS_TABLE}" \
-        "gs://${GCS_BUCKET}/correlated/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/correlated/${TARGET_REPO_NAME}/incidents.jsonl"
+        "gs://${GCS_BUCKET}/correlated/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/${TARGET_REPO_NAME}/incidents.jsonl"
