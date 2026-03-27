@@ -56,6 +56,13 @@ variables:
   MAX_HIGH: "999999"
   FAIL_ON_SECRET: "true"
 
+  # GCP
+  GCP_PROJECT_ID: "datawarehouse-486704"
+  GCS_BUCKET: "pipelineguard-artifacts"
+  BQ_DATASET: "pipelineguard_analytics"
+  BQ_FINDINGS_TABLE: "findings_normalized"
+  BQ_INCIDENTS_TABLE: "incidents"
+
 cache:
   key: trivy-cache
   paths:
@@ -167,3 +174,19 @@ publish_artifacts:
       - outputs/
       - normalized/
       - correlated/
+
+export_to_gcs:
+  stage: publish
+  image: google/cloud-sdk:slim
+  needs:
+    - job: publish_artifacts
+      artifacts: true
+  before_script:
+    - echo "$GCP_SA_KEY_JSON" > /tmp/gcp-key.json
+    - gcloud auth activate-service-account --key-file=/tmp/gcp-key.json
+    - gcloud config set project "$GCP_PROJECT_ID"
+    - export TARGET_REPO_NAME="vulnerable-infra-project"
+  script:
+    - gsutil -m cp -r outputs "gs://${GCS_BUCKET}/raw/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/"
+    - gsutil -m cp -r normalized "gs://${GCS_BUCKET}/normalized/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/"
+    - gsutil -m cp -r correlated "gs://${GCS_BUCKET}/correlated/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/"
