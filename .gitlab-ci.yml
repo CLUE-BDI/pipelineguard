@@ -202,7 +202,7 @@ load_to_bigquery:
     - gcloud config set project "$GCP_PROJECT_ID"
     - export TARGET_REPO_NAME="vulnerable-infra-project"
   script:
-    - bq --location=US mk --dataset --if_not_exists "${GCP_PROJECT_ID}:${BQ_DATASET}"
+    - bq --location=US mk --dataset "${GCP_PROJECT_ID}:${BQ_DATASET}"
 
     - bq load --source_format=NEWLINE_DELIMITED_JSON --autodetect \
         "${GCP_PROJECT_ID}:${BQ_DATASET}.${BQ_FINDINGS_TABLE}" \
