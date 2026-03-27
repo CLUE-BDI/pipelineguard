@@ -190,3 +190,24 @@ export_to_gcs:
     - gsutil -m cp -r outputs "gs://${GCS_BUCKET}/raw/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/"
     - gsutil -m cp -r normalized "gs://${GCS_BUCKET}/normalized/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/"
     - gsutil -m cp -r correlated "gs://${GCS_BUCKET}/correlated/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/"
+
+load_to_bigquery:
+  stage: publish
+  image: google/cloud-sdk:slim
+  needs:
+    - job: export_to_gcs
+  before_script:
+    - echo "$GCP_SA_KEY_JSON" > /tmp/gcp-key.json
+    - gcloud auth activate-service-account --key-file=/tmp/gcp-key.json
+    - gcloud config set project "$GCP_PROJECT_ID"
+    - export TARGET_REPO_NAME="vulnerable-infra-project"
+  script:
+    - bq --location=US mk --dataset --if_not_exists "${GCP_PROJECT_ID}:${BQ_DATASET}"
+
+    - bq load --source_format=NEWLINE_DELIMITED_JSON --autodetect \
+        "${GCP_PROJECT_ID}:${BQ_DATASET}.${BQ_FINDINGS_TABLE}" \
+        "gs://${GCS_BUCKET}/normalized/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/normalized/${TARGET_REPO_NAME}/findings.jsonl"
+
+    - bq load --source_format=NEWLINE_DELIMITED_JSON --autodetect \
+        "${GCP_PROJECT_ID}:${BQ_DATASET}.${BQ_INCIDENTS_TABLE}" \
+        "gs://${GCS_BUCKET}/correlated/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/correlated/${TARGET_REPO_NAME}/incidents.jsonl"
