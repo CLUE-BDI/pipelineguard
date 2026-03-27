@@ -1,0 +1,8 @@
+{
+    "critical": 40,
+    "high": 25,
+    "medium": 15,
+    "low": 5,
+    "info": 1,
+    "unknown": 10
+  }

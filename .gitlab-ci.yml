@@ -1,6 +1,7 @@
 stages:
   - scan
   - normalize
+  - correlate
   - validate
   - publish
 
@@ -84,6 +85,36 @@ normalize:
       - outputs/
       - normalized/
 
+correlate:
+  stage: correlate
+  needs:
+    - job: normalize
+      artifacts: true
+  script:
+    - uv run python -m scripts.correlate_findings
+  artifacts:
+    when: always
+    expire_in: 7 days
+    paths:
+      - outputs/
+      - normalized/
+      - correlated/
+
+validate_correlation:
+  stage: validate
+  needs:
+    - job: correlate
+      artifacts: true
+  script:
+    - uv run python -m scripts.validate_correlation
+  artifacts:
+    when: always
+    expire_in: 7 days
+    paths:
+      - outputs/
+      - normalized/
+      - correlated/
+
 validate_findings:
   stage: validate
   needs:
@@ -120,14 +151,19 @@ publish_artifacts:
       artifacts: true
     - job: threshold_check
       artifacts: true
+    - job: validate_correlation
+      artifacts: true
   script:
     - echo "Output artifacts:"
     - find outputs -maxdepth 3 -type f | sort
     - echo "Normalized artifacts:"
     - find normalized -maxdepth 3 -type f | sort
+    - echo "Correlated artifacts:"
+    - find correlated -maxdepth 3 -type f | sort
   artifacts:
     when: always
     expire_in: 14 days
     paths:
       - outputs/
       - normalized/
+      - correlated/

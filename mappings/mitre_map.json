@@ -1,0 +1,5 @@
+{
+    "gitleaks:aws-access-token": "T1552",
+    "gitleaks:generic-api-key": "T1552",
+    "semgrep:python.lang.security.audit.dangerous-subprocess-use": "T1059"
+  }

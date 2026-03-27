@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 set -euo pipefail
-# source config/target.env
 
 uv run python -m scripts.normalize_gitleaks
 uv run python -m scripts.normalize_checkov

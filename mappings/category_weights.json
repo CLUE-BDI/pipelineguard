@@ -1,0 +1,9 @@
+{
+    "secret": 30,
+    "vulnerability": 20,
+    "iac_misconfiguration": 15,
+    "k8s_misconfiguration": 15,
+    "container_risk": 15,
+    "code_issue": 10,
+    "unknown": 5
+  }
