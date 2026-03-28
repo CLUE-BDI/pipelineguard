@@ -210,25 +210,68 @@ load_to_bigquery:
         bq --location=US mk --dataset "${GCP_PROJECT_ID}:${BQ_DATASET}"
       fi
 
+    # Load current run into staging tables
     - |
-      gsutil ls "gs://${GCS_BUCKET}/normalized/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/normalized/${TARGET_REPO_NAME}/findings.jsonl"
+      bq load --replace --source_format=NEWLINE_DELIMITED_JSON --autodetect \
+      "${GCP_PROJECT_ID}:${BQ_DATASET}.findings_normalized_staging" \
+      "gs://${GCS_BUCKET}/normalized/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/normalized/${TARGET_REPO_NAME}/findings.jsonl"
 
     - |
-      gsutil ls "gs://${GCS_BUCKET}/correlated/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/correlated/${TARGET_REPO_NAME}/incidents.jsonl"
+      bq load --replace --source_format=NEWLINE_DELIMITED_JSON --autodetect \
+      "${GCP_PROJECT_ID}:${BQ_DATASET}.incidents_staging" \
+      "gs://${GCS_BUCKET}/correlated/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/correlated/${TARGET_REPO_NAME}/incidents.jsonl"
+
+    # Ensure final tables exist
+    - |
+      bq query --use_legacy_sql=false "
+      CREATE TABLE IF NOT EXISTS \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized\`
+      AS SELECT * FROM \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized_staging\` WHERE 1=0
+      "
 
     - |
-      bq load \
-        --source_format=NEWLINE_DELIMITED_JSON \
-        --autodetect \
-        "${GCP_PROJECT_ID}:${BQ_DATASET}.${BQ_FINDINGS_TABLE}" \
-        "gs://${GCS_BUCKET}/normalized/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/normalized/${TARGET_REPO_NAME}/findings.jsonl"
+      bq query --use_legacy_sql=false "
+      CREATE TABLE IF NOT EXISTS \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents\`
+      AS SELECT * FROM \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents_staging\` WHERE 1=0
+      "
+
+    # Merge without duplicates
+    - |
+      bq query --use_legacy_sql=false "
+      MERGE \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized\` T
+      USING \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized_staging\` S
+      ON T.finding_id = S.finding_id
+      WHEN NOT MATCHED THEN
+        INSERT ROW
+      "
 
     - |
-      bq load \
-        --source_format=NEWLINE_DELIMITED_JSON \
-        --autodetect \
-        "${GCP_PROJECT_ID}:${BQ_DATASET}.${BQ_INCIDENTS_TABLE}" \
-        "gs://${GCS_BUCKET}/correlated/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/correlated/${TARGET_REPO_NAME}/incidents.jsonl"
+      bq query --use_legacy_sql=false "
+      MERGE \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents\` T
+      USING \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents_staging\` S
+      ON T.incident_id = S.incident_id
+      WHEN NOT MATCHED THEN
+        INSERT ROW
+      "
+
+    # - |
+    #   gsutil ls "gs://${GCS_BUCKET}/normalized/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/normalized/${TARGET_REPO_NAME}/findings.jsonl"
+
+    # - |
+    #   gsutil ls "gs://${GCS_BUCKET}/correlated/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/correlated/${TARGET_REPO_NAME}/incidents.jsonl"
+
+    # - |
+    #   bq load \
+    #     --source_format=NEWLINE_DELIMITED_JSON \
+    #     --autodetect \
+    #     "${GCP_PROJECT_ID}:${BQ_DATASET}.${BQ_FINDINGS_TABLE}" \
+    #     "gs://${GCS_BUCKET}/normalized/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/normalized/${TARGET_REPO_NAME}/findings.jsonl"
+
+    # - |
+    #   bq load \
+    #     --source_format=NEWLINE_DELIMITED_JSON \
+    #     --autodetect \
+    #     "${GCP_PROJECT_ID}:${BQ_DATASET}.${BQ_INCIDENTS_TABLE}" \
+    #     "gs://${GCS_BUCKET}/correlated/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/correlated/${TARGET_REPO_NAME}/incidents.jsonl"
 
 create_bigquery_views:
   stage: publish
