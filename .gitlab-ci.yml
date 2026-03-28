@@ -9,7 +9,7 @@ default:
   image: python:3.12-slim
   before_script:
     - apt-get update
-    - apt-get install -y curl git jq ca-certificates gnupg wget build-essential
+    - apt-get install -y curl git jq ca-certificates gnupg wget build-essential gettext-base
     - curl -LsSf https://astral.sh/uv/install.sh | sh
     - export PATH="$HOME/.local/bin:$PATH"
     - uv sync
@@ -229,3 +229,19 @@ load_to_bigquery:
         --autodetect \
         "${GCP_PROJECT_ID}:${BQ_DATASET}.${BQ_INCIDENTS_TABLE}" \
         "gs://${GCS_BUCKET}/correlated/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/correlated/${TARGET_REPO_NAME}/incidents.jsonl"
+
+create_bigquery_views:
+  stage: publish
+  image: google/cloud-sdk:slim
+  needs:
+    - job: load_to_bigquery
+  before_script:
+    - echo "$GCP_SA_KEY_JSON" > /tmp/gcp-key.json
+    - gcloud auth activate-service-account --key-file=/tmp/gcp-key.json
+    - gcloud config set project "$GCP_PROJECT_ID"
+  script:
+    - for f in sql/views/*.sql; do
+        echo "Applying $f";
+        envsubst < "$f" | bq query --use_legacy_sql=false;
+      done
+
