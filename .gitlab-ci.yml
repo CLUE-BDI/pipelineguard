@@ -209,50 +209,501 @@ load_to_bigquery:
         echo "Creating dataset: ${BQ_DATASET}"
         bq --location=US mk --dataset "${GCP_PROJECT_ID}:${BQ_DATASET}"
       fi
-
-    # Load current run into staging tables
+    # Historical analysis + Idempotent
+    # Load current pipeline run into staging tables
     - |
-      bq load --replace --source_format=NEWLINE_DELIMITED_JSON --autodetect \
-      "${GCP_PROJECT_ID}:${BQ_DATASET}.findings_normalized_staging" \
-      "gs://${GCS_BUCKET}/normalized/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/normalized/${TARGET_REPO_NAME}/findings.jsonl"
+      bq load \
+        --replace \
+        --source_format=NEWLINE_DELIMITED_JSON \
+        --autodetect \
+        "${GCP_PROJECT_ID}:${BQ_DATASET}.findings_normalized_staging" \
+        "gs://${GCS_BUCKET}/normalized/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/normalized/${TARGET_REPO_NAME}/findings.jsonl"
 
     - |
-      bq load --replace --source_format=NEWLINE_DELIMITED_JSON --autodetect \
-      "${GCP_PROJECT_ID}:${BQ_DATASET}.incidents_staging" \
-      "gs://${GCS_BUCKET}/correlated/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/correlated/${TARGET_REPO_NAME}/incidents.jsonl"
+      bq load \
+        --replace \
+        --source_format=NEWLINE_DELIMITED_JSON \
+        --autodetect \
+        "${GCP_PROJECT_ID}:${BQ_DATASET}.incidents_staging" \
+        "gs://${GCS_BUCKET}/correlated/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/correlated/${TARGET_REPO_NAME}/incidents.jsonl"
 
-    # Ensure final tables exist
+    # Create canonical findings table if missing
     - |
       bq query --use_legacy_sql=false "
-      CREATE TABLE IF NOT EXISTS \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized\`
-      AS SELECT * FROM \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized_staging\` WHERE 1=0
+      CREATE TABLE IF NOT EXISTS \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized\` AS
+      SELECT
+        S.*,
+        CAST(NULL AS TIMESTAMP) AS first_seen_at,
+        CAST(NULL AS TIMESTAMP) AS last_seen_at,
+        CAST(NULL AS STRING) AS first_seen_pipeline_id,
+        CAST(NULL AS STRING) AS last_seen_pipeline_id,
+        CAST(NULL AS STRING) AS first_seen_commit_sha,
+        CAST(NULL AS STRING) AS last_seen_commit_sha,
+        CAST(NULL AS STRING) AS first_seen_branch,
+        CAST(NULL AS STRING) AS last_seen_branch,
+        CAST(NULL AS INT64) AS seen_count
+      FROM \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized_staging\` S
+      WHERE 1=0
       "
 
+    # Create canonical incidents table if missing
     - |
       bq query --use_legacy_sql=false "
-      CREATE TABLE IF NOT EXISTS \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents\`
-      AS SELECT * FROM \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents_staging\` WHERE 1=0
+      CREATE TABLE IF NOT EXISTS \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents\` AS
+      SELECT
+        S.*,
+        CAST(NULL AS TIMESTAMP) AS first_seen_at,
+        CAST(NULL AS TIMESTAMP) AS last_seen_at,
+        CAST(NULL AS STRING) AS first_seen_pipeline_id,
+        CAST(NULL AS STRING) AS last_seen_pipeline_id,
+        CAST(NULL AS STRING) AS first_seen_commit_sha,
+        CAST(NULL AS STRING) AS last_seen_commit_sha,
+        CAST(NULL AS STRING) AS first_seen_branch,
+        CAST(NULL AS STRING) AS last_seen_branch,
+        CAST(NULL AS INT64) AS seen_count
+      FROM \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents_staging\` S
+      WHERE 1=0
       "
 
-    # Merge without duplicates
+    # Create finding observations table if missing
+    - |
+      bq query --use_legacy_sql=false "
+      CREATE TABLE IF NOT EXISTS \`${GCP_PROJECT_ID}.${BQ_DATASET}.finding_observations\` (
+        finding_id STRING,
+        repo STRING,
+        branch STRING,
+        commit_sha STRING,
+        pipeline_id STRING,
+        loaded_at TIMESTAMP,
+        observed_at TIMESTAMP,
+        severity STRING,
+        category STRING,
+        tool STRING,
+        status STRING
+      )
+      PARTITION BY DATE(loaded_at)
+      "
+
+    # Create incident observations table if missing
+    - |
+      bq query --use_legacy_sql=false "
+      CREATE TABLE IF NOT EXISTS \`${GCP_PROJECT_ID}.${BQ_DATASET}.incident_observations\` (
+        incident_id STRING,
+        repo STRING,
+        branch STRING,
+        commit_sha STRING,
+        pipeline_id STRING,
+        loaded_at TIMESTAMP,
+        observed_at TIMESTAMP,
+        severity STRING,
+        risk_score INT64,
+        status STRING
+      )
+      PARTITION BY DATE(loaded_at)
+      "
+    # Merge findings into canonical table
     - |
       bq query --use_legacy_sql=false "
       MERGE \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized\` T
-      USING \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized_staging\` S
+      USING (
+        SELECT
+          S.*,
+          CURRENT_TIMESTAMP() AS loaded_at
+        FROM \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized_staging\` S
+      ) S
       ON T.finding_id = S.finding_id
+      WHEN MATCHED THEN
+        UPDATE SET
+          tool = S.tool,
+          tool_finding_id = S.tool_finding_id,
+          category = S.category,
+          subcategory = S.subcategory,
+          severity = S.severity,
+          confidence = S.confidence,
+          title = S.title,
+          description = S.description,
+          recommendation = S.recommendation,
+          rule_id = S.rule_id,
+          rule_name = S.rule_name,
+          file_path = S.file_path,
+          line_start = S.line_start,
+          line_end = S.line_end,
+          code_snippet = S.code_snippet,
+          resource_type = S.resource_type,
+          resource_name = S.resource_name,
+          resource_namespace = S.resource_namespace,
+          package_name = S.package_name,
+          installed_version = S.installed_version,
+          fixed_version = S.fixed_version,
+          secret_type = S.secret_type,
+          vulnerability_id = S.vulnerability_id,
+          repo = S.repo,
+          branch = S.branch,
+          commit_sha = S.commit_sha,
+          pipeline_id = S.pipeline_id,
+          scanner_stage = S.scanner_stage,
+          timestamp = S.timestamp,
+          status = S.status,
+          environment = S.environment,
+          raw_ref = S.raw_ref,
+          raw_tool = S.raw_tool,
+          raw_severity = S.raw_severity,
+          normalized_version = S.normalized_version,
+          tags = S.tags,
+          references = S.references,
+          mitre_technique = S.mitre_technique,
+          compliance_controls = S.compliance_controls,
+          last_seen_at = S.loaded_at,
+          last_seen_pipeline_id = S.pipeline_id,
+          last_seen_commit_sha = S.commit_sha,
+          last_seen_branch = S.branch,
+          seen_count = COALESCE(T.seen_count, 0) + 1
       WHEN NOT MATCHED THEN
-        INSERT ROW
+        INSERT (
+          finding_id,
+          tool,
+          tool_finding_id,
+          category,
+          subcategory,
+          severity,
+          confidence,
+          title,
+          description,
+          recommendation,
+          rule_id,
+          rule_name,
+          file_path,
+          line_start,
+          line_end,
+          code_snippet,
+          resource_type,
+          resource_name,
+          resource_namespace,
+          package_name,
+          installed_version,
+          fixed_version,
+          secret_type,
+          vulnerability_id,
+          repo,
+          branch,
+          commit_sha,
+          pipeline_id,
+          scanner_stage,
+          timestamp,
+          status,
+          environment,
+          raw_ref,
+          raw_tool,
+          raw_severity,
+          normalized_version,
+          tags,
+          references,
+          mitre_technique,
+          compliance_controls,
+          first_seen_at,
+          last_seen_at,
+          first_seen_pipeline_id,
+          last_seen_pipeline_id,
+          first_seen_commit_sha,
+          last_seen_commit_sha,
+          first_seen_branch,
+          last_seen_branch,
+          seen_count
+        )
+        VALUES (
+          S.finding_id,
+          S.tool,
+          S.tool_finding_id,
+          S.category,
+          S.subcategory,
+          S.severity,
+          S.confidence,
+          S.title,
+          S.description,
+          S.recommendation,
+          S.rule_id,
+          S.rule_name,
+          S.file_path,
+          S.line_start,
+          S.line_end,
+          S.code_snippet,
+          S.resource_type,
+          S.resource_name,
+          S.resource_namespace,
+          S.package_name,
+          S.installed_version,
+          S.fixed_version,
+          S.secret_type,
+          S.vulnerability_id,
+          S.repo,
+          S.branch,
+          S.commit_sha,
+          S.pipeline_id,
+          S.scanner_stage,
+          S.timestamp,
+          S.status,
+          S.environment,
+          S.raw_ref,
+          S.raw_tool,
+          S.raw_severity,
+          S.normalized_version,
+          S.tags,
+          S.references,
+          S.mitre_technique,
+          S.compliance_controls,
+          S.loaded_at,
+          S.loaded_at,
+          S.pipeline_id,
+          S.pipeline_id,
+          S.commit_sha,
+          S.commit_sha,
+          S.branch,
+          S.branch,
+          1
+        )
       "
 
+    # Merge incidents into canonical table
     - |
       bq query --use_legacy_sql=false "
       MERGE \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents\` T
-      USING \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents_staging\` S
+      USING (
+        SELECT
+          S.*,
+          CURRENT_TIMESTAMP() AS loaded_at
+        FROM \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents_staging\` S
+      ) S
       ON T.incident_id = S.incident_id
+      WHEN MATCHED THEN
+        UPDATE SET
+          repo = S.repo,
+          branch = S.branch,
+          commit_sha = S.commit_sha,
+          pipeline_id = S.pipeline_id,
+          timestamp = S.timestamp,
+          summary = S.summary,
+          title = S.title,
+          severity = S.severity,
+          risk_score = S.risk_score,
+          confidence = S.confidence,
+          categories = S.categories,
+          mitre_techniques = S.mitre_techniques,
+          related_findings = S.related_findings,
+          finding_count = S.finding_count,
+          primary_resource = S.primary_resource,
+          recommended_action = S.recommended_action,
+          status = S.status,
+          normalized_version = S.normalized_version,
+          last_seen_at = S.loaded_at,
+          last_seen_pipeline_id = S.pipeline_id,
+          last_seen_commit_sha = S.commit_sha,
+          last_seen_branch = S.branch,
+          seen_count = COALESCE(T.seen_count, 0) + 1
       WHEN NOT MATCHED THEN
-        INSERT ROW
+        INSERT (
+          incident_id,
+          repo,
+          branch,
+          commit_sha,
+          pipeline_id,
+          timestamp,
+          summary,
+          title,
+          severity,
+          risk_score,
+          confidence,
+          categories,
+          mitre_techniques,
+          related_findings,
+          finding_count,
+          primary_resource,
+          recommended_action,
+          status,
+          normalized_version,
+          first_seen_at,
+          last_seen_at,
+          first_seen_pipeline_id,
+          last_seen_pipeline_id,
+          first_seen_commit_sha,
+          last_seen_commit_sha,
+          first_seen_branch,
+          last_seen_branch,
+          seen_count
+        )
+        VALUES (
+          S.incident_id,
+          S.repo,
+          S.branch,
+          S.commit_sha,
+          S.pipeline_id,
+          S.timestamp,
+          S.summary,
+          S.title,
+          S.severity,
+          S.risk_score,
+          S.confidence,
+          S.categories,
+          S.mitre_techniques,
+          S.related_findings,
+          S.finding_count,
+          S.primary_resource,
+          S.recommended_action,
+          S.status,
+          S.normalized_version,
+          S.loaded_at,
+          S.loaded_at,
+          S.pipeline_id,
+          S.pipeline_id,
+          S.commit_sha,
+          S.commit_sha,
+          S.branch,
+          S.branch,
+          1
+        )
       "
 
+    # Insert finding observations once per (finding_id, pipeline_id)
+    - |
+      bq query --use_legacy_sql=false "
+      MERGE \`${GCP_PROJECT_ID}.${BQ_DATASET}.finding_observations\` T
+      USING (
+        SELECT
+          finding_id,
+          repo,
+          branch,
+          commit_sha,
+          pipeline_id,
+          CURRENT_TIMESTAMP() AS loaded_at,
+          timestamp AS observed_at,
+          severity,
+          category,
+          tool,
+          status
+        FROM \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized_staging\`
+      ) S
+      ON T.finding_id = S.finding_id
+      AND T.pipeline_id = S.pipeline_id
+      WHEN NOT MATCHED THEN
+        INSERT (
+          finding_id,
+          repo,
+          branch,
+          commit_sha,
+          pipeline_id,
+          loaded_at,
+          observed_at,
+          severity,
+          category,
+          tool,
+          status
+        )
+        VALUES (
+          S.finding_id,
+          S.repo,
+          S.branch,
+          S.commit_sha,
+          S.pipeline_id,
+          S.loaded_at,
+          S.observed_at,
+          S.severity,
+          S.category,
+          S.tool,
+          S.status
+        )
+      "
+
+    # Insert incident observations once per (incident_id, pipeline_id)
+    - |
+      bq query --use_legacy_sql=false "
+      MERGE \`${GCP_PROJECT_ID}.${BQ_DATASET}.incident_observations\` T
+      USING (
+        SELECT
+          incident_id,
+          repo,
+          branch,
+          commit_sha,
+          pipeline_id,
+          CURRENT_TIMESTAMP() AS loaded_at,
+          timestamp AS observed_at,
+          severity,
+          risk_score,
+          status
+        FROM \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents_staging\`
+      ) S
+      ON T.incident_id = S.incident_id
+      AND T.pipeline_id = S.pipeline_id
+      WHEN NOT MATCHED THEN
+        INSERT (
+          incident_id,
+          repo,
+          branch,
+          commit_sha,
+          pipeline_id,
+          loaded_at,
+          observed_at,
+          severity,
+          risk_score,
+          status
+        )
+        VALUES (
+          S.incident_id,
+          S.repo,
+          S.branch,
+          S.commit_sha,
+          S.pipeline_id,
+          S.loaded_at,
+          S.observed_at,
+          S.severity,
+          S.risk_score,
+          S.status
+        )
+      "
+    # Second modification - Idempotent implemetion
+  
+    # # Load current run into staging tables
+    # - |
+    #   bq load --replace --source_format=NEWLINE_DELIMITED_JSON --autodetect \
+    #   "${GCP_PROJECT_ID}:${BQ_DATASET}.findings_normalized_staging" \
+    #   "gs://${GCS_BUCKET}/normalized/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/normalized/${TARGET_REPO_NAME}/findings.jsonl"
+
+    # - |
+    #   bq load --replace --source_format=NEWLINE_DELIMITED_JSON --autodetect \
+    #   "${GCP_PROJECT_ID}:${BQ_DATASET}.incidents_staging" \
+    #   "gs://${GCS_BUCKET}/correlated/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/correlated/${TARGET_REPO_NAME}/incidents.jsonl"
+
+    # # Ensure final tables exist
+    # - |
+    #   bq query --use_legacy_sql=false "
+    #   CREATE TABLE IF NOT EXISTS \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized\`
+    #   AS SELECT * FROM \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized_staging\` WHERE 1=0
+    #   "
+
+    # - |
+    #   bq query --use_legacy_sql=false "
+    #   CREATE TABLE IF NOT EXISTS \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents\`
+    #   AS SELECT * FROM \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents_staging\` WHERE 1=0
+    #   "
+
+    # # Merge without duplicates
+    # - |
+    #   bq query --use_legacy_sql=false "
+    #   MERGE \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized\` T
+    #   USING \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized_staging\` S
+    #   ON T.finding_id = S.finding_id
+    #   WHEN NOT MATCHED THEN
+    #     INSERT ROW
+    #   "
+
+    # - |
+    #   bq query --use_legacy_sql=false "
+    #   MERGE \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents\` T
+    #   USING \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents_staging\` S
+    #   ON T.incident_id = S.incident_id
+    #   WHEN NOT MATCHED THEN
+    #     INSERT ROW
+    #   "
+
+    # No Idempotent
     # - |
     #   gsutil ls "gs://${GCS_BUCKET}/normalized/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/normalized/${TARGET_REPO_NAME}/findings.jsonl"
 
