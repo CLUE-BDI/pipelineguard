@@ -149,7 +149,7 @@ def main():
             "repo": repo,
             "branch": branch,
             "commit_sha": commit_sha,
-            "pipeline_id": pipeline_id,
+            "pipeline_id": str(pipeline_id),
             "timestamp": utc_now(),
             "summary": summary,
             "title": title,
