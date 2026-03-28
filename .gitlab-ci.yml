@@ -9,7 +9,7 @@ default:
   image: python:3.12-slim
   before_script:
     - apt-get update
-    - apt-get install -y curl git jq ca-certificates gnupg wget build-essential gettext-base
+    - apt-get install -y curl git jq ca-certificates gnupg wget build-essential
     - curl -LsSf https://astral.sh/uv/install.sh | sh
     - export PATH="$HOME/.local/bin:$PATH"
     - uv sync
@@ -236,12 +236,12 @@ create_bigquery_views:
   needs:
     - job: load_to_bigquery
   before_script:
+    - apt-get update
+    - apt-get install -y gettext-base
     - echo "$GCP_SA_KEY_JSON" > /tmp/gcp-key.json
     - gcloud auth activate-service-account --key-file=/tmp/gcp-key.json
     - gcloud config set project "$GCP_PROJECT_ID"
   script:
-    - for f in sql/views/*.sql; do
-        echo "Applying $f";
-        envsubst < "$f" | bq query --use_legacy_sql=false;
-      done
-
+    - which envsubst
+    - envsubst --version
+    - for f in sql/views/*.sql; do echo "Applying $f"; envsubst < "$f" | bq query --use_legacy_sql=false; done
