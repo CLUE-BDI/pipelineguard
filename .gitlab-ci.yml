@@ -354,7 +354,7 @@ load_to_bigquery:
           mitre_technique = S.mitre_technique,
           compliance_controls = S.compliance_controls,
           last_seen_at = S.loaded_at,
-          last_seen_pipeline_id = S.pipeline_id,
+          last_seen_pipeline_id = CAST(S.pipeline_id AS STRING),
           last_seen_commit_sha = S.commit_sha,
           last_seen_branch = S.branch,
           seen_count = COALESCE(T.seen_count, 0) + 1
@@ -495,7 +495,7 @@ load_to_bigquery:
           status = S.status,
           normalized_version = S.normalized_version,
           last_seen_at = S.loaded_at,
-          last_seen_pipeline_id = S.pipeline_id,
+          last_seen_pipeline_id = CAST(S.pipeline_id AS STRING),
           last_seen_commit_sha = S.commit_sha,
           last_seen_branch = S.branch,
           seen_count = COALESCE(T.seen_count, 0) + 1
