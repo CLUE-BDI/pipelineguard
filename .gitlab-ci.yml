@@ -307,7 +307,7 @@ load_to_bigquery:
       MERGE \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized\` T
       USING (
         SELECT
-          S.*,
+          S.* REPLACE (CAST(S.pipeline_id AS STRING) AS pipeline_id),
           CURRENT_TIMESTAMP() AS loaded_at
         FROM \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized_staging\` S
       ) S
@@ -453,8 +453,8 @@ load_to_bigquery:
           S.compliance_controls,
           S.loaded_at,
           S.loaded_at,
-          S.pipeline_id,
-          S.pipeline_id,
+          CAST(S.pipeline_id AS STRING),
+          CAST(S.pipeline_id AS STRING),
           S.commit_sha,
           S.commit_sha,
           S.branch,
@@ -469,7 +469,7 @@ load_to_bigquery:
       MERGE \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents\` T
       USING (
         SELECT
-          S.*,
+          S.* REPLACE (CAST(S.pipeline_id AS STRING) AS pipeline_id),
           CURRENT_TIMESTAMP() AS loaded_at
         FROM \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents_staging\` S
       ) S
@@ -572,7 +572,7 @@ load_to_bigquery:
           repo,
           branch,
           commit_sha,
-          pipeline_id,
+          CAST(pipeline_id AS STRING) AS pipeline_id,
           CURRENT_TIMESTAMP() AS loaded_at,
           timestamp AS observed_at,
           severity,
@@ -622,7 +622,7 @@ load_to_bigquery:
           repo,
           branch,
           commit_sha,
-          pipeline_id,
+          CAST(pipeline_id AS STRING) AS pipeline_id,
           CURRENT_TIMESTAMP() AS loaded_at,
           timestamp AS observed_at,
           severity,
