@@ -273,7 +273,7 @@ load_to_bigquery:
         repo STRING,
         branch STRING,
         commit_sha STRING,
-        pipeline_id STRING,
+        pipeline_id INT64,
         loaded_at TIMESTAMP,
         observed_at TIMESTAMP,
         severity STRING,
@@ -292,7 +292,7 @@ load_to_bigquery:
         repo STRING,
         branch STRING,
         commit_sha STRING,
-        pipeline_id STRING,
+        pipeline_id INT64,
         loaded_at TIMESTAMP,
         observed_at TIMESTAMP,
         severity STRING,
@@ -307,7 +307,7 @@ load_to_bigquery:
       MERGE \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized\` T
       USING (
         SELECT
-          S.* REPLACE (CAST(S.pipeline_id AS STRING) AS pipeline_id),
+          S.*,
           CURRENT_TIMESTAMP() AS loaded_at
         FROM \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized_staging\` S
       ) S
@@ -354,7 +354,7 @@ load_to_bigquery:
           mitre_technique = S.mitre_technique,
           compliance_controls = S.compliance_controls,
           last_seen_at = S.loaded_at,
-          last_seen_pipeline_id = CAST(S.pipeline_id AS STRING),
+          last_seen_pipeline_id = S.pipeline_id,
           last_seen_commit_sha = S.commit_sha,
           last_seen_branch = S.branch,
           seen_count = COALESCE(T.seen_count, 0) + 1
@@ -453,8 +453,8 @@ load_to_bigquery:
           S.compliance_controls,
           S.loaded_at,
           S.loaded_at,
-          CAST(S.pipeline_id AS STRING),
-          CAST(S.pipeline_id AS STRING),
+          S.pipeline_id,
+          S.pipeline_id,
           S.commit_sha,
           S.commit_sha,
           S.branch,
@@ -469,7 +469,7 @@ load_to_bigquery:
       MERGE \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents\` T
       USING (
         SELECT
-          S.* REPLACE (CAST(S.pipeline_id AS STRING) AS pipeline_id),
+          S.*,
           CURRENT_TIMESTAMP() AS loaded_at
         FROM \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents_staging\` S
       ) S
@@ -495,7 +495,7 @@ load_to_bigquery:
           status = S.status,
           normalized_version = S.normalized_version,
           last_seen_at = S.loaded_at,
-          last_seen_pipeline_id = CAST(S.pipeline_id AS STRING),
+          last_seen_pipeline_id = S.pipeline_id,
           last_seen_commit_sha = S.commit_sha,
           last_seen_branch = S.branch,
           seen_count = COALESCE(T.seen_count, 0) + 1
@@ -572,7 +572,7 @@ load_to_bigquery:
           repo,
           branch,
           commit_sha,
-          CAST(pipeline_id AS STRING) AS pipeline_id,
+          pipeline_id,
           CURRENT_TIMESTAMP() AS loaded_at,
           timestamp AS observed_at,
           severity,
@@ -622,7 +622,7 @@ load_to_bigquery:
           repo,
           branch,
           commit_sha,
-          CAST(pipeline_id AS STRING) AS pipeline_id,
+          pipeline_id,
           CURRENT_TIMESTAMP() AS loaded_at,
           timestamp AS observed_at,
           severity,
