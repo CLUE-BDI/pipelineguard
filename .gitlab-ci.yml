@@ -1,14 +1,719 @@
+stages:
+  - scan
+  - normalize
+  - correlate
+  - validate
+  - publish
+
+variables:
+  GIT_SUBMODULE_STRATEGY: none
+  UV_PYTHON: "3.12"
+  MAX_CRITICAL: "0"
+  MAX_HIGH: "999999"
+  FAIL_ON_SECRET: "true"
+  TARGET_BASE_DIR: "$CI_PROJECT_DIR/vulnerable-repos"
+
+  # GCP
+  GCP_PROJECT_ID: "datawarehouse-486704"
+  GCS_BUCKET: "pipelineguard-artifacts"
+  BQ_DATASET: "pipelineguard_analytics"
+  BQ_FINDINGS_TABLE: "findings_normalized"
+  BQ_INCIDENTS_TABLE: "incidents"
+
 default:
   tags:
-    - aws
-    - aws-pipelineguard-runner
-
-stages:
-  - test
-
-runner-check:
-  stage: test
+    - ubuntu-vm
   image: python:3.12-slim
+  before_script:
+    - apt-get update
+    - apt-get install -y curl git jq ca-certificates gnupg wget build-essential
+    - curl -LsSf https://astral.sh/uv/install.sh | sh
+    - export PATH="$HOME/.local/bin:$PATH"
+    - uv sync
+
+    # Gitleaks
+    - export GITLEAKS_VERSION="8.30.0"
+    - wget -O gitleaks.tar.gz "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+    - tar -xzf gitleaks.tar.gz
+    - install -m 0755 gitleaks /usr/local/bin/gitleaks
+    - gitleaks version
+
+    # Trivy
+    - wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor > /usr/share/keyrings/trivy.gpg
+    - echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb bookworm main" > /etc/apt/sources.list.d/trivy.list
+    - apt-get update
+    - apt-get install -y trivy
+    - trivy --version
+
+    - mkdir -p outputs normalized correlated .trivycache
+    - chmod +x scripts/*.sh || true
+
+    # PipelineGuard target settings
+    - export TARGET_REPO_NAME="${TARGET_REPO_NAME}"
+    - export TARGET_REPO_PATH="$TARGET_BASE_DIR/${TARGET_REPO_NAME}"
+    - export PG_REPO="$TARGET_REPO_NAME"
+    - export PG_BRANCH="${CI_COMMIT_REF_NAME}"
+    - export PG_COMMIT_SHA="${CI_COMMIT_SHA}"
+    - export PG_PIPELINE_ID="${CI_PIPELINE_ID}"
+    - export PG_ENVIRONMENT="ci"
+
+    # Sanity/debug
+    - echo "TARGET_REPO_NAME=$TARGET_REPO_NAME"
+    - echo "TARGET_REPO_PATH=$TARGET_REPO_PATH"
+    - test -n "$TARGET_REPO_NAME"
+    - test -n "$TARGET_REPO_PATH"
+    - test -d "$TARGET_REPO_PATH"
+    - ls -la "$TARGET_REPO_PATH"
+    - find "$TARGET_REPO_PATH" -maxdepth 3 -type f | sort | sed -n '1,100p'
+
+cache:
+  key: trivy-cache
+  paths:
+    - .trivycache/
+
+.multi_repo_matrix: &multi_repo_matrix
+  parallel:
+    matrix:
+      - TARGET_REPO_NAME: ["terragoat", "kubernetes-goat", "juice-shop", "secrets-test", "secrets-lab"]
+
+scan:
+  stage: scan
+  <<: *multi_repo_matrix
   script:
-    - echo "Runner is working on AWS"
-    - python --version
+    - ./scripts/run_phase1.sh
+  artifacts:
+    when: always
+    expire_in: 7 days
+    paths:
+      - outputs/
+
+normalize:
+  stage: normalize
+  <<: *multi_repo_matrix
+  needs:
+    - job: scan
+      artifacts: true
+  script:
+    - ./scripts/run_phase2.sh
+  artifacts:
+    when: always
+    expire_in: 7 days
+    paths:
+      - outputs/
+      - normalized/
+
+correlate:
+  stage: correlate
+  <<: *multi_repo_matrix
+  needs:
+    - job: normalize
+      artifacts: true
+  script:
+    - uv run python -m scripts.correlate_findings
+  artifacts:
+    when: always
+    expire_in: 7 days
+    paths:
+      - outputs/
+      - normalized/
+      - correlated/
+
+validate_findings:
+  stage: validate
+  <<: *multi_repo_matrix
+  needs:
+    - job: normalize
+      artifacts: true
+  script:
+    - 'set -x'
+    - 'echo "Repo: $TARGET_REPO_NAME"'
+    - 'find normalized -maxdepth 3 -type f | sort || true'
+    - 'ls -la "normalized/${TARGET_REPO_NAME}" || true'
+    - 'head -n 5 "normalized/${TARGET_REPO_NAME}/findings.jsonl" || true'
+    - 'uv run python -m scripts.validate_findings'
+  artifacts:
+    when: always
+    expire_in: 7 days
+    paths:
+      - outputs/
+      - normalized/
+      - correlated/
+
+validate_correlation:
+  stage: validate
+  <<: *multi_repo_matrix
+  needs:
+    - job: correlate
+      artifacts: true
+  script:
+    - 'set -x'
+    - 'echo "Repo: $TARGET_REPO_NAME"'
+    - 'find correlated -maxdepth 3 -type f | sort || true'
+    - 'ls -la "correlated/${TARGET_REPO_NAME}" || true'
+    - 'head -n 5 "correlated/${TARGET_REPO_NAME}/incidents.jsonl" || true'
+    - 'uv run python -m scripts.validate_correlation' 
+  artifacts:
+    when: always
+    expire_in: 7 days
+    paths:
+      - outputs/
+      - normalized/
+      - correlated/
+
+threshold_check:
+  stage: validate
+  <<: *multi_repo_matrix
+  needs:
+    - job: normalize
+      artifacts: true
+  script:
+    - 'set -x'
+    - 'echo "Repo: $TARGET_REPO_NAME"'
+    - 'find normalized -maxdepth 3 -type f | sort || true'
+    - 'uv run python -m scripts.enforce_thresholds'
+  allow_failure: true
+  artifacts:
+    when: always
+    expire_in: 7 days
+    paths:
+      - outputs/
+      - normalized/
+      - correlated/
+
+publish_artifacts:
+  stage: publish
+  image: python:3.12-slim
+  before_script:
+    - apt-get update
+    - apt-get install -y findutils
+  needs:
+    - job: validate_findings
+      artifacts: true
+    - job: threshold_check
+      artifacts: true
+    - job: validate_correlation
+      artifacts: true
+  script:
+    - echo "Output artifacts:"
+    - find outputs -maxdepth 3 -type f | sort
+    - echo "Normalized artifacts:"
+    - find normalized -maxdepth 3 -type f | sort
+    - echo "Correlated artifacts:"
+    - find correlated -maxdepth 3 -type f | sort
+  artifacts:
+    when: always
+    expire_in: 14 days
+    paths:
+      - outputs/
+      - normalized/
+      - correlated/
+
+export_to_gcs:
+  stage: publish
+  image: google/cloud-sdk:slim
+  needs:
+    - job: publish_artifacts
+      artifacts: true
+  before_script:
+    - echo "$GCP_SA_KEY_JSON" > /tmp/gcp-key.json
+    - gcloud auth activate-service-account --key-file=/tmp/gcp-key.json
+    - gcloud config set project "$GCP_PROJECT_ID"
+  script:
+    - gsutil -m cp -r outputs "gs://${GCS_BUCKET}/raw/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/"
+    - gsutil -m cp -r normalized "gs://${GCS_BUCKET}/normalized/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/"
+    - gsutil -m cp -r correlated "gs://${GCS_BUCKET}/correlated/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/"
+
+load_to_bigquery:
+  stage: publish
+  image: google/cloud-sdk:slim
+  needs:
+    - job: export_to_gcs
+  before_script:
+    - echo "$GCP_SA_KEY_JSON" > /tmp/gcp-key.json
+    - gcloud auth activate-service-account --key-file=/tmp/gcp-key.json
+    - gcloud config set project "$GCP_PROJECT_ID"
+  script:
+    - |
+      if bq ls "${GCP_PROJECT_ID}:${BQ_DATASET}" >/dev/null 2>&1; then
+        echo "Dataset already exists: ${BQ_DATASET}"
+      else
+        echo "Creating dataset: ${BQ_DATASET}"
+        bq --location=US mk --dataset "${GCP_PROJECT_ID}:${BQ_DATASET}"
+      fi
+
+    # Process every repo that produced normalized findings
+    - |
+      for repo_dir in normalized/*; do
+        [ -d "$repo_dir" ] || continue
+        TARGET_REPO_NAME="$(basename "$repo_dir")"
+        echo "Processing BigQuery load for ${TARGET_REPO_NAME}"
+
+        FINDINGS_GCS="gs://${GCS_BUCKET}/normalized/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/normalized/${TARGET_REPO_NAME}/findings.jsonl"
+        INCIDENTS_GCS="gs://${GCS_BUCKET}/correlated/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/correlated/${TARGET_REPO_NAME}/incidents.jsonl"
+
+        gsutil ls "$FINDINGS_GCS"
+        gsutil ls "$INCIDENTS_GCS"
+      
+        bq load \
+          --replace \
+          --source_format=NEWLINE_DELIMITED_JSON \
+          --autodetect \
+          "${GCP_PROJECT_ID}:${BQ_DATASET}.findings_normalized_staging" \
+          "$FINDINGS_GCS"
+
+        bq load \
+          --replace \
+          --source_format=NEWLINE_DELIMITED_JSON \
+          --autodetect \
+          "${GCP_PROJECT_ID}:${BQ_DATASET}.incidents_staging" \
+          "$INCIDENTS_GCS"
+
+        bq query --use_legacy_sql=false "
+        CREATE TABLE IF NOT EXISTS \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized\` AS
+        SELECT
+          S.*,
+          CAST(NULL AS TIMESTAMP) AS first_seen_at,
+          CAST(NULL AS TIMESTAMP) AS last_seen_at,
+          CAST(NULL AS INT64) AS first_seen_pipeline_id,
+          CAST(NULL AS INT64) AS last_seen_pipeline_id,
+          CAST(NULL AS STRING) AS first_seen_commit_sha,
+          CAST(NULL AS STRING) AS last_seen_commit_sha,
+          CAST(NULL AS STRING) AS first_seen_branch,
+          CAST(NULL AS STRING) AS last_seen_branch,
+          CAST(NULL AS INT64) AS seen_count
+        FROM \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized_staging\` S
+        WHERE 1=0
+        "
+
+        bq query --use_legacy_sql=false "
+        CREATE TABLE IF NOT EXISTS \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents\` AS
+        SELECT
+          S.*,
+          CAST(NULL AS TIMESTAMP) AS first_seen_at,
+          CAST(NULL AS TIMESTAMP) AS last_seen_at,
+          CAST(NULL AS INT64) AS first_seen_pipeline_id,
+          CAST(NULL AS INT64) AS last_seen_pipeline_id,
+          CAST(NULL AS STRING) AS first_seen_commit_sha,
+          CAST(NULL AS STRING) AS last_seen_commit_sha,
+          CAST(NULL AS STRING) AS first_seen_branch,
+          CAST(NULL AS STRING) AS last_seen_branch,
+          CAST(NULL AS INT64) AS seen_count
+        FROM \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents_staging\` S
+        WHERE 1=0
+        "
+
+        bq query --use_legacy_sql=false "
+        CREATE TABLE IF NOT EXISTS \`${GCP_PROJECT_ID}.${BQ_DATASET}.finding_observations\` (
+          finding_id STRING,
+          repo STRING,
+          branch STRING,
+          commit_sha STRING,
+          pipeline_id INT64,
+          loaded_at TIMESTAMP,
+          observed_at TIMESTAMP,
+          severity STRING,
+          category STRING,
+          tool STRING,
+          status STRING
+        )
+        PARTITION BY DATE(loaded_at)
+        "
+
+        bq query --use_legacy_sql=false "
+        CREATE TABLE IF NOT EXISTS \`${GCP_PROJECT_ID}.${BQ_DATASET}.incident_observations\` (
+          incident_id STRING,
+          repo STRING,
+          branch STRING,
+          commit_sha STRING,
+          pipeline_id INT64,
+          loaded_at TIMESTAMP,
+          observed_at TIMESTAMP,
+          severity STRING,
+          risk_score INT64,
+          status STRING
+        )
+        PARTITION BY DATE(loaded_at)
+        "
+
+        bq query --use_legacy_sql=false "
+        MERGE \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized\` T
+        USING (
+          SELECT
+            S.*,
+            CURRENT_TIMESTAMP() AS loaded_at
+          FROM \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized_staging\` S
+        ) S
+        ON T.finding_id = S.finding_id
+        WHEN MATCHED THEN
+          UPDATE SET
+            tool = S.tool,
+            tool_finding_id = S.tool_finding_id,
+            category = S.category,
+            subcategory = S.subcategory,
+            severity = S.severity,
+            confidence = S.confidence,
+            title = S.title,
+            description = S.description,
+            recommendation = S.recommendation,
+            rule_id = S.rule_id,
+            rule_name = S.rule_name,
+            file_path = S.file_path,
+            line_start = S.line_start,
+            line_end = S.line_end,
+            code_snippet = S.code_snippet,
+            resource_type = S.resource_type,
+            resource_name = S.resource_name,
+            resource_namespace = S.resource_namespace,
+            package_name = S.package_name,
+            installed_version = S.installed_version,
+            fixed_version = S.fixed_version,
+            secret_type = S.secret_type,
+            vulnerability_id = S.vulnerability_id,
+            repo = S.repo,
+            branch = S.branch,
+            commit_sha = S.commit_sha,
+            pipeline_id = S.pipeline_id,
+            scanner_stage = S.scanner_stage,
+            timestamp = S.timestamp,
+            status = S.status,
+            environment = S.environment,
+            raw_ref = S.raw_ref,
+            raw_tool = S.raw_tool,
+            raw_severity = S.raw_severity,
+            normalized_version = S.normalized_version,
+            tags = S.tags,
+            references = S.references,
+            mitre_technique = S.mitre_technique,
+            compliance_controls = S.compliance_controls,
+            last_seen_at = S.loaded_at,
+            last_seen_pipeline_id = S.pipeline_id,
+            last_seen_commit_sha = S.commit_sha,
+            last_seen_branch = S.branch,
+            seen_count = COALESCE(T.seen_count, 0) + 1
+        WHEN NOT MATCHED THEN
+          INSERT (
+            finding_id,
+            tool,
+            tool_finding_id,
+            category,
+            subcategory,
+            severity,
+            confidence,
+            title,
+            description,
+            recommendation,
+            rule_id,
+            rule_name,
+            file_path,
+            line_start,
+            line_end,
+            code_snippet,
+            resource_type,
+            resource_name,
+            resource_namespace,
+            package_name,
+            installed_version,
+            fixed_version,
+            secret_type,
+            vulnerability_id,
+            repo,
+            branch,
+            commit_sha,
+            pipeline_id,
+            scanner_stage,
+            timestamp,
+            status,
+            environment,
+            raw_ref,
+            raw_tool,
+            raw_severity,
+            normalized_version,
+            tags,
+            references,
+            mitre_technique,
+            compliance_controls,
+            first_seen_at,
+            last_seen_at,
+            first_seen_pipeline_id,
+            last_seen_pipeline_id,
+            first_seen_commit_sha,
+            last_seen_commit_sha,
+            first_seen_branch,
+            last_seen_branch,
+            seen_count
+          )
+          VALUES (
+            S.finding_id,
+            S.tool,
+            S.tool_finding_id,
+            S.category,
+            S.subcategory,
+            S.severity,
+            S.confidence,
+            S.title,
+            S.description,
+            S.recommendation,
+            S.rule_id,
+            S.rule_name,
+            S.file_path,
+            S.line_start,
+            S.line_end,
+            S.code_snippet,
+            S.resource_type,
+            S.resource_name,
+            S.resource_namespace,
+            S.package_name,
+            S.installed_version,
+            S.fixed_version,
+            S.secret_type,
+            S.vulnerability_id,
+            S.repo,
+            S.branch,
+            S.commit_sha,
+            S.pipeline_id,
+            S.scanner_stage,
+            S.timestamp,
+            S.status,
+            S.environment,
+            S.raw_ref,
+            S.raw_tool,
+            S.raw_severity,
+            S.normalized_version,
+            S.tags,
+            S.references,
+            S.mitre_technique,
+            S.compliance_controls,
+            S.loaded_at,
+            S.loaded_at,
+            S.pipeline_id,
+            S.pipeline_id,
+            S.commit_sha,
+            S.commit_sha,
+            S.branch,
+            S.branch,
+            1
+          )
+        "
+
+        bq query --use_legacy_sql=false "
+        MERGE \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents\` T
+        USING (
+          SELECT
+            S.*,
+            CURRENT_TIMESTAMP() AS loaded_at
+          FROM \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents_staging\` S
+        ) S
+        ON T.incident_id = S.incident_id
+        WHEN MATCHED THEN
+          UPDATE SET
+            repo = S.repo,
+            branch = S.branch,
+            commit_sha = S.commit_sha,
+            pipeline_id = S.pipeline_id,
+            timestamp = S.timestamp,
+            summary = S.summary,
+            title = S.title,
+            severity = S.severity,
+            risk_score = S.risk_score,
+            confidence = S.confidence,
+            categories = S.categories,
+            mitre_techniques = S.mitre_techniques,
+            related_findings = S.related_findings,
+            finding_count = S.finding_count,
+            primary_resource = S.primary_resource,
+            recommended_action = S.recommended_action,
+            status = S.status,
+            normalized_version = S.normalized_version,
+            last_seen_at = S.loaded_at,
+            last_seen_pipeline_id = S.pipeline_id,
+            last_seen_commit_sha = S.commit_sha,
+            last_seen_branch = S.branch,
+            seen_count = COALESCE(T.seen_count, 0) + 1
+        WHEN NOT MATCHED THEN
+          INSERT (
+            incident_id,
+            repo,
+            branch,
+            commit_sha,
+            pipeline_id,
+            timestamp,
+            summary,
+            title,
+            severity,
+            risk_score,
+            confidence,
+            categories,
+            mitre_techniques,
+            related_findings,
+            finding_count,
+            primary_resource,
+            recommended_action,
+            status,
+            normalized_version,
+            first_seen_at,
+            last_seen_at,
+            first_seen_pipeline_id,
+            last_seen_pipeline_id,
+            first_seen_commit_sha,
+            last_seen_commit_sha,
+            first_seen_branch,
+            last_seen_branch,
+            seen_count
+          )
+          VALUES (
+            S.incident_id,
+            S.repo,
+            S.branch,
+            S.commit_sha,
+            S.pipeline_id,
+            S.timestamp,
+            S.summary,
+            S.title,
+            S.severity,
+            S.risk_score,
+            S.confidence,
+            S.categories,
+            S.mitre_techniques,
+            S.related_findings,
+            S.finding_count,
+            S.primary_resource,
+            S.recommended_action,
+            S.status,
+            S.normalized_version,
+            S.loaded_at,
+            S.loaded_at,
+            S.pipeline_id,
+            S.pipeline_id,
+            S.commit_sha,
+            S.commit_sha,
+            S.branch,
+            S.branch,
+            1
+          )
+        "
+
+        bq query --use_legacy_sql=false "
+        MERGE \`${GCP_PROJECT_ID}.${BQ_DATASET}.finding_observations\` T
+        USING (
+          SELECT
+            finding_id,
+            repo,
+            branch,
+            commit_sha,
+            pipeline_id,
+            CURRENT_TIMESTAMP() AS loaded_at,
+            timestamp AS observed_at,
+            severity,
+            category,
+            tool,
+            status
+          FROM \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized_staging\`
+        ) S
+        ON T.finding_id = S.finding_id
+        AND T.pipeline_id = S.pipeline_id
+        WHEN NOT MATCHED THEN
+          INSERT (
+            finding_id,
+            repo,
+            branch,
+            commit_sha,
+            pipeline_id,
+            loaded_at,
+            observed_at,
+            severity,
+            category,
+            tool,
+            status
+          )
+          VALUES (
+            S.finding_id,
+            S.repo,
+            S.branch,
+            S.commit_sha,
+            S.pipeline_id,
+            S.loaded_at,
+            S.observed_at,
+            S.severity,
+            S.category,
+            S.tool,
+            S.status
+          )
+        "
+
+        bq query --use_legacy_sql=false "
+        MERGE \`${GCP_PROJECT_ID}.${BQ_DATASET}.incident_observations\` T
+        USING (
+          SELECT
+            incident_id,
+            repo,
+            branch,
+            commit_sha,
+            pipeline_id,
+            CURRENT_TIMESTAMP() AS loaded_at,
+            timestamp AS observed_at,
+            severity,
+            risk_score,
+            status
+          FROM \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents_staging\`
+        ) S
+        ON T.incident_id = S.incident_id
+        AND T.pipeline_id = S.pipeline_id
+        WHEN NOT MATCHED THEN
+          INSERT (
+            incident_id,
+            repo,
+            branch,
+            commit_sha,
+            pipeline_id,
+            loaded_at,
+            observed_at,
+            severity,
+            risk_score,
+            status
+          )
+          VALUES (
+            S.incident_id,
+            S.repo,
+            S.branch,
+            S.commit_sha,
+            S.pipeline_id,
+            S.loaded_at,
+            S.observed_at,
+            S.severity,
+            S.risk_score,
+            S.status
+          )
+        "
+        done
+    - bq show "${GCP_PROJECT_ID}:${BQ_DATASET}.findings_normalized"
+    - bq show "${GCP_PROJECT_ID}:${BQ_DATASET}.incidents"
+      
+create_bigquery_views:
+  stage: publish
+  image: google/cloud-sdk:slim
+  needs:
+    - job: load_to_bigquery
+  before_script:
+    - apt-get update
+    - apt-get install -y gettext-base
+    - echo "$GCP_SA_KEY_JSON" > /tmp/gcp-key.json
+    - gcloud auth activate-service-account --key-file=/tmp/gcp-key.json
+    - gcloud config set project "$GCP_PROJECT_ID"
+  script:
+    - which envsubst
+    - envsubst --version
+    - |
+      if ! bq show "${GCP_PROJECT_ID}:${BQ_DATASET}.findings_normalized" >/dev/null 2>&1; then
+        echo "Missing table: ${GCP_PROJECT_ID}:${BQ_DATASET}.findings_normalized"
+        exit 1
+      fi
+    - |
+      if ! bq show "${GCP_PROJECT_ID}:${BQ_DATASET}.incidents" >/dev/null 2>&1; then
+        echo "Missing table: ${GCP_PROJECT_ID}:${BQ_DATASET}.incidents"
+        exit 1
+      fi
+    - |
+      for f in sql/views/*.sql; do
+        echo "Applying $f"
+        envsubst < "$f" | bq query --use_legacy_sql=false
+      done

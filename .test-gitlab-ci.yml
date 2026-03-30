@@ -1,0 +1,14 @@
+default:
+  tags:
+    - aws
+    - aws-pipelineguard-runner
+
+stages:
+  - test
+
+runner-check:
+  stage: test
+  image: python:3.12-slim
+  script:
+    - echo "Runner is working on AWS"
+    - python --version
