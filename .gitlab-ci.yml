@@ -5,6 +5,21 @@ stages:
   - validate
   - publish
 
+variables:
+  GIT_SUBMODULE_STRATEGY: none
+  UV_PYTHON: "3.12"
+  MAX_CRITICAL: "0"
+  MAX_HIGH: "999999"
+  FAIL_ON_SECRET: "true"
+  TARGET_BASE_DIR: "$CI_PROJECT_DIR/vulnerable-repos"
+
+  # GCP
+  GCP_PROJECT_ID: "datawarehouse-486704"
+  GCS_BUCKET: "pipelineguard-artifacts"
+  BQ_DATASET: "pipelineguard_analytics"
+  BQ_FINDINGS_TABLE: "findings_normalized"
+  BQ_INCIDENTS_TABLE: "incidents"
+
 default:
   image: python:3.12-slim
   before_script:
@@ -28,17 +43,17 @@ default:
     - apt-get install -y trivy
     - trivy --version
 
+       - mkdir -p outputs normalized .trivycache
+    - chmod +x scripts/*.sh || true
+
     # PipelineGuard target settings
-    - export TARGET_REPO_NAME="vulnerable-infra-project"
-    - export TARGET_REPO_PATH="$CI_PROJECT_DIR/vulnerable-infra-project"
+    - export TARGET_REPO_NAME="${TARGET_REPO_NAME}"
+    - export TARGET_REPO_PATH="$TARGET_BASE_DIR/${TARGET_REPO_NAME}"
     - export PG_REPO="$TARGET_REPO_NAME"
     - export PG_BRANCH="${CI_COMMIT_REF_NAME}"
     - export PG_COMMIT_SHA="${CI_COMMIT_SHA}"
     - export PG_PIPELINE_ID="${CI_PIPELINE_ID}"
     - export PG_ENVIRONMENT="ci"
-
-    - mkdir -p outputs normalized .trivycache
-    - chmod +x scripts/*.sh || true
 
     # Sanity/debug
     - echo "TARGET_REPO_NAME=$TARGET_REPO_NAME"
@@ -49,27 +64,19 @@ default:
     - ls -la "$TARGET_REPO_PATH"
     - find "$TARGET_REPO_PATH" -maxdepth 3 -type f | sort | head -100
 
-variables:
-  GIT_SUBMODULE_STRATEGY: none
-  UV_PYTHON: "3.12"
-  MAX_CRITICAL: "0"
-  MAX_HIGH: "999999"
-  FAIL_ON_SECRET: "true"
-
-  # GCP
-  GCP_PROJECT_ID: "datawarehouse-486704"
-  GCS_BUCKET: "pipelineguard-artifacts"
-  BQ_DATASET: "pipelineguard_analytics"
-  BQ_FINDINGS_TABLE: "findings_normalized"
-  BQ_INCIDENTS_TABLE: "incidents"
-
 cache:
   key: trivy-cache
   paths:
     - .trivycache/
 
+.multi_repo_matrix: &multi_repo_matrix
+  parallel:
+    matrix:
+      - TARGET_REPO_NAME: ["terragoat", "kubernetes-goat", "juice-shop", "secrets-test", "secrets-lab"]
+
 scan:
   stage: scan
+  <<: *multi_repo_matrix
   script:
     - ./scripts/run_phase1.sh
   artifacts:
@@ -80,6 +87,7 @@ scan:
 
 normalize:
   stage: normalize
+  <<: *multi_repo_matrix
   needs:
     - job: scan
       artifacts: true
@@ -94,6 +102,7 @@ normalize:
 
 correlate:
   stage: correlate
+  <<: *multi_repo_matrix
   needs:
     - job: normalize
       artifacts: true
@@ -107,8 +116,24 @@ correlate:
       - normalized/
       - correlated/
 
+validate_findings:
+  stage: validate
+  <<: *multi_repo_matrix
+  needs:
+    - job: normalize
+      artifacts: true
+  script:
+    - uv run python -m scripts.validate_findings
+  artifacts:
+    when: always
+    expire_in: 7 days
+    paths:
+      - outputs/
+      - normalized/
+
 validate_correlation:
   stage: validate
+  <<: *multi_repo_matrix
   needs:
     - job: correlate
       artifacts: true
@@ -122,22 +147,9 @@ validate_correlation:
       - normalized/
       - correlated/
 
-validate_findings:
-  stage: validate
-  needs:
-    - job: normalize
-      artifacts: true
-  script:
-    - uv run python -m scripts.validate_findings
-  artifacts:
-    when: always
-    expire_in: 7 days
-    paths:
-      - outputs/
-      - normalized/
-
 threshold_check:
   stage: validate
+  <<: *multi_repo_matrix
   needs:
     - job: normalize
       artifacts: true
@@ -150,9 +162,14 @@ threshold_check:
     paths:
       - outputs/
       - normalized/
+      - correlated/
 
 publish_artifacts:
   stage: publish
+  image: python:3.12-slim
+  before_script:
+    - apt-get update
+    - apt-get install -y findutils
   needs:
     - job: validate_findings
       artifacts: true
@@ -185,7 +202,6 @@ export_to_gcs:
     - echo "$GCP_SA_KEY_JSON" > /tmp/gcp-key.json
     - gcloud auth activate-service-account --key-file=/tmp/gcp-key.json
     - gcloud config set project "$GCP_PROJECT_ID"
-    - export TARGET_REPO_NAME="vulnerable-infra-project"
   script:
     - gsutil -m cp -r outputs "gs://${GCS_BUCKET}/raw/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/"
     - gsutil -m cp -r normalized "gs://${GCS_BUCKET}/normalized/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/"
@@ -200,7 +216,6 @@ load_to_bigquery:
     - echo "$GCP_SA_KEY_JSON" > /tmp/gcp-key.json
     - gcloud auth activate-service-account --key-file=/tmp/gcp-key.json
     - gcloud config set project "$GCP_PROJECT_ID"
-    - export TARGET_REPO_NAME="vulnerable-infra-project"
   script:
     - |
       if bq ls "${GCP_PROJECT_ID}:${BQ_DATASET}" >/dev/null 2>&1; then
@@ -209,26 +224,34 @@ load_to_bigquery:
         echo "Creating dataset: ${BQ_DATASET}"
         bq --location=US mk --dataset "${GCP_PROJECT_ID}:${BQ_DATASET}"
       fi
-    # Historical analysis + Idempotent
-    # Load current pipeline run into staging tables
+
+    # Process every repo that produced normalized findings
     - |
+      for repo_dir in normalized/*; do
+        [ -d "$repo_dir" ] || continue
+        TARGET_REPO_NAME="$(basename "$repo_dir")"
+        echo "Processing BigQuery load for ${TARGET_REPO_NAME}"
+
+        FINDINGS_GCS="gs://${GCS_BUCKET}/normalized/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/normalized/${TARGET_REPO_NAME}/findings.jsonl"
+        INCIDENTS_GCS="gs://${GCS_BUCKET}/correlated/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/correlated/${TARGET_REPO_NAME}/incidents.jsonl"
+
+        gsutil ls "$FINDINGS_GCS"
+        gsutil ls "$INCIDENTS_GCS"
+      
       bq load \
         --replace \
         --source_format=NEWLINE_DELIMITED_JSON \
         --autodetect \
         "${GCP_PROJECT_ID}:${BQ_DATASET}.findings_normalized_staging" \
-        "gs://${GCS_BUCKET}/normalized/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/normalized/${TARGET_REPO_NAME}/findings.jsonl"
+        "$FINDINGS_GCS"
 
-    - |
       bq load \
         --replace \
         --source_format=NEWLINE_DELIMITED_JSON \
         --autodetect \
         "${GCP_PROJECT_ID}:${BQ_DATASET}.incidents_staging" \
-        "gs://${GCS_BUCKET}/correlated/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/correlated/${TARGET_REPO_NAME}/incidents.jsonl"
+        "$INCIDENTS_GCS"
 
-    # Create canonical findings table if missing
-    - |
       bq query --use_legacy_sql=false "
       CREATE TABLE IF NOT EXISTS \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized\` AS
       SELECT
@@ -246,8 +269,6 @@ load_to_bigquery:
       WHERE 1=0
       "
 
-    # Create canonical incidents table if missing
-    - |
       bq query --use_legacy_sql=false "
       CREATE TABLE IF NOT EXISTS \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents\` AS
       SELECT
@@ -265,8 +286,6 @@ load_to_bigquery:
       WHERE 1=0
       "
 
-    # Create finding observations table if missing
-    - |
       bq query --use_legacy_sql=false "
       CREATE TABLE IF NOT EXISTS \`${GCP_PROJECT_ID}.${BQ_DATASET}.finding_observations\` (
         finding_id STRING,
@@ -284,8 +303,6 @@ load_to_bigquery:
       PARTITION BY DATE(loaded_at)
       "
 
-    # Create incident observations table if missing
-    - |
       bq query --use_legacy_sql=false "
       CREATE TABLE IF NOT EXISTS \`${GCP_PROJECT_ID}.${BQ_DATASET}.incident_observations\` (
         incident_id STRING,
@@ -301,8 +318,7 @@ load_to_bigquery:
       )
       PARTITION BY DATE(loaded_at)
       "
-    # Merge findings into canonical table
-    - |
+
       bq query --use_legacy_sql=false "
       MERGE \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized\` T
       USING (
@@ -463,8 +479,6 @@ load_to_bigquery:
         )
       "
 
-    # Merge incidents into canonical table
-    - |
       bq query --use_legacy_sql=false "
       MERGE \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents\` T
       USING (
@@ -562,8 +576,6 @@ load_to_bigquery:
         )
       "
 
-    # Insert finding observations once per (finding_id, pipeline_id)
-    - |
       bq query --use_legacy_sql=false "
       MERGE \`${GCP_PROJECT_ID}.${BQ_DATASET}.finding_observations\` T
       USING (
@@ -612,8 +624,6 @@ load_to_bigquery:
         )
       "
 
-    # Insert incident observations once per (incident_id, pipeline_id)
-    - |
       bq query --use_legacy_sql=false "
       MERGE \`${GCP_PROJECT_ID}.${BQ_DATASET}.incident_observations\` T
       USING (
@@ -658,72 +668,8 @@ load_to_bigquery:
           S.status
         )
       "
-    # Second modification - Idempotent implemetion
-  
-    # # Load current run into staging tables
-    # - |
-    #   bq load --replace --source_format=NEWLINE_DELIMITED_JSON --autodetect \
-    #   "${GCP_PROJECT_ID}:${BQ_DATASET}.findings_normalized_staging" \
-    #   "gs://${GCS_BUCKET}/normalized/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/normalized/${TARGET_REPO_NAME}/findings.jsonl"
-
-    # - |
-    #   bq load --replace --source_format=NEWLINE_DELIMITED_JSON --autodetect \
-    #   "${GCP_PROJECT_ID}:${BQ_DATASET}.incidents_staging" \
-    #   "gs://${GCS_BUCKET}/correlated/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/correlated/${TARGET_REPO_NAME}/incidents.jsonl"
-
-    # # Ensure final tables exist
-    # - |
-    #   bq query --use_legacy_sql=false "
-    #   CREATE TABLE IF NOT EXISTS \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized\`
-    #   AS SELECT * FROM \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized_staging\` WHERE 1=0
-    #   "
-
-    # - |
-    #   bq query --use_legacy_sql=false "
-    #   CREATE TABLE IF NOT EXISTS \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents\`
-    #   AS SELECT * FROM \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents_staging\` WHERE 1=0
-    #   "
-
-    # # Merge without duplicates
-    # - |
-    #   bq query --use_legacy_sql=false "
-    #   MERGE \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized\` T
-    #   USING \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized_staging\` S
-    #   ON T.finding_id = S.finding_id
-    #   WHEN NOT MATCHED THEN
-    #     INSERT ROW
-    #   "
-
-    # - |
-    #   bq query --use_legacy_sql=false "
-    #   MERGE \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents\` T
-    #   USING \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents_staging\` S
-    #   ON T.incident_id = S.incident_id
-    #   WHEN NOT MATCHED THEN
-    #     INSERT ROW
-    #   "
-
-    # No Idempotent
-    # - |
-    #   gsutil ls "gs://${GCS_BUCKET}/normalized/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/normalized/${TARGET_REPO_NAME}/findings.jsonl"
-
-    # - |
-    #   gsutil ls "gs://${GCS_BUCKET}/correlated/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/correlated/${TARGET_REPO_NAME}/incidents.jsonl"
-
-    # - |
-    #   bq load \
-    #     --source_format=NEWLINE_DELIMITED_JSON \
-    #     --autodetect \
-    #     "${GCP_PROJECT_ID}:${BQ_DATASET}.${BQ_FINDINGS_TABLE}" \
-    #     "gs://${GCS_BUCKET}/normalized/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/normalized/${TARGET_REPO_NAME}/findings.jsonl"
-
-    # - |
-    #   bq load \
-    #     --source_format=NEWLINE_DELIMITED_JSON \
-    #     --autodetect \
-    #     "${GCP_PROJECT_ID}:${BQ_DATASET}.${BQ_INCIDENTS_TABLE}" \
-    #     "gs://${GCS_BUCKET}/correlated/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/correlated/${TARGET_REPO_NAME}/incidents.jsonl"
-
+      done
+    
 create_bigquery_views:
   stage: publish
   image: google/cloud-sdk:slim

@@ -84,6 +84,10 @@ def main():
         if not finding.get("mitre_technique"):
             finding["mitre_technique"] = mitre_map.get(map_key)
 
+            # fallback for Trivy CVEs
+            if not finding.get("mitre_technique") and tool == "trivy" and rule_id and str(rule_id).startswith("CVE-"):
+                finding["mitre_technique"] = mitre_map.get("trivy:CVE")
+
         sev = finding.get("severity", "unknown")
         cat = finding.get("category", "unknown")
 

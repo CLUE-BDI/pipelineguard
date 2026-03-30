@@ -1,5 +1,29 @@
 {
-    "gitleaks:aws-access-token": "T1552",
-    "gitleaks:generic-api-key": "T1552",
-    "semgrep:python.lang.security.audit.dangerous-subprocess-use": "T1059"
-  }
+  "gitleaks:aws-access-token": "T1552",
+  "gitleaks:generic-api-key": "T1552",
+  "gitleaks:private-key": "T1552",
+  "gitleaks:slack-access-token": "T1552",
+  "gitleaks:github-pat": "T1552",
+
+  "semgrep:python.lang.security.audit.dangerous-subprocess-use": "T1059",
+  "semgrep:python.lang.security.audit.subprocess-shell-true": "T1059",
+  "semgrep:python.lang.security.audit.eval-detected": "T1059",
+  "semgrep:javascript.lang.security.detect-child-process.detect-child-process": "T1059",
+
+  "checkov:CKV_AWS_20": "T1530",
+  "checkov:CKV_AWS_21": "T1530",
+  "checkov:CKV_AWS_24": "T1046",
+  "checkov:CKV_K8S_8": "T1611",
+  "checkov:CKV_K8S_20": "T1611",
+  "checkov:CKV_K8S_22": "T1611",
+  "checkov:CKV_K8S_23": "T1611",
+  "checkov:CKV_K8S_31": "T1611",
+  "checkov:CKV_K8S_37": "T1611",
+
+  "trivy:AVD-KSV-0041": "T1611",
+  "trivy:AVD-KSV-0012": "T1611",
+  "trivy:AVD-KSV-0014": "T1611",
+  "trivy:AVD-KCV-0048": "T1046",
+
+  "trivy:CVE": null
+}
