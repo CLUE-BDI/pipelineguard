@@ -43,7 +43,7 @@ default:
     - apt-get install -y trivy
     - trivy --version
 
-    - mkdir -p outputs normalized .trivycache
+    - mkdir -p outputs normalized correlated .trivycache
     - chmod +x scripts/*.sh || true
 
     # PipelineGuard target settings
