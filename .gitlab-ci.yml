@@ -123,6 +123,10 @@ validate_findings:
     - job: normalize
       artifacts: true
   script:
+    - set -x
+    - echo "Repo: $TARGET_REPO_NAME"
+    - echo "Normalized dir:"
+    - find normalized -maxdepth 3 -type f | sort || true
     - uv run python -m scripts.validate_findings
   artifacts:
     when: always
@@ -130,6 +134,7 @@ validate_findings:
     paths:
       - outputs/
       - normalized/
+      - correlated/
 
 validate_correlation:
   stage: validate
@@ -154,6 +159,9 @@ threshold_check:
     - job: normalize
       artifacts: true
   script:
+    - set -x
+    - echo "Repo: $TARGET_REPO_NAME"
+    - find normalized -maxdepth 3 -type f | sort || true
     - uv run python -m scripts.enforce_thresholds
   allow_failure: true
   artifacts:
