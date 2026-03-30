@@ -123,11 +123,12 @@ validate_findings:
     - job: normalize
       artifacts: true
   script:
-    - set -x
-    - echo "Repo: $TARGET_REPO_NAME"
-    - echo "Normalized dir:"
-    - find normalized -maxdepth 3 -type f | sort || true
-    - uv run python -m scripts.validate_findings
+    - 'set -x'
+    - 'echo "Repo: $TARGET_REPO_NAME"'
+    - 'find normalized -maxdepth 3 -type f | sort || true'
+    - 'ls -la "normalized/${TARGET_REPO_NAME}" || true'
+    - 'head -n 5 "normalized/${TARGET_REPO_NAME}/findings.jsonl" || true'
+    - 'uv run python -m scripts.validate_findings'
   artifacts:
     when: always
     expire_in: 7 days
@@ -143,7 +144,12 @@ validate_correlation:
     - job: correlate
       artifacts: true
   script:
-    - uv run python -m scripts.validate_correlation
+    - 'set -x'
+    - 'echo "Repo: $TARGET_REPO_NAME"'
+    - 'find correlated -maxdepth 3 -type f | sort || true'
+    - 'ls -la "correlated/${TARGET_REPO_NAME}" || true'
+    - 'head -n 5 "correlated/${TARGET_REPO_NAME}/incidents.jsonl" || true'
+    - 'uv run python -m scripts.validate_correlation' 
   artifacts:
     when: always
     expire_in: 7 days
@@ -159,10 +165,10 @@ threshold_check:
     - job: normalize
       artifacts: true
   script:
-    - set -x
-    - echo "Repo: $TARGET_REPO_NAME"
-    - find normalized -maxdepth 3 -type f | sort || true
-    - uv run python -m scripts.enforce_thresholds
+    - 'set -x'
+    - 'echo "Repo: $TARGET_REPO_NAME"'
+    - 'find normalized -maxdepth 3 -type f | sort || true'
+    - 'uv run python -m scripts.enforce_thresholds'
   allow_failure: true
   artifacts:
     when: always
