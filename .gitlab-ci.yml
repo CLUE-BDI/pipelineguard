@@ -683,6 +683,8 @@ load_to_bigquery:
           )
         "
         done
+    - bq show "${GCP_PROJECT_ID}:${BQ_DATASET}.findings_normalized"
+    - bq show "${GCP_PROJECT_ID}:${BQ_DATASET}.incidents"
       
 create_bigquery_views:
   stage: publish
@@ -698,4 +700,18 @@ create_bigquery_views:
   script:
     - which envsubst
     - envsubst --version
-    - for f in sql/views/*.sql; do echo "Applying $f"; envsubst < "$f" | bq query --use_legacy_sql=false; done
+    - |
+      if ! bq show "${GCP_PROJECT_ID}:${BQ_DATASET}.findings_normalized" >/dev/null 2>&1; then
+        echo "Missing table: ${GCP_PROJECT_ID}:${BQ_DATASET}.findings_normalized"
+        exit 1
+      fi
+    - |
+      if ! bq show "${GCP_PROJECT_ID}:${BQ_DATASET}.incidents" >/dev/null 2>&1; then
+        echo "Missing table: ${GCP_PROJECT_ID}:${BQ_DATASET}.incidents"
+        exit 1
+      fi
+    - |
+      for f in sql/views/*.sql; do
+        echo "Applying $f"
+        envsubst < "$f" | bq query --use_legacy_sql=false
+      done
