@@ -248,15 +248,15 @@ load_to_bigquery:
 
     - |
       for TARGET_REPO_NAME in terragoat kubernetes-goat juice-shop secrets-test secrets-lab; do
-        if [ ! -f "normalized/${TARGET_REPO_NAME}/findings.jsonl" ]; then
-          echo "Skipping ${TARGET_REPO_NAME}: missing normalized/${TARGET_REPO_NAME}/findings.jsonl"
-          continue
-        fi
+        # if [ ! -f "normalized/${TARGET_REPO_NAME}/findings.jsonl" ]; then
+        #   echo "Skipping ${TARGET_REPO_NAME}: missing normalized/${TARGET_REPO_NAME}/findings.jsonl"
+        #   continue
+        # fi
 
-        if [ ! -f "correlated/${TARGET_REPO_NAME}/incidents.jsonl" ]; then
-          echo "Skipping ${TARGET_REPO_NAME}: missing correlated/${TARGET_REPO_NAME}/incidents.jsonl"
-          continue
-        fi
+        # if [ ! -f "correlated/${TARGET_REPO_NAME}/incidents.jsonl" ]; then
+        #   echo "Skipping ${TARGET_REPO_NAME}: missing correlated/${TARGET_REPO_NAME}/incidents.jsonl"
+        #   continue
+        # fi
 
         echo "Processing BigQuery load for ${TARGET_REPO_NAME}"
 
