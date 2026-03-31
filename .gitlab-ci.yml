@@ -242,19 +242,26 @@ load_to_bigquery:
         bq --location=US mk --dataset "${GCP_PROJECT_ID}:${BQ_DATASET}"
       fi
 
-    # Process every repo that produced normalized findings
     - |
-      for repo_dir in normalized/*; do
-        [ -d "$repo_dir" ] || continue
-        TARGET_REPO_NAME="$(basename "$repo_dir")"
+      for TARGET_REPO_NAME in terragoat kubernetes-goat juice-shop secrets-test secrets-lab; do
+        if [ ! -f "normalized/${TARGET_REPO_NAME}/findings.jsonl" ]; then
+          echo "Skipping ${TARGET_REPO_NAME}: missing normalized/${TARGET_REPO_NAME}/findings.jsonl"
+          continue
+        fi
+
+        if [ ! -f "correlated/${TARGET_REPO_NAME}/incidents.jsonl" ]; then
+          echo "Skipping ${TARGET_REPO_NAME}: missing correlated/${TARGET_REPO_NAME}/incidents.jsonl"
+          continue
+        fi
+
         echo "Processing BigQuery load for ${TARGET_REPO_NAME}"
 
         FINDINGS_GCS="gs://${GCS_BUCKET}/normalized/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/normalized/${TARGET_REPO_NAME}/findings.jsonl"
         INCIDENTS_GCS="gs://${GCS_BUCKET}/correlated/${CI_PROJECT_NAME}/${CI_COMMIT_REF_NAME}/${CI_PIPELINE_ID}/correlated/${TARGET_REPO_NAME}/incidents.jsonl"
 
-        gsutil ls "$FINDINGS_GCS"
-        gsutil ls "$INCIDENTS_GCS"
-      
+        gsutil ls "$FINDINGS_GCS" >/dev/null
+        gsutil ls "$INCIDENTS_GCS" >/dev/null
+
         bq load \
           --replace \
           --source_format=NEWLINE_DELIMITED_JSON \
@@ -341,6 +348,7 @@ load_to_bigquery:
         USING (
           SELECT
             S.*,
+            SAFE_CAST(S.pipeline_id AS INT64) AS pipeline_id_int,
             CURRENT_TIMESTAMP() AS loaded_at
           FROM \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized_staging\` S
         ) S
@@ -373,7 +381,7 @@ load_to_bigquery:
             repo = S.repo,
             branch = S.branch,
             commit_sha = S.commit_sha,
-            pipeline_id = S.pipeline_id,
+            pipeline_id = S.pipeline_id_int,
             scanner_stage = S.scanner_stage,
             timestamp = S.timestamp,
             status = S.status,
@@ -387,112 +395,31 @@ load_to_bigquery:
             mitre_technique = S.mitre_technique,
             compliance_controls = S.compliance_controls,
             last_seen_at = S.loaded_at,
-            last_seen_pipeline_id = S.pipeline_id,
+            last_seen_pipeline_id = S.pipeline_id_int,
             last_seen_commit_sha = S.commit_sha,
             last_seen_branch = S.branch,
             seen_count = COALESCE(T.seen_count, 0) + 1
         WHEN NOT MATCHED THEN
           INSERT (
-            finding_id,
-            tool,
-            tool_finding_id,
-            category,
-            subcategory,
-            severity,
-            confidence,
-            title,
-            description,
-            recommendation,
-            rule_id,
-            rule_name,
-            file_path,
-            line_start,
-            line_end,
-            code_snippet,
-            resource_type,
-            resource_name,
-            resource_namespace,
-            package_name,
-            installed_version,
-            fixed_version,
-            secret_type,
-            vulnerability_id,
-            repo,
-            branch,
-            commit_sha,
-            pipeline_id,
-            scanner_stage,
-            timestamp,
-            status,
-            environment,
-            raw_ref,
-            raw_tool,
-            raw_severity,
-            normalized_version,
-            tags,
-            references,
-            mitre_technique,
-            compliance_controls,
-            first_seen_at,
-            last_seen_at,
-            first_seen_pipeline_id,
-            last_seen_pipeline_id,
-            first_seen_commit_sha,
-            last_seen_commit_sha,
-            first_seen_branch,
-            last_seen_branch,
-            seen_count
+            finding_id, tool, tool_finding_id, category, subcategory, severity, confidence, title,
+            description, recommendation, rule_id, rule_name, file_path, line_start, line_end,
+            code_snippet, resource_type, resource_name, resource_namespace, package_name,
+            installed_version, fixed_version, secret_type, vulnerability_id, repo, branch,
+            commit_sha, pipeline_id, scanner_stage, timestamp, status, environment, raw_ref,
+            raw_tool, raw_severity, normalized_version, tags, references, mitre_technique,
+            compliance_controls, first_seen_at, last_seen_at, first_seen_pipeline_id,
+            last_seen_pipeline_id, first_seen_commit_sha, last_seen_commit_sha,
+            first_seen_branch, last_seen_branch, seen_count
           )
           VALUES (
-            S.finding_id,
-            S.tool,
-            S.tool_finding_id,
-            S.category,
-            S.subcategory,
-            S.severity,
-            S.confidence,
-            S.title,
-            S.description,
-            S.recommendation,
-            S.rule_id,
-            S.rule_name,
-            S.file_path,
-            S.line_start,
-            S.line_end,
-            S.code_snippet,
-            S.resource_type,
-            S.resource_name,
-            S.resource_namespace,
-            S.package_name,
-            S.installed_version,
-            S.fixed_version,
-            S.secret_type,
-            S.vulnerability_id,
-            S.repo,
-            S.branch,
-            S.commit_sha,
-            S.pipeline_id,
-            S.scanner_stage,
-            S.timestamp,
-            S.status,
-            S.environment,
-            S.raw_ref,
-            S.raw_tool,
-            S.raw_severity,
-            S.normalized_version,
-            S.tags,
-            S.references,
-            S.mitre_technique,
-            S.compliance_controls,
-            S.loaded_at,
-            S.loaded_at,
-            S.pipeline_id,
-            S.pipeline_id,
-            S.commit_sha,
-            S.commit_sha,
-            S.branch,
-            S.branch,
-            1
+            S.finding_id, S.tool, S.tool_finding_id, S.category, S.subcategory, S.severity, S.confidence, S.title,
+            S.description, S.recommendation, S.rule_id, S.rule_name, S.file_path, S.line_start, S.line_end,
+            S.code_snippet, S.resource_type, S.resource_name, S.resource_namespace, S.package_name,
+            S.installed_version, S.fixed_version, S.secret_type, S.vulnerability_id, S.repo, S.branch,
+            S.commit_sha, S.pipeline_id_int, S.scanner_stage, S.timestamp, S.status, S.environment, S.raw_ref,
+            S.raw_tool, S.raw_severity, S.normalized_version, S.tags, S.references, S.mitre_technique,
+            S.compliance_controls, S.loaded_at, S.loaded_at, S.pipeline_id_int,
+            S.pipeline_id_int, S.commit_sha, S.commit_sha, S.branch, S.branch, 1
           )
         "
 
@@ -501,6 +428,7 @@ load_to_bigquery:
         USING (
           SELECT
             S.*,
+            SAFE_CAST(S.pipeline_id AS INT64) AS pipeline_id_int,
             CURRENT_TIMESTAMP() AS loaded_at
           FROM \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents_staging\` S
         ) S
@@ -510,7 +438,7 @@ load_to_bigquery:
             repo = S.repo,
             branch = S.branch,
             commit_sha = S.commit_sha,
-            pipeline_id = S.pipeline_id,
+            pipeline_id = S.pipeline_id_int,
             timestamp = S.timestamp,
             summary = S.summary,
             title = S.title,
@@ -526,70 +454,24 @@ load_to_bigquery:
             status = S.status,
             normalized_version = S.normalized_version,
             last_seen_at = S.loaded_at,
-            last_seen_pipeline_id = S.pipeline_id,
+            last_seen_pipeline_id = S.pipeline_id_int,
             last_seen_commit_sha = S.commit_sha,
             last_seen_branch = S.branch,
             seen_count = COALESCE(T.seen_count, 0) + 1
         WHEN NOT MATCHED THEN
           INSERT (
-            incident_id,
-            repo,
-            branch,
-            commit_sha,
-            pipeline_id,
-            timestamp,
-            summary,
-            title,
-            severity,
-            risk_score,
-            confidence,
-            categories,
-            mitre_techniques,
-            related_findings,
-            finding_count,
-            primary_resource,
-            recommended_action,
-            status,
-            normalized_version,
-            first_seen_at,
-            last_seen_at,
-            first_seen_pipeline_id,
-            last_seen_pipeline_id,
-            first_seen_commit_sha,
-            last_seen_commit_sha,
-            first_seen_branch,
-            last_seen_branch,
-            seen_count
+            incident_id, repo, branch, commit_sha, pipeline_id, timestamp, summary, title,
+            severity, risk_score, confidence, categories, mitre_techniques, related_findings,
+            finding_count, primary_resource, recommended_action, status, normalized_version,
+            first_seen_at, last_seen_at, first_seen_pipeline_id, last_seen_pipeline_id,
+            first_seen_commit_sha, last_seen_commit_sha, first_seen_branch, last_seen_branch, seen_count
           )
           VALUES (
-            S.incident_id,
-            S.repo,
-            S.branch,
-            S.commit_sha,
-            S.pipeline_id,
-            S.timestamp,
-            S.summary,
-            S.title,
-            S.severity,
-            S.risk_score,
-            S.confidence,
-            S.categories,
-            S.mitre_techniques,
-            S.related_findings,
-            S.finding_count,
-            S.primary_resource,
-            S.recommended_action,
-            S.status,
-            S.normalized_version,
-            S.loaded_at,
-            S.loaded_at,
-            S.pipeline_id,
-            S.pipeline_id,
-            S.commit_sha,
-            S.commit_sha,
-            S.branch,
-            S.branch,
-            1
+            S.incident_id, S.repo, S.branch, S.commit_sha, S.pipeline_id_int, S.timestamp, S.summary, S.title,
+            S.severity, S.risk_score, S.confidence, S.categories, S.mitre_techniques, S.related_findings,
+            S.finding_count, S.primary_resource, S.recommended_action, S.status, S.normalized_version,
+            S.loaded_at, S.loaded_at, S.pipeline_id_int, S.pipeline_id_int,
+            S.commit_sha, S.commit_sha, S.branch, S.branch, 1
           )
         "
 
@@ -601,7 +483,7 @@ load_to_bigquery:
             repo,
             branch,
             commit_sha,
-            pipeline_id,
+            SAFE_CAST(pipeline_id AS INT64) AS pipeline_id,
             CURRENT_TIMESTAMP() AS loaded_at,
             timestamp AS observed_at,
             severity,
@@ -614,30 +496,12 @@ load_to_bigquery:
         AND T.pipeline_id = S.pipeline_id
         WHEN NOT MATCHED THEN
           INSERT (
-            finding_id,
-            repo,
-            branch,
-            commit_sha,
-            pipeline_id,
-            loaded_at,
-            observed_at,
-            severity,
-            category,
-            tool,
-            status
+            finding_id, repo, branch, commit_sha, pipeline_id, loaded_at,
+            observed_at, severity, category, tool, status
           )
           VALUES (
-            S.finding_id,
-            S.repo,
-            S.branch,
-            S.commit_sha,
-            S.pipeline_id,
-            S.loaded_at,
-            S.observed_at,
-            S.severity,
-            S.category,
-            S.tool,
-            S.status
+            S.finding_id, S.repo, S.branch, S.commit_sha, S.pipeline_id, S.loaded_at,
+            S.observed_at, S.severity, S.category, S.tool, S.status
           )
         "
 
@@ -649,7 +513,7 @@ load_to_bigquery:
             repo,
             branch,
             commit_sha,
-            pipeline_id,
+            SAFE_CAST(pipeline_id AS INT64) AS pipeline_id,
             CURRENT_TIMESTAMP() AS loaded_at,
             timestamp AS observed_at,
             severity,
@@ -661,34 +525,19 @@ load_to_bigquery:
         AND T.pipeline_id = S.pipeline_id
         WHEN NOT MATCHED THEN
           INSERT (
-            incident_id,
-            repo,
-            branch,
-            commit_sha,
-            pipeline_id,
-            loaded_at,
-            observed_at,
-            severity,
-            risk_score,
-            status
+            incident_id, repo, branch, commit_sha, pipeline_id, loaded_at,
+            observed_at, severity, risk_score, status
           )
           VALUES (
-            S.incident_id,
-            S.repo,
-            S.branch,
-            S.commit_sha,
-            S.pipeline_id,
-            S.loaded_at,
-            S.observed_at,
-            S.severity,
-            S.risk_score,
-            S.status
+            S.incident_id, S.repo, S.branch, S.commit_sha, S.pipeline_id, S.loaded_at,
+            S.observed_at, S.severity, S.risk_score, S.status
           )
         "
-        done
+      done
+
     - bq show "${GCP_PROJECT_ID}:${BQ_DATASET}.findings_normalized"
     - bq show "${GCP_PROJECT_ID}:${BQ_DATASET}.incidents"
-      
+
 create_bigquery_views:
   stage: publish
   image: google/cloud-sdk:slim
