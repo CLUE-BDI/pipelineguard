@@ -96,6 +96,10 @@ normalize:
       artifacts: true
   script:
     - ./scripts/run_phase2.sh
+    - echo "Repo: $TARGET_REPO_NAME"
+    - find "outputs/${TARGET_REPO_NAME}" -maxdepth 1 -type f | sort || true
+    - find "normalized/${TARGET_REPO_NAME}" -maxdepth 1 -type f | sort || true
+    - test -f "normalized/${TARGET_REPO_NAME}/findings.jsonl"
   artifacts:
     when: always
     expire_in: 7 days

@@ -10,6 +10,9 @@ from scripts.common import (
     normalized_dir,
 )
 
+from pathlib import Path
+
+
 INPUT_PATH = str(outputs_dir() / "checkov.json")
 OUTPUT_PATH = str(normalized_dir() / "checkov.normalized.jsonl")
 
@@ -60,6 +63,11 @@ def extract_failed_checks(raw):
 
 
 def main() -> None:
+    if not Path(INPUT_PATH).exists():
+        write_jsonl(OUTPUT_PATH, [])
+        print(f"[checkov] Input missing, wrote 0 records to {OUTPUT_PATH}")
+        return
+
     raw = load_json(INPUT_PATH)
     failed_checks = extract_failed_checks(raw)
     records = []

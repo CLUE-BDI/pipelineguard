@@ -8,6 +8,8 @@ from scripts.common import (
     normalized_dir,
 )
 
+from pathlib import Path
+
 INPUT_PATH = str(outputs_dir() / "semgrep.json")
 OUTPUT_PATH = str(normalized_dir() / "semgrep.normalized.jsonl")
 
@@ -30,6 +32,11 @@ def infer_mitre(check_id: str, message: str) -> str | None:
     return None
 
 def main() -> None:
+    if not Path(INPUT_PATH).exists():
+        write_jsonl(OUTPUT_PATH, [])
+        print(f"[semgrep] Input missing, wrote 0 records to {OUTPUT_PATH}")
+        return
+
     raw = load_json(INPUT_PATH)
     findings = raw.get("results", [])
     records = []

@@ -8,10 +8,17 @@ from scripts.common import (
     normalized_dir
 )
 
+from pathlib import Path
+
 INPUT_PATH = str(outputs_dir() / "gitleaks.json")
 OUTPUT_PATH = str(normalized_dir() / "gitleaks.normalized.jsonl")
 
 def main() -> None:
+    if not Path(INPUT_PATH).exists():
+        write_jsonl(OUTPUT_PATH, [])
+        print(f"[gitleaks] Input missing, wrote 0 records to {OUTPUT_PATH}")
+        return
+
     raw = load_json(INPUT_PATH)
     records = []
 

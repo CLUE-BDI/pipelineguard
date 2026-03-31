@@ -15,7 +15,7 @@ CONFIG_INPUT = str(outputs_dir() / "trivy-config.json")
 OUTPUT_PATH = str(normalized_dir() / "trivy.normalized.jsonl")
 
 
-def normalize_vulnerabilities(raw_path: str):
+def normalize_vulnerabilities(raw_path: str):  
     raw = load_json(raw_path)
     records = []
 
@@ -104,14 +104,32 @@ def normalize_misconfigurations(raw_path: str):
 def main() -> None:
     all_records = []
 
-    if Path(FS_INPUT).exists():
-        all_records.extend(normalize_vulnerabilities(FS_INPUT))
+    # Track if any input exists
+    fs_exists = Path(FS_INPUT).exists()
+    config_exists = Path(CONFIG_INPUT).exists()
 
-    if Path(CONFIG_INPUT).exists():
-        all_records.extend(normalize_misconfigurations(CONFIG_INPUT))
+    if not fs_exists and not config_exists:
+        # No inputs at all → write empty file and exit cleanly
+        write_jsonl(OUTPUT_PATH, [])
+        print(f"[trivy] No input files found, wrote 0 records to {OUTPUT_PATH}")
+        return
 
+    # Process inputs safely
+    if fs_exists:
+        try:
+            all_records.extend(normalize_vulnerabilities(FS_INPUT))
+        except Exception as e:
+            print(f"[trivy] Error processing FS_INPUT: {e}")
+
+    if config_exists:
+        try:
+            all_records.extend(normalize_misconfigurations(CONFIG_INPUT))
+        except Exception as e:
+            print(f"[trivy] Error processing CONFIG_INPUT: {e}")
+
+    # ALWAYS write output (even if empty)
     write_jsonl(OUTPUT_PATH, all_records)
-    print(f"Wrote {len(all_records)} records to {OUTPUT_PATH}")
+    print(f"[trivy] Wrote {len(all_records)} records to {OUTPUT_PATH}")
 
 if __name__ == "__main__":
     main()
