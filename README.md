@@ -1,86 +1,123 @@
-# 🚀 PipelineGuard — Multi-Cloud DevSecOps Analytics Platform
+# 🚀 PipelineGuard — Multi-Cloud Security Data Engineering Platform
 
 ## 📌 Overview
 
-**PipelineGuard** is a multi-cloud DevSecOps analytics platform designed to:
+**PipelineGuard** is a **data engineering platform for security analytics**, designed to ingest, transform, and analyze vulnerability data generated across modern CI/CD pipelines.
 
-* Detect vulnerabilities across CI/CD pipelines
-* Normalize and correlate findings across multiple security tools
-* Map findings to MITRE ATT&CK techniques
-* Store and analyze results in a scalable data platform
-* Provide actionable insights via dashboards
+The system transforms raw security scan outputs into a **structured, analytics-ready dataset**, enabling:
 
-It integrates scanning, data engineering, and analytics into a unified pipeline across **AWS, Azure, and GCP**.
+* Cross-tool vulnerability correlation
+* MITRE ATT&CK mapping
+* Risk-based prioritization
+* Scalable analytics and reporting
 
 ---
 
 ## 🏗️ Architecture
 
-The platform is designed using a **multi-cloud execution + centralized data model**:
+PipelineGuard follows a **modern data engineering architecture**:
 
-* **Local Docker** → Development & testing
-* **AWS ECS (Fargate)** → Batch scanning & scheduled execution
-* **Azure AKS** → API, workers, and platform services
-* **GCP (GCS + BigQuery)** → Central analytics and storage
-
-### 🔁 High-Level Flow
-
-```
-Developer → CI/CD → Containers → Scan → Normalize → Correlate
-         → GCS → BigQuery → Views → Dashboard
+```text
+Sources → Ingestion → Processing → Storage → Analytics → Visualization
 ```
 
----
+### Core Principles
 
-## 🧱 Core Components
-
-### 🔹 1. Scanner Layer (Phase 1)
-
-Runs security tools against target repositories:
-
-* Gitleaks (secrets)
-* Trivy (containers + dependencies)
-* Checkov (IaC)
-* Semgrep (code)
-
-📦 Container: `pipelineguard-scanners`
+* Batch-first ingestion
+* Schema standardization (JSONL)
+* Layered data processing
+* Separation of compute and storage
+* Multi-cloud execution with centralized analytics
 
 ---
 
-### 🔹 2. Normalization Layer (Phase 2)
+## 🧱 Data Pipeline
 
-Standardizes outputs into a unified schema:
+### 🔴 1. Data Sources
 
-* JSONL format
-* Common severity model
-* Deterministic finding IDs
+Security tools generate raw findings:
 
-📦 Container: `pipelineguard-runtime`
+* Gitleaks (secrets detection)
+* Trivy (container & dependency vulnerabilities)
+* Checkov (IaC misconfigurations)
+* Semgrep (code-level issues)
+
+Output format:
+
+```json
+Raw JSON scan results
+```
 
 ---
 
-### 🔹 3. Correlation Engine (Phase 5)
+### 🟠 2. Ingestion Layer
+
+PipelineGuard orchestrates ingestion via:
+
+* Docker containers (local development)
+* AWS ECS (batch execution)
+* Azure AKS (workers & services)
+* CI/CD pipelines (GitLab)
+
+Output:
+
+```text
+Raw findings stored as JSON artifacts
+```
+
+---
+
+### 🔵 3. Processing Layer
+
+The core data engineering pipeline consists of:
+
+#### ✅ Normalization
+
+* Converts tool-specific outputs into a unified schema
+* Produces JSONL records
+* Standardizes severity and metadata
+
+#### ✅ Enrichment
+
+* Maps findings to MITRE ATT&CK
+* Adds contextual metadata
+* Enhances classification
+
+#### ✅ Correlation
 
 * Groups findings into incidents
-* Maps to **MITRE ATT&CK**
-* Calculates risk scores
-* Deduplicates overlapping signals
+* Deduplicates signals across tools
+* Applies risk scoring
+
+Output:
+
+```text
+Normalized + Correlated JSONL datasets
+```
 
 ---
 
-### 🔹 4. Data Platform (GCP)
+### 🟢 4. Storage Layer
 
-#### Storage
+#### Data Lake (GCS)
 
-* **GCS Bucket**: `pipelineguard-artifacts`
+* Stores raw and processed artifacts
+* Structure:
 
-  * raw/
-  * normalized/
-  * correlated/
+```text
+gs://pipelineguard-artifacts/
+  ├── raw/
+  ├── normalized/
+  └── correlated/
+```
 
-#### Analytics
+#### Data Warehouse (BigQuery)
 
-* **BigQuery Dataset**: `pipelineguard_analytics`
+Dataset:
+
+```text
+pipelineguard_analytics
+```
 
 Tables:
 
@@ -88,95 +125,80 @@ Tables:
 * `incidents`
 * `correlated_findings`
 
-Views:
-
-* 24 analytical views (MITRE, severity, trends, risk)
-
-Dashboard:
-
-* **Looker Studio**
+Data is loaded from GCS using batch load jobs.
 
 ---
 
-## ☁️ Multi-Cloud Deployment
+### 🟣 5. Analytics Layer
 
-### 🟠 AWS (ECS Fargate)
+#### SQL Modeling
 
-* Batch scan execution
-* Scheduled runs via EventBridge
-* Blue/Green deployment via CodeDeploy
-* Container registry: ECR
+* 24 analytical views
+* MITRE mapping
+* Severity trends
+* Risk scoring
+* Incident aggregation
+
+#### Visualization
+
+* Looker Studio dashboards
+* Real-time exploration of security posture
 
 ---
 
-### 🔵 Azure (AKS)
+## ☁️ Multi-Cloud Execution
 
-* API services (FastAPI)
-* Background workers
+### AWS (ECS Fargate)
+
+* Batch processing layer
+* Scheduled ingestion jobs
+* Blue/Green deployments
+
+### Azure (AKS)
+
+* API and worker services
+* Distributed processing
 * Blue/Green cluster strategy
-* Container registry: ACR
+
+### GCP
+
+* Data lake (GCS)
+* Data warehouse (BigQuery)
+* Analytics (Looker Studio)
 
 ---
 
-### 🟢 GCP
+## 🐳 Containerized Architecture
 
-* GCS for artifact storage
-* BigQuery for analytics
-* Looker Studio for visualization
-
----
-
-## 🔄 Blue/Green Deployment Strategy
-
-### AWS ECS
-
-* Two environments: **BLUE / GREEN**
-* Managed by **CodeDeploy**
-* Traffic shifted via ALB
-
-### Azure AKS
-
-* Two clusters: **AKS-BLUE / AKS-GREEN**
-* Traffic managed via:
-
-  * Azure Front Door / App Gateway / DNS
-* Zero-downtime deployments
-
----
-
-## 🐳 Containerization
-
-### Images
-
-| Image                    | Purpose                        |
-| ------------------------ | ------------------------------ |
-| `pipelineguard-scanners` | Security scanning tools        |
-| `pipelineguard-runtime`  | Normalize, correlate, validate |
-| `gcp-jobs` (optional)    | BigQuery + GCS operations      |
+| Component                | Description                       |
+| ------------------------ | --------------------------------- |
+| `pipelineguard-scanners` | Data ingestion (scan execution)   |
+| `pipelineguard-runtime`  | Data transformation + correlation |
+| `gcp-jobs`               | Data loading & SQL execution      |
 
 ---
 
 ## ⚙️ CI/CD Pipeline
 
-Implemented using **GitLab CI/CD**
+Pipeline stages:
 
-### Stages
+```text
+Build → Ingest → Normalize → Correlate → Validate → Load → Transform → Deploy
+```
 
-1. **Build**
-2. **Scan**
-3. **Normalize**
-4. **Correlate**
-5. **Validate**
-6. **Publish Artifacts**
-7. **Load to BigQuery**
-8. **Apply Views**
-9. **Deploy (AWS + Azure)**
+CI/CD handles:
+
+* Container builds
+* Data pipeline execution
+* BigQuery loading
+* View generation
+* Multi-cloud deployment
 
 ---
 
-## 🗂️ Repository Structure
+## 🗂️ Project Structure
 
-```
+```text
 pipelineguard/
 │
 ├── scripts/
@@ -184,14 +206,10 @@ pipelineguard/
 │   ├── run_phase2.sh
 │   ├── normalize_*.py
 │   ├── correlate_findings.py
-│   ├── validate_findings.py
-│   └── validate_correlation.py
+│   └── validate_*.py
 │
 ├── sql/
 │   └── views/
-│       ├── 01_incident_categories_v.sql
-│       ├── ...
-│       └── 24_*.sql
 │
 ├── outputs/
 ├── normalized/
@@ -202,110 +220,93 @@ pipelineguard/
 ├── .gitlab-ci.yml
 │
 └── terraform/
-    ├── modules/
-    └── environments/
 ```
 
 ---
 
 ## 🛠️ Local Development
 
-### Build containers
+### Build images
 
 ```bash
 docker build -f Dockerfile.scanners -t pipelineguard-scanners .
 docker build -f Dockerfile.runtime -t pipelineguard-runtime .
 ```
 
-### Run scanning
+### Run ingestion
 
 ```bash
 docker run --rm -it \
   -v "$PWD:/app" \
   -e TARGET_REPO_NAME=terragoat \
-  -e TARGET_REPO_PATH=/app/vulnerable-repos/terragoat \
   pipelineguard-scanners \
   bash -lc './scripts/run_phase1.sh'
 ```
 
-### Run normalization & correlation
+### Run processing
 
 ```bash
 docker run --rm -it \
   -v "$PWD:/app" \
-  -e TARGET_REPO_NAME=terragoat \
   pipelineguard-runtime \
   bash -lc './scripts/run_phase2.sh && uv run python -m scripts.correlate_findings'
 ```
 
 ---
 
-## 📊 Data Flow
+## 📊 Data Flow Summary
 
-```
-Scanners → JSON → Normalized JSONL → Correlated JSONL
-        → GCS → BigQuery → Views → Dashboard
+```text
+Security Tools → JSON → Normalize → Enrich → Correlate
+              → GCS → BigQuery → Views → Dashboard
 ```
 
 ---
 
-## 🔐 Security & Secrets
+## 🔐 Security
 
-* AWS: Secrets Manager
-* Azure: Key Vault
-* GCP: Service Account
+* AWS Secrets Manager
+* Azure Key Vault
+* GCP Service Accounts
 
-Environment variable:
-
-```bash
-GOOGLE_APPLICATION_CREDENTIALS=/path/to/key.json
-```
+Credentials are injected at runtime.
 
 ---
 
 ## 📈 Future Enhancements
 
-* Real-time streaming (Kafka / Kinesis)
-* Automated remediation (Lambda / Functions)
-* ML-based risk scoring
-* SBOM integration (Syft/Grype)
-* Policy engine (OPA/Rego)
+* Streaming ingestion (Kafka / Kinesis)
+* ML-based anomaly detection
+* Automated remediation workflows
+* Data quality validation layer
+* Real-time dashboards
 
 ---
 
-## 🎯 Key Features
+## 🎯 Key Data Engineering Concepts
 
-* Multi-cloud execution
-* Unified vulnerability schema
-* MITRE ATT&CK mapping
-* Risk-based prioritization
-* Scalable analytics with BigQuery
-* Blue/Green zero-downtime deployment
+* Batch data pipelines
+* Schema normalization
+* Data lake + warehouse architecture
+* Multi-cloud compute
+* Analytical modeling (SQL views)
+* Observability & validation
 
 ---
 
 ## 👤 Author
 
 **Md Hasan**
-Cloud Platform Security | DevSecOps | Data Engineering
-
----
-
-## 📄 License
-
-MIT License (or specify as needed)
+Cloud Platform Security | Data Engineering | DevSecOps
 
 ---
 
 ## ⭐ Summary
 
-PipelineGuard combines:
+PipelineGuard demonstrates how **security telemetry can be transformed into a scalable data platform**, enabling:
 
-* DevSecOps scanning
-* Data engineering pipelines
-* Multi-cloud deployment
-* Advanced analytics
-
-into a **single, production-grade security intelligence platform**.
+* Unified visibility across tools
+* Data-driven risk prioritization
+* Enterprise-grade analytics
 
 ---
