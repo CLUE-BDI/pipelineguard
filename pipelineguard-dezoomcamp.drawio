@@ -1,0 +1,70 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Page-1" id="wnvbU-IIBA4X3ERRIzDW">
+    <mxGraphModel dx="1619" dy="1374" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+      <root>
+        <mxCell id="3hbKWXpWb3xlno1mbGmc-0" />
+        <mxCell id="3hbKWXpWb3xlno1mbGmc-1" parent="3hbKWXpWb3xlno1mbGmc-0" />
+        <mxCell id="ZwPo4dMBsSLs8uQqx6gn-1" parent="3hbKWXpWb3xlno1mbGmc-1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e51400;strokeColor=#B20000;fontColor=#ffffff;" value="" vertex="1">
+          <mxGeometry height="453" width="240" y="217" as="geometry" />
+        </mxCell>
+        <mxCell id="ZwPo4dMBsSLs8uQqx6gn-2" parent="3hbKWXpWb3xlno1mbGmc-1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="60" width="120" x="600" y="217" as="geometry" />
+        </mxCell>
+        <mxCell id="ZwPo4dMBsSLs8uQqx6gn-3" parent="3hbKWXpWb3xlno1mbGmc-1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="60" width="120" x="440" y="217" as="geometry" />
+        </mxCell>
+        <mxCell id="ZwPo4dMBsSLs8uQqx6gn-4" parent="3hbKWXpWb3xlno1mbGmc-1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="380" width="240" x="270" y="217" as="geometry" />
+        </mxCell>
+        <mxCell id="ZwPo4dMBsSLs8uQqx6gn-5" parent="3hbKWXpWb3xlno1mbGmc-1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="400" width="230" x="870" y="207" as="geometry" />
+        </mxCell>
+        <mxCell id="ZwPo4dMBsSLs8uQqx6gn-6" parent="3hbKWXpWb3xlno1mbGmc-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;div&gt;Data Sources&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="240" y="225" as="geometry" />
+        </mxCell>
+        <mxCell id="ZwPo4dMBsSLs8uQqx6gn-7" parent="3hbKWXpWb3xlno1mbGmc-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Ingestion Layer" vertex="1">
+          <mxGeometry height="30" width="60" x="300" y="177" as="geometry" />
+        </mxCell>
+        <mxCell id="ZwPo4dMBsSLs8uQqx6gn-8" parent="3hbKWXpWb3xlno1mbGmc-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Processing Layer" vertex="1">
+          <mxGeometry height="30" width="60" x="480" y="177" as="geometry" />
+        </mxCell>
+        <mxCell id="ZwPo4dMBsSLs8uQqx6gn-9" parent="3hbKWXpWb3xlno1mbGmc-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Storage Layer" vertex="1">
+          <mxGeometry height="30" width="60" x="640" y="177" as="geometry" />
+        </mxCell>
+        <mxCell id="ZwPo4dMBsSLs8uQqx6gn-10" parent="3hbKWXpWb3xlno1mbGmc-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Analytics &amp;amp; Consumption" vertex="1">
+          <mxGeometry height="30" width="60" x="955" y="177" as="geometry" />
+        </mxCell>
+        <mxCell id="ZwPo4dMBsSLs8uQqx6gn-16" parent="3hbKWXpWb3xlno1mbGmc-1" style="swimlane;whiteSpace=wrap;html=1;startSize=53;" value="Security Scan Sources" vertex="1">
+          <mxGeometry height="310" width="205" x="15" y="267" as="geometry" />
+        </mxCell>
+        <mxCell id="ZwPo4dMBsSLs8uQqx6gn-11" parent="ZwPo4dMBsSLs8uQqx6gn-16" style="text;html=1;whiteSpace=wrap;strokeColor=#996185;fillColor=#e6d0de;align=center;verticalAlign=middle;rounded=0;strokeWidth=3;gradientColor=#d5739d;" value="&lt;div style=&quot;line-height: 60%;&quot;&gt;&lt;font style=&quot;line-height: 60%; font-size: 32px;&quot;&gt;Gitleaks&lt;/font&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="50" width="150" x="20" y="74" as="geometry" />
+        </mxCell>
+        <mxCell id="ZwPo4dMBsSLs8uQqx6gn-14" parent="ZwPo4dMBsSLs8uQqx6gn-16" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Checkov" vertex="1">
+          <mxGeometry height="50" width="60" x="20" y="261" as="geometry" />
+        </mxCell>
+        <mxCell id="ZwPo4dMBsSLs8uQqx6gn-15" parent="ZwPo4dMBsSLs8uQqx6gn-16" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Semgrep" vertex="1">
+          <mxGeometry height="50" width="60" x="20" y="202" as="geometry" />
+        </mxCell>
+        <mxCell id="ZwPo4dMBsSLs8uQqx6gn-22" parent="3hbKWXpWb3xlno1mbGmc-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Raw JSON Findings" vertex="1">
+          <mxGeometry height="30" width="150" x="600" y="660" as="geometry" />
+        </mxCell>
+        <mxCell id="ZwPo4dMBsSLs8uQqx6gn-23" parent="3hbKWXpWb3xlno1mbGmc-1" style="swimlane;whiteSpace=wrap;html=1;" value="PipelineGuard Scanner Jobs&lt;br&gt;(Docker / ECS / AKS)" vertex="1">
+          <mxGeometry height="200" width="200" x="290" y="277" as="geometry" />
+        </mxCell>
+        <mxCell id="ZwPo4dMBsSLs8uQqx6gn-24" parent="3hbKWXpWb3xlno1mbGmc-1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Batch Ingestion (CI/CD / Scheduled)" vertex="1">
+          <mxGeometry height="30" width="60" x="350" y="367" as="geometry" />
+        </mxCell>
+        <mxCell id="ZwPo4dMBsSLs8uQqx6gn-26" parent="3hbKWXpWb3xlno1mbGmc-1" style="rounded=1;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="100" width="1000" x="40" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="ZwPo4dMBsSLs8uQqx6gn-29" parent="3hbKWXpWb3xlno1mbGmc-1" style="line;strokeWidth=2;html=1;" value="" vertex="1">
+          <mxGeometry height="10" width="160" x="37.5" y="255" as="geometry" />
+        </mxCell>
+        <mxCell id="ZwPo4dMBsSLs8uQqx6gn-30" parent="3hbKWXpWb3xlno1mbGmc-1" style="text;html=1;whiteSpace=wrap;strokeColor=#996185;fillColor=#e6d0de;align=center;verticalAlign=middle;rounded=0;strokeWidth=3;gradientColor=#d5739d;" value="Trivy" vertex="1">
+          <mxGeometry height="50" width="150" x="140" y="740" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
