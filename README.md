@@ -1,7 +1,7 @@
 # 🚀 PipelineGuard — Multi-Cloud Security Data Engineering Platform
 
 <p align="center">
-  <img src="docs/images/pipelineguard-architecture.png" width="100%">
+  <img src="./docs/images/pipelineguard-dezoomcamp.drawio.png" width="100%">
 </p>
 
 <p align="center">
