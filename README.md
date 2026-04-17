@@ -59,7 +59,7 @@ Raw JSON scan results
 
 Output:
 
-```text
+```json
 Raw scan artifacts (JSON)
 ```
 ---
@@ -83,7 +83,7 @@ Raw scan artifacts (JSON)
 
 Output:
 
-```text
+```json
 Normalized + Correlated JSONL datasets
 ```
 
@@ -96,7 +96,7 @@ Normalized + Correlated JSONL datasets
 * Stores raw and processed artifacts
 * Structure:
 
-```text
+```json
 gs://pipelineguard-artifacts/
   ├── raw/
   ├── normalized/
@@ -107,7 +107,7 @@ gs://pipelineguard-artifacts/
 
 Dataset:
 
-```text
+```json
 pipelineguard_analytics
 ```
 
@@ -118,16 +118,6 @@ Tables:
 * `correlated_findings`
 
 Data is loaded from GCS using batch load jobs.
-
----
-
-
-Tables:
-- findings_normalized  
-- incidents  
-- correlated_findings  
-
-Data is loaded from GCS using batch ingestion jobs.
 
 ---
 
@@ -150,25 +140,9 @@ Data is loaded from GCS using batch ingestion jobs.
 
 | Cloud | Role |
 |------|------|
-| **AWS ECS (Fargate)** | Batch compute for scanning & processing |
-| **Azure AKS** | API layer + distributed workers |
-| **GCP** | Data lake (GCS) + Data warehouse (BigQuery) + Analytics |
-
----
-
-## 🔄 Blue/Green Deployment
-
-### AWS ECS
-- Blue/Green deployments via CodeDeploy  
-- Traffic managed via Application Load Balancer  
-
-### Azure AKS
-- Dual cluster strategy (Blue / Green)  
-- Traffic switching via:
-  - Azure Front Door  
-  - Application Gateway / DNS  
-
----
+| **AWS ECS (Fargate)** | Batch compute for scanning & processing | [Future Enhancements] |
+| **Azure AKS** | API layer + distributed workers | [Future Enhancements] |
+| **GCP** | Data lake (GCS) + Data warehouse (BigQuery) + Analytics | [MVP] |
 
 ## 🐳 Containerized Components
 
@@ -205,6 +179,9 @@ Responsibilities:
 ```text
 pipelineguard/
 │
+.
+.
+.
 ├── scripts/
 │   ├── run_phase1.sh
 │   ├── run_phase2.sh
@@ -228,43 +205,10 @@ pipelineguard/
 │ │ └── pipelineguard-architecture.png
 │ └── diagrams/
 │ └── pipelineguard-architecture.drawio
-│
-└── terraform/
-├── modules/
-└── environments/
+.
+.
+.
 ```
-
----
-
-## 🛠️ Local Development
-
-### Build images
-
-```bash
-docker build -f Dockerfile.scanners -t pipelineguard-scanners .
-docker build -f Dockerfile.runtime -t pipelineguard-runtime .
-```
-
-### Run ingestion
-
-```bash
-docker run --rm -it \
-  -v "$PWD:/app" \
-  -e TARGET_REPO_NAME=terragoat \
-  pipelineguard-scanners \
-  bash -lc './scripts/run_phase1.sh'
-```
-
-### Run processing
-
-```bash
-docker run --rm -it \
-  -v "$PWD:/app" \
-  pipelineguard-runtime \
-  bash -lc './scripts/run_phase2.sh && uv run python -m scripts.correlate_findings'
-```
-
----
 
 ## 📊 Data Flow Summary
 
@@ -300,17 +244,15 @@ GOOGLE_APPLICATION_CREDENTIALS=/path/to/key.json
 * Automated remediation workflows
 * SBOM integration (Syft / Grype)
 * Policy-as-code (OPA / Rego)
-
----
+* Multi-cloud compute separation
 
 ## 🎯 Key Data Engineering Concepts
 
-Batch data pipelines
-Schema normalization (JSON → JSONL)
-Data lake + warehouse architecture
-Multi-cloud compute separation
-SQL-based analytical modeling
-Data validation and observability
+* Batch data pipelines
+* Schema normalization (JSON → JSONL)
+* Data lake + warehouse architecture
+* SQL-based analytical modeling
+* Data validation and observability
 
 ---
 
