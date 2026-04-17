@@ -4,3 +4,4 @@ vulnerable-repos/
 bin/grype
 bin/syft
 .mailmap
+.mailmap
