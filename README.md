@@ -277,7 +277,7 @@ Security Tools → JSON → Normalize → Enrich → Correlate
 
 ## 🔧 Architecture Diagram Source
 
-👉 [Edit in draw.io](https://app.diagrams.net/?url=https://gitlab.com/datatalks.club/pipelineguard/-/blob/pipelineguard-arch-mvp/docs/diagrams/pipelineguard-dezoomcamp.drawio)
+👉 [Edit in draw.io](https://app.diagrams.net/?url=https://gitlab.com/datatalks.club/pipelineguard/-/raw/pipelineguard-arch-mvp/docs/diagrams/pipelineguard-dezoomcamp.drawio)
 
 ---
 
