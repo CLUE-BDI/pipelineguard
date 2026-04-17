@@ -30,6 +30,7 @@ PipelineGuard ingests data from intentionally vulnerable open-source repositorie
 These repositories act as **data sources** for the pipeline and enable end-to-end testing of ingestion, normalization, correlation, and analytics.
 
 These repositories simulate heterogeneous upstream data sources in a production data pipeline.
+
 ---
 
 ### 🔴 Infrastructure as Code (IaC)
