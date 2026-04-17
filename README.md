@@ -1,5 +1,9 @@
 # 🚀 PipelineGuard — Multi-Cloud Security Data Engineering Platform
 
+## 📊 Live Dashboard
+
+👉 https://datastudio.google.com/u/1/reporting/fb711dfb-2354-42b9-9d7e-62464853ce48/page/F4TtF
+
 <p align="center">
   <img src="./docs/images/pipelineguard-dezoomcamp.drawio.png" width="100%">
 </p>
@@ -22,6 +26,71 @@ It converts raw security scan outputs into **structured, analytics-ready dataset
 - Scalable analytics and reporting  
 
 ---
+
+## 📊 Live Dashboard (Visualization)
+
+<p align="center">
+  <a href="https://datastudio.google.com/u/1/reporting/fb711dfb-2354-42b9-9d7e-62464853ce48/page/F4TtF" target="_blank">
+    <img src="https://img.shields.io/badge/View-Dashboard-blue?style=for-the-badge&logo=googleanalytics" />
+  </a>
+</p>
+
+PipelineGuard includes a live analytics dashboard built using **Looker Studio (Google Data Studio)**.
+
+👉 **Access the dashboard:**
+https://datastudio.google.com/u/1/reporting/fb711dfb-2354-42b9-9d7e-62464853ce48/page/F4TtF
+
+---
+
+### 📈 Dashboard Highlights
+
+The dashboard provides insights across the full data pipeline:
+
+#### 🧭 Executive Overview
+
+* Total findings
+* Critical & high severity issues
+* Secret exposure count
+* Top repositories by risk
+
+#### 📊 Findings Analysis
+
+* Findings by severity
+* Findings by tool (Gitleaks, Trivy, Checkov, Semgrep)
+* Findings by category (IaC, K8s, secrets, code)
+
+#### ⚠️ Incident Analysis
+
+* Correlated incidents
+* Risk scoring per repository
+* Incident trends over time
+
+#### 🧠 MITRE ATT&CK Coverage
+
+* Findings mapped to MITRE techniques
+* Coverage distribution across attack categories
+
+---
+
+### 🔄 Data Pipeline Behind the Dashboard
+
+```text
+Security Tools → Normalize → Correlate → GCS → BigQuery → SQL Views → Looker Studio
+```
+
+---
+
+### 🧠 Purpose
+
+This dashboard demonstrates:
+
+* End-to-end data pipeline execution
+* Analytical modeling using BigQuery
+* Real-time visualization of security data
+* Data-driven risk prioritization
+
+---
+
 
 ## 🧪 Vulnerable Data Sources (Test Repositories)
 
