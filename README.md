@@ -23,6 +23,96 @@ It converts raw security scan outputs into **structured, analytics-ready dataset
 
 ---
 
+## 🧪 Vulnerable Data Sources (Test Repositories)
+
+PipelineGuard ingests data from intentionally vulnerable open-source repositories to simulate real-world security scenarios across multiple domains.
+
+These repositories act as **data sources** for the pipeline and enable end-to-end testing of ingestion, normalization, correlation, and analytics.
+
+These repositories simulate heterogeneous upstream data sources in a production data pipeline.
+---
+
+### 🔴 Infrastructure as Code (IaC)
+
+* 🔗 https://github.com/bridgecrewio/terragoat
+
+  * Terraform misconfigurations
+  * Used to test **Checkov** and IaC scanning
+
+---
+
+### ☸️ Kubernetes Security
+
+* 🔗 https://github.com/madhuakula/kubernetes-goat
+
+  * Vulnerable Kubernetes manifests
+  * Used to test **k8s misconfiguration detection**
+
+---
+
+### 🧾 Application Security
+
+* 🔗 https://github.com/juice-shop/juice-shop
+
+  * OWASP Juice Shop (intentionally vulnerable web app)
+  * Used to test **Semgrep and code analysis**
+
+---
+
+### 🔐 Secrets Detection
+
+* 🔗 https://github.com/gitleaks/gitleaks/tree/master/testdata
+
+  * Embedded secrets across multiple formats
+  * Used to test **Gitleaks secret detection**
+
+---
+
+### 🧪 Custom Multi-Layer Test Dataset
+
+* 📁 `vulnerable-repos/secrets-lab/`
+
+  * Combined dataset including:
+
+    * `.env` files (credentials)
+    * Terraform configs
+    * Kubernetes YAML
+    * Application code
+  * Designed to simulate **real enterprise data pipelines**
+
+---
+
+## 📊 How These Fit Into the Data Pipeline
+
+```text
+Vulnerable Repos → Scan Tools → JSON Output
+                 → Normalize → Correlate → Store → Analyze
+```
+
+Each repository contributes different **signal types**:
+
+| Repo               | Signal Type   | Tool            |
+| ------------------ | ------------- | --------------- |
+| Terragoat          | IaC Misconfig | Checkov         |
+| Kubernetes Goat    | K8s Misconfig | Checkov / Trivy |
+| Juice Shop         | Code Issues   | Semgrep         |
+| Gitleaks Test Data | Secrets       | Gitleaks        |
+| Secrets Lab        | Mixed         | All Tools       |
+
+---
+
+## 🎯 Purpose
+
+These datasets enable:
+
+* Multi-source data ingestion
+* Cross-domain correlation
+* Realistic security analytics
+* Validation of data engineering pipelines
+
+---
+
+
 ## 🏗️ Architecture
 
 PipelineGuard follows a **modern batch-oriented data pipeline architecture**:
