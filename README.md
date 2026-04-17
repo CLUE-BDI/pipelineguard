@@ -1,5 +1,7 @@
 # 🚀 PipelineGuard — Multi-Cloud Security Data Engineering Platform
 
+> ⚠️ Note: This is a sanitized public version. Full pipeline and vulnerable test cases are available in GitLab.
+
 <p align="center">
   <img src="./docs/images/pipelineguard-dezoomcamp.drawio.png" width="100%">
 </p>
@@ -390,6 +392,49 @@ Security Tools → JSON → Normalize → Enrich → Correlate
 Environment variable:
 
 GOOGLE_APPLICATION_CREDENTIALS=/path/to/key.json
+
+---
+
+## 📊 Pipeline Overview
+
+Below is a sample execution of the PipelineGuard CI/CD pipeline running in GitLab:
+
+![PipelineGuard GitLab Pipeline](./docs/images/pipelineingithub.png)
+
+---
+
+## 🚀 Project Setup
+
+This repository contains the **public-safe version** of PipelineGuard for demonstration and portfolio purposes.
+
+### 🔒 Full Implementation
+
+The complete project, including:
+- Vulnerable test repositories
+- Full CI/CD pipeline configurations
+- Security scanning integrations (Gitleaks, Trivy, Checkov, etc.)
+
+is hosted on GitLab:
+
+👉 https://gitlab.com/datatalks.club/pipelineguard
+
+---
+
+## ⚙️ Pipeline Execution
+
+All CI/CD pipelines are executed in **GitLab**, where the full DevSecOps workflow is implemented:
+
+- Scan → Normalize → Correlate → Validate → Publish
+- Results exported to GCS and loaded into BigQuery
+- Detection rules and threshold checks applied
+- Artifacts published for downstream analysis
+
+---
+
+## 🧠 Notes
+
+- This GitHub repository excludes intentionally vulnerable components for security reasons.
+- It is intended for **architecture review, code walkthrough, and portfolio presentation**.
 
 ---
 
