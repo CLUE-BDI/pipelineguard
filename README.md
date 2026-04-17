@@ -312,26 +312,6 @@ Data is loaded from GCS using batch load jobs.
 
 ---
 
-## ⚙️ CI/CD Pipeline
-
-Implemented using **GitLab CI/CD**
-
-### Stages
-
-```text
-Build → Ingest → Normalize → Correlate → Validate → Load → Transform → Deploy
-```
-
-Responsibilities:
-- Build and push containers  
-- Execute data pipelines  
-- Upload artifacts to GCS  
-- Load data into BigQuery  
-- Apply SQL views  
-- Deploy to AWS & Azure  
-
----
-
 ## 🗂️ Project Structure
 
 ```text
@@ -395,11 +375,24 @@ GOOGLE_APPLICATION_CREDENTIALS=/path/to/key.json
 
 ---
 
-## 📊 Pipeline Overview
+
+## ⚙️ CI/CD Pipeline
+
+Implemented using **GitLab CI/CD**
+
+### Stages
 
 Below is a sample execution of the PipelineGuard CI/CD pipeline running in GitLab:
 
 ![PipelineGuard GitLab Pipeline](./docs/images/pipelineingithub.png)
+
+Responsibilities:
+- Build and push containers  
+- Execute data pipelines  
+- Upload artifacts to GCS  
+- Load data into BigQuery  
+- Apply SQL views  
+- Deploy to AWS & Azure  
 
 ---
 
