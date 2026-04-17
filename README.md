@@ -1,9 +1,5 @@
 # 🚀 PipelineGuard — Multi-Cloud Security Data Engineering Platform
 
-## 📊 Live Dashboard
-
-👉 https://datastudio.google.com/u/1/reporting/fb711dfb-2354-42b9-9d7e-62464853ce48/page/F4TtF
-
 <p align="center">
   <img src="./docs/images/pipelineguard-dezoomcamp.drawio.png" width="100%">
 </p>
@@ -381,7 +377,7 @@ Security Tools → JSON → Normalize → Enrich → Correlate
 
 ## 🔧 Architecture Diagram Source
 
-👉 [Edit in draw.io](https://app.diagrams.net/?url=https://gitlab.com/datatalks.club/pipelineguard/-/raw/pipelineguard-arch-mvp/docs/diagrams/pipelineguard-dezoomcamp.drawio)
+👉 [Edit in draw.io](https://app.diagrams.net/?url=https://gitlab.com/datatalks.club/pipelineguard/-/raw/main/docs/diagrams/pipelineguard-dezoomcamp.drawio)
 
 ---
 
