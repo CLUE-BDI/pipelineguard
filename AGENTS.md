@@ -1,1 +1,1 @@
-regularly commit and push code to git
+regularly commit code to git
