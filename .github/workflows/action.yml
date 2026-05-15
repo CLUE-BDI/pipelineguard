@@ -569,6 +569,8 @@ jobs:
     name: Load to BigQuery
     runs-on: ubuntu-latest
     needs: export_to_gcs
+    outputs:
+      skipped: ${{ steps.load.outputs.skipped }}
     steps:
       - name: Checkout PipelineGuard
         uses: actions/checkout@v4
@@ -590,6 +592,7 @@ jobs:
         uses: google-github-actions/setup-gcloud@v2
 
       - name: Load into BigQuery
+        id: load
         run: |
           if bq ls "${GCP_PROJECT_ID}:${BQ_DATASET}" >/dev/null 2>&1; then
             echo "Dataset already exists: ${BQ_DATASET}"
@@ -604,11 +607,13 @@ jobs:
 
           if ! gsutil ls "$FINDINGS_GCS" >/dev/null 2>&1; then
             echo "Skipping ${TARGET_REPO_NAME}: missing findings in GCS"
+            echo "skipped=true" >> $GITHUB_OUTPUT
             exit 0
           fi
 
           if ! gsutil ls "$INCIDENTS_GCS" >/dev/null 2>&1; then
             echo "Skipping ${TARGET_REPO_NAME}: missing incidents in GCS"
+            echo "skipped=true" >> $GITHUB_OUTPUT
             exit 0
           fi
 
@@ -771,6 +776,7 @@ jobs:
           "
 
       - name: Verify BigQuery tables
+        if: steps.load.outputs.skipped != 'true'
         run: |
           bq show "${GCP_PROJECT_ID}:${BQ_DATASET}.findings_normalized"
           bq show "${GCP_PROJECT_ID}:${BQ_DATASET}.incidents"
@@ -779,6 +785,7 @@ jobs:
     name: Create BigQuery views
     runs-on: ubuntu-latest
     needs: load_to_bigquery
+    if: needs.load_to_bigquery.outputs.skipped != 'true'
     steps:
       - name: Checkout PipelineGuard
         uses: actions/checkout@v4
