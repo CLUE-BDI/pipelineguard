@@ -15,12 +15,10 @@ on:
         required: false
         type: string
         description: The GCS bucket to export to
-        default: "pipelineguard-artifacts"
       gcp_project_id:
         required: false
         type: string
         description: The GCP Project ID
-        default: "datawarehouse-486704"
 
 env:
   UV_PYTHON: "3.12"
@@ -28,8 +26,8 @@ env:
   MAX_HIGH: "999999"
   FAIL_ON_SECRET: "true"
   TARGET_BASE_DIR: "${{ github.workspace }}/vulnerable-repos"
-  GCP_PROJECT_ID: "${{ inputs.gcp_project_id || 'datawarehouse-486704' }}"
-  GCS_BUCKET: "${{ inputs.gcs_bucket || 'pipelineguard-artifacts' }}"
+  GCP_PROJECT_ID: "${{ inputs.gcp_project_id || secrets.GCP_PROJECT_ID }}"
+  GCS_BUCKET: "${{ inputs.gcs_bucket }}"
   BQ_DATASET: "pipelineguard_analytics"
   BQ_FINDINGS_TABLE: "findings_normalized"
   BQ_INCIDENTS_TABLE: "incidents"
