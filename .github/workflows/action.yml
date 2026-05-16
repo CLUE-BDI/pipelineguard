@@ -91,7 +91,7 @@ jobs:
       - name: Debug target repository
         run: |
           echo "TARGET_REPO_NAME=${{ inputs.target_repo_name }}"
-          echo "TARGET_REPO_PATH=${{ inputs.target_repo_PATH }}"
+          echo "TARGET_REPO_PATH=${{ inputs.target_repo_path }}"
           test -n "$TARGET_REPO_NAME"
           test -n "$TARGET_REPO_PATH"
           test -d "$TARGET_REPO_PATH"
@@ -610,21 +610,16 @@ jobs:
           FINDINGS_GCS=$(gsutil ls "gs://${GCS_BUCKET}/normalized/${{ github.event.repository.name }}/${{ github.ref_name }}/${{ github.run_id }}/**/findings.jsonl" | head -n 1)
           INCIDENTS_GCS=$(gsutil ls "gs://${GCS_BUCKET}/correlated/${{ github.event.repository.name }}/${{ github.ref_name }}/${{ github.run_id }}/**/incidents.jsonl" | head -n 1)
 
-<<<<<<< HEAD
           HAS_FINDINGS=false
-          if gsutil ls "$FINDINGS_GCS" >/dev/null 2>&1; then
+          if [ -n "$FINDINGS_GCS" ] && gsutil ls "$FINDINGS_GCS" >/dev/null 2>&1; then
             HAS_FINDINGS=true
             echo "Found findings in GCS: $FINDINGS_GCS"
-          else
-            echo "No findings found in GCS: $FINDINGS_GCS"
           fi
 
           HAS_INCIDENTS=false
-          if gsutil ls "$INCIDENTS_GCS" >/dev/null 2>&1; then
+          if [ -n "$INCIDENTS_GCS" ] && gsutil ls "$INCIDENTS_GCS" >/dev/null 2>&1; then
             HAS_INCIDENTS=true
             echo "Found incidents in GCS: $INCIDENTS_GCS"
-          else
-            echo "No incidents found in GCS: $INCIDENTS_GCS"
           fi
 
           if [ "$HAS_FINDINGS" = "false" ] && [ "$HAS_INCIDENTS" = "false" ]; then
@@ -635,20 +630,6 @@ jobs:
 
           echo "skipped=false" >> $GITHUB_OUTPUT
           echo "Processing BigQuery load for ${TARGET_REPO_NAME}"
-=======
-          if [ -z "$FINDINGS_GCS" ]; then
-            echo "Skipping ${TARGET_REPO_NAME}: missing findings in GCS"
-            exit 0
-          fi
-
-          if [ -z "$INCIDENTS_GCS" ]; then
-            echo "Skipping ${TARGET_REPO_NAME}: missing incidents in GCS"
-            exit 0
-          fi
-
-          echo "Found findings at: $FINDINGS_GCS"
-          echo "Found incidents at: $INCIDENTS_GCS"
->>>>>>> 4e21bbf (Search for findings)
 
           if [ "$HAS_FINDINGS" = "true" ]; then
             bq load \
@@ -668,7 +649,7 @@ jobs:
               "$INCIDENTS_GCS"
           fi
 
-          # Ensure target tables exist
+          # Ensure target tables exist with proper schema
           bq query --use_legacy_sql=false "
           CREATE TABLE IF NOT EXISTS \
             \\`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized\\` ( \
