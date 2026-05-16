@@ -91,7 +91,7 @@ jobs:
       - name: Debug target repository
         run: |
           echo "TARGET_REPO_NAME=${{ inputs.target_repo_name }}"
-          echo "TARGET_REPO_PATH=${{ inputs.target_repo_path }}"
+          echo "TARGET_REPO_PATH=${{ inputs.target_repo_PATH }}"
           test -n "$TARGET_REPO_NAME"
           test -n "$TARGET_REPO_PATH"
           test -d "$TARGET_REPO_PATH"
@@ -561,9 +561,10 @@ jobs:
 
       - name: Copy artifacts to GCS
         run: |
-          gsutil -m cp -r outputs "gs://${GCS_BUCKET}/raw/${{ github.event.repository.name }}/${{ github.ref_name }}/${{ github.run_id }}/"
-          gsutil -m cp -r normalized "gs://${GCS_BUCKET}/normalized/${{ github.event.repository.name }}/${{ github.ref_name }}/${{ github.run_id }}/"
-          gsutil -m cp -r correlated "gs://${GCS_BUCKET}/correlated/${{ github.event.repository.name }}/${{ github.ref_name }}/${{ github.run_id }}/"
+          # Robust copy: copy contents to avoid nested folders
+          gsutil -m cp -r outputs/* "gs://${GCS_BUCKET}/raw/${{ github.event.repository.name }}/${{ github.ref_name }}/${{ github.run_id }}/" || true
+          gsutil -m cp -r normalized/* "gs://${GCS_BUCKET}/normalized/${{ github.event.repository.name }}/${{ github.ref_name }}/${{ github.run_id }}/" || true
+          gsutil -m cp -r correlated/* "gs://${GCS_BUCKET}/correlated/${{ github.event.repository.name }}/${{ github.ref_name }}/${{ github.run_id }}/" || true
 
   load_to_bigquery:
     name: Load to BigQuery
@@ -602,9 +603,14 @@ jobs:
           fi
 
           TARGET_REPO_NAME="${{ inputs.target_repo_name }}"
-          FINDINGS_GCS="gs://${GCS_BUCKET}/normalized/${{ github.event.repository.name }}/${{ github.ref_name }}/${{ github.run_id }}/normalized/${TARGET_REPO_NAME}/findings.jsonl"
-          INCIDENTS_GCS="gs://${GCS_BUCKET}/correlated/${{ github.event.repository.name }}/${{ github.ref_name }}/${{ github.run_id }}/correlated/${TARGET_REPO_NAME}/incidents.jsonl"
+          
+          echo "Searching for artifacts in GCS..."
+          
+          # Use wildcards to find findings and incidents regardless of exact directory nesting
+          FINDINGS_GCS=$(gsutil ls "gs://${GCS_BUCKET}/normalized/${{ github.event.repository.name }}/${{ github.ref_name }}/${{ github.run_id }}/**/findings.jsonl" | head -n 1)
+          INCIDENTS_GCS=$(gsutil ls "gs://${GCS_BUCKET}/correlated/${{ github.event.repository.name }}/${{ github.ref_name }}/${{ github.run_id }}/**/incidents.jsonl" | head -n 1)
 
+<<<<<<< HEAD
           HAS_FINDINGS=false
           if gsutil ls "$FINDINGS_GCS" >/dev/null 2>&1; then
             HAS_FINDINGS=true
@@ -629,6 +635,20 @@ jobs:
 
           echo "skipped=false" >> $GITHUB_OUTPUT
           echo "Processing BigQuery load for ${TARGET_REPO_NAME}"
+=======
+          if [ -z "$FINDINGS_GCS" ]; then
+            echo "Skipping ${TARGET_REPO_NAME}: missing findings in GCS"
+            exit 0
+          fi
+
+          if [ -z "$INCIDENTS_GCS" ]; then
+            echo "Skipping ${TARGET_REPO_NAME}: missing incidents in GCS"
+            exit 0
+          fi
+
+          echo "Found findings at: $FINDINGS_GCS"
+          echo "Found incidents at: $INCIDENTS_GCS"
+>>>>>>> 4e21bbf (Search for findings)
 
           if [ "$HAS_FINDINGS" = "true" ]; then
             bq load \
