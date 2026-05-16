@@ -1,0 +1,50 @@
+name: 'Setup PipelineGuard Environment'
+description: 'Installs dependencies and sets environment variables'
+inputs:
+  target_repo_name:
+    description: 'The name of the target repository'
+    required: true
+  target_repo_path:
+    description: 'The path to the target repository'
+    required: true
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Python 3.12
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install runtime dependencies
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y curl git jq ca-certificates gnupg wget build-essential findutils
+        curl -LsSf https://astral.sh/uv/install.sh | sh
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
+        export PATH="$HOME/.local/bin:$PATH"
+        uv sync
+        export GITLEAKS_VERSION="8.30.0"
+        wget -O gitleaks.tar.gz "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+        tar -xzf gitleaks.tar.gz
+        sudo install -m 0755 gitleaks /usr/local/bin/gitleaks
+        gitleaks version
+        wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | gpg --dearmor > /tmp/trivy.gpg
+        sudo install -m 0644 /tmp/trivy.gpg /usr/share/keyrings/trivy.gpg
+        echo "deb [signed-by=/usr/share/keyrings/trivy.gpg] https://aquasecurity.github.io/trivy-repo/deb bookworm main" | sudo tee /etc/apt/sources.list.d/trivy.list
+        sudo apt-get update
+        sudo apt-get install -y trivy
+        trivy --version
+        mkdir -p outputs normalized correlated .trivycache
+        chmod +x scripts/*.sh || true
+
+    - name: Set PipelineGuard environment
+      shell: bash
+      run: |
+        echo "TARGET_REPO_NAME=${{ inputs.target_repo_name }}" >> $GITHUB_ENV
+        echo "TARGET_REPO_PATH=${{ inputs.target_repo_path }}" >> $GITHUB_ENV
+        echo "PG_REPO=${{ inputs.target_repo_name }}" >> $GITHUB_ENV
+        echo "PG_BRANCH=${{ github.ref_name }}" >> $GITHUB_ENV
+        echo "PG_COMMIT_SHA=${{ github.sha }}" >> $GITHUB_ENV
+        echo "PG_PIPELINE_ID=${{ github.run_id }}" >> $GITHUB_ENV
+        echo "PG_ENVIRONMENT=ci" >> $GITHUB_ENV
