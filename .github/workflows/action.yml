@@ -93,8 +93,6 @@ jobs:
       - name: Checkout target repository
         uses: actions/checkout@v4
         with:
-          repository: ${{ github.repository_owner }}/${{ inputs.target_repo_name }}
-          token: ${{ secrets.PIPELINEGUARD_PAT }}
           path: ${{ inputs.target_repo_path }}
 
       - name: Setup PipelineGuard
@@ -139,8 +137,6 @@ jobs:
       - name: Checkout target repository
         uses: actions/checkout@v4
         with:
-          repository: ${{ github.repository_owner }}/${{ inputs.target_repo_name }}
-          token: ${{ secrets.PIPELINEGUARD_PAT }}
           path: ${{ inputs.target_repo_path }}
 
       - name: Setup PipelineGuard
@@ -181,8 +177,6 @@ jobs:
       - name: Checkout target repository
         uses: actions/checkout@v4
         with:
-          repository: ${{ github.repository_owner }}/${{ inputs.target_repo_name }}
-          token: ${{ secrets.PIPELINEGUARD_PAT }}
           path: ${{ inputs.target_repo_path }}
 
       - name: Setup PipelineGuard
@@ -229,8 +223,6 @@ jobs:
       - name: Checkout target repository
         uses: actions/checkout@v4
         with:
-          repository: ${{ github.repository_owner }}/${{ inputs.target_repo_name }}
-          token: ${{ secrets.PIPELINEGUARD_PAT }}
           path: ${{ inputs.target_repo_path }}
 
       - name: Setup PipelineGuard
@@ -277,8 +269,6 @@ jobs:
       - name: Checkout target repository
         uses: actions/checkout@v4
         with:
-          repository: ${{ github.repository_owner }}/${{ inputs.target_repo_name }}
-          token: ${{ secrets.PIPELINEGUARD_PAT }}
           path: ${{ inputs.target_repo_path }}
 
       - name: Setup PipelineGuard
@@ -327,8 +317,6 @@ jobs:
       - name: Checkout target repository
         uses: actions/checkout@v4
         with:
-          repository: ${{ github.repository_owner }}/${{ inputs.target_repo_name }}
-          token: ${{ secrets.PIPELINEGUARD_PAT }}
           path: ${{ inputs.target_repo_path }}
 
       - name: Download validate findings artifacts
@@ -377,8 +365,6 @@ jobs:
       - name: Checkout target repository
         uses: actions/checkout@v4
         with:
-          repository: ${{ github.repository_owner }}/${{ inputs.target_repo_name }}
-          token: ${{ secrets.PIPELINEGUARD_PAT }}
           path: ${{ inputs.target_repo_path }}
 
       - name: Download published artifacts
@@ -418,8 +404,6 @@ jobs:
       - name: Checkout target repository
         uses: actions/checkout@v4
         with:
-          repository: ${{ github.repository_owner }}/${{ inputs.target_repo_name }}
-          token: ${{ secrets.PIPELINEGUARD_PAT }}
           path: ${{ inputs.target_repo_path }}
 
       - name: Authenticate to Google Cloud
@@ -659,8 +643,6 @@ jobs:
       - name: Checkout target repository
         uses: actions/checkout@v4
         with:
-          repository: ${{ github.repository_owner }}/${{ inputs.target_repo_name }}
-          token: ${{ secrets.PIPELINEGUARD_PAT }}
           path: ${{ inputs.target_repo_path }}
 
       - name: Authenticate to Google Cloud
