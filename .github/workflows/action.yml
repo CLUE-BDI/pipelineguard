@@ -381,10 +381,22 @@ jobs:
 
       - name: Copy artifacts to GCS
         run: |
+          echo "=== DEBUG INFO ==="
+          echo "Target Bucket: ${GCS_BUCKET}"
+          echo "Repo Name: ${{ github.event.repository.name }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Run ID: ${{ github.run_id }}"
+          echo "Raw Path: gs://${GCS_BUCKET}/raw/${{ github.event.repository.name }}/${{ github.ref_name }}/${{ github.run_id }}/"
+          echo "=================="
+
           # Robust copy: copy contents to avoid nested folders
           gsutil -m cp -r outputs/* "gs://${GCS_BUCKET}/raw/${{ github.event.repository.name }}/${{ github.ref_name }}/${{ github.run_id }}/"
           gsutil -m cp -r normalized/* "gs://${GCS_BUCKET}/normalized/${{ github.event.repository.name }}/${{ github.ref_name }}/${{ github.run_id }}/"
           gsutil -m cp -r correlated/* "gs://${GCS_BUCKET}/correlated/${{ github.event.repository.name }}/${{ github.ref_name }}/${{ github.run_id }}/"
+          
+          echo "=== VERIFICATION ==="
+          gsutil ls "gs://${GCS_BUCKET}/raw/${{ github.event.repository.name }}/${{ github.ref_name }}/${{ github.run_id }}/" || echo "Failed to list raw"
+          gsutil ls "gs://${GCS_BUCKET}/normalized/${{ github.event.repository.name }}/${{ github.ref_name }}/${{ github.run_id }}/" || echo "Failed to list normalized"
 
   load_to_bigquery:
     name: Load to BigQuery
