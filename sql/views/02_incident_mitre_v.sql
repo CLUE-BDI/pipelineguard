@@ -14,4 +14,4 @@ SELECT
   status,
   mitre_technique
 FROM `${GCP_PROJECT_ID}.${BQ_DATASET}.incidents`,
-UNNEST(mitre_techniques) AS mitre_technique;
+UNNEST(JSON_EXTRACT_STRING_ARRAY(mitre_techniques)) AS mitre_technique;

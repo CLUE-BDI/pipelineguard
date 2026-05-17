@@ -14,4 +14,4 @@ SELECT
   status,
   category
 FROM `${GCP_PROJECT_ID}.${BQ_DATASET}.incidents`,
-UNNEST(categories) AS category;
+UNNEST(JSON_EXTRACT_STRING_ARRAY(categories)) AS category;
