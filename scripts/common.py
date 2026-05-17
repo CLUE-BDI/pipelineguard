@@ -65,9 +65,12 @@ def ensure_parent(path: str) -> None:
     Path(path).parent.mkdir(parents=True, exist_ok=True)
 
 def write_jsonl(path: str, records: Iterable[Dict[str, Any]]) -> None:
+    records_list = list(records)
+    if not records_list:
+        return
     ensure_parent(path)
     with open(path, "w", encoding="utf-8") as f:
-        for r in records:
+        for r in records_list:
             f.write(json.dumps(r, ensure_ascii=False) + "\n")
 
 def read_jsonl(path: str) -> List[Dict[str, Any]]:
