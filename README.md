@@ -28,7 +28,7 @@ It converts raw security scan outputs into **structured, analytics-ready dataset
 ## 📊 Live Dashboard (Visualization)
 
 <p align="center">
-  <a href="https://datastudio.google.com/u/1/reporting/fb711dfb-2354-42b9-9d7e-62464853ce48/page/F4TtF" target="_blank">
+  <a href="https://datastudio.google.com/reporting/ff3831fe-285a-48bb-9083-e52df6721c00" target="_blank">
     <img src="https://img.shields.io/badge/View-Dashboard-blue?style=for-the-badge&logo=googleanalytics" />
   </a>
 </p>
@@ -36,7 +36,7 @@ It converts raw security scan outputs into **structured, analytics-ready dataset
 PipelineGuard includes a live analytics dashboard built using **Looker Studio (Google Data Studio)**.
 
 👉 **Access the dashboard:**
-https://datastudio.google.com/u/1/reporting/fb711dfb-2354-42b9-9d7e-62464853ce48/page/F4TtF
+https://datastudio.google.com/reporting/ff3831fe-285a-48bb-9083-e52df6721c00
 
 ---
 
@@ -359,7 +359,7 @@ Security Tools → JSON → Normalize → Enrich → Correlate
 
 ## 🔧 Architecture Diagram Source
 
-👉 [Edit in draw.io](https://app.diagrams.net/?url=https://gitlab.com/datatalks.club/pipelineguard/-/raw/main/docs/diagrams/pipelineguard-dezoomcamp.drawio)
+👉 [Edit in draw.io](https://app.diagrams.net/?url=https://raw.githubusercontent.com/CLUE-BDI/pipelineguard/main/docs/diagrams/pipelineguard-dezoomcamp.drawio)
 
 ---
 
@@ -407,9 +407,9 @@ The complete project, including:
 - Full CI/CD pipeline configurations
 - Security scanning integrations (Gitleaks, Trivy, Checkov, etc.)
 
-is hosted on GitLab:
+is hosted on GitHub:
 
-👉 https://gitlab.com/datatalks.club/pipelineguard
+👉 https://github.com/CLUE-BDI/pipelineguard
 
 ---
 
