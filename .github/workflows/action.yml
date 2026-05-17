@@ -546,8 +546,8 @@ jobs:
               pipeline_id = S.pipeline_id_int, scanner_stage = S.scanner_stage, timestamp = S.timestamp, \
               status = S.status, environment = S.environment, raw_ref = S.raw_ref, \
               raw_tool = S.raw_tool, raw_severity = S.raw_severity, normalized_version = S.normalized_version, \
-              tags = S.tags, references = S.references, mitre_technique = S.mitre_technique, \
-              compliance_controls = S.compliance_controls, last_seen_at = S.loaded_at, \
+              tags = TO_JSON_STRING(S.tags), references = TO_JSON_STRING(S.references), mitre_technique = S.mitre_technique, \
+              compliance_controls = TO_JSON_STRING(S.compliance_controls), last_seen_at = S.loaded_at, \
               last_seen_pipeline_id = S.pipeline_id_int, last_seen_commit_sha = S.commit_sha, \
               last_seen_branch = S.branch, seen_count = COALESCE(T.seen_count, 0) + 1 \
             WHEN NOT MATCHED THEN INSERT ( \
@@ -567,7 +567,7 @@ jobs:
               S.fixed_version, S.secret_type, S.vulnerability_id, S.repo, S.branch, \
               S.commit_sha, S.pipeline_id_int, S.scanner_stage, S.timestamp, S.status, \
               S.environment, S.raw_ref, S.raw_tool, S.raw_severity, S.normalized_version, \
-              S.tags, S.references, S.mitre_technique, S.compliance_controls, S.loaded_at, \
+              TO_JSON_STRING(S.tags), TO_JSON_STRING(S.references), S.mitre_technique, TO_JSON_STRING(S.compliance_controls), S.loaded_at, \
               S.loaded_at, S.pipeline_id_int, S.pipeline_id_int, S.commit_sha, S.commit_sha, \
               S.branch, S.branch, 1 )
             "
@@ -596,8 +596,8 @@ jobs:
               repo = S.repo, branch = S.branch, commit_sha = S.commit_sha, \
               pipeline_id = S.pipeline_id_int, timestamp = S.timestamp, summary = S.summary, \
               title = S.title, severity = S.severity, risk_score = S.risk_score, confidence = S.confidence, \
-              categories = S.categories, mitre_techniques = S.mitre_techniques, \
-              related_findings = S.related_findings, finding_count = S.finding_count, \
+              categories = TO_JSON_STRING(S.categories), mitre_techniques = TO_JSON_STRING(S.mitre_techniques), \
+              related_findings = TO_JSON_STRING(S.related_findings), finding_count = S.finding_count, \
               primary_resource = S.primary_resource, recommended_action = S.recommended_action, \
               status = S.status, normalized_version = S.normalized_version, \
               last_seen_at = S.loaded_at, last_seen_pipeline_id = S.pipeline_id_int, \
@@ -611,8 +611,8 @@ jobs:
               first_seen_commit_sha, last_seen_commit_sha, first_seen_branch, last_seen_branch, \
               seen_count ) VALUES ( \
               S.incident_id, S.repo, S.branch, S.commit_sha, S.pipeline_id_int, S.timestamp, \
-              S.summary, S.title, S.severity, S.risk_score, S.confidence, S.categories, \
-              S.mitre_techniques, S.related_findings, S.finding_count, S.primary_resource, \
+              S.summary, S.title, S.severity, S.risk_score, S.confidence, TO_JSON_STRING(S.categories), \
+              TO_JSON_STRING(S.mitre_techniques), TO_JSON_STRING(S.related_findings), S.finding_count, S.primary_resource, \
               S.recommended_action, S.status, S.normalized_version, S.loaded_at, S.loaded_at, \
               S.pipeline_id_int, S.pipeline_id_int, S.commit_sha, S.commit_sha, S.branch, \
               S.branch, 1 )
