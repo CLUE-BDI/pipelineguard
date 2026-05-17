@@ -164,7 +164,7 @@ jobs:
   validate_findings:
     name: Validate findings ${{ inputs.target_repo_name }}
     runs-on: ubuntu-latest
-    needs: normalize
+    needs: correlate
     steps:
       - name: Checkout PipelineGuard
         uses: actions/checkout@v4
@@ -183,10 +183,10 @@ jobs:
           target_repo_name: ${{ inputs.target_repo_name }}
           target_repo_path: ${{ inputs.target_repo_path }}
 
-      - name: Download normalize artifacts
+      - name: Download correlate artifacts
         uses: actions/download-artifact@v4
         with:
-          name: normalized-${{ inputs.target_repo_name }}
+          name: correlated-${{ inputs.target_repo_name }}
           path: .
 
       - name: Run validate findings
@@ -256,7 +256,7 @@ jobs:
   threshold_check:
     name: Threshold check ${{ inputs.target_repo_name }}
     runs-on: ubuntu-latest
-    needs: normalize
+    needs: correlate
     steps:
       - name: Checkout PipelineGuard
         uses: actions/checkout@v4
@@ -275,10 +275,10 @@ jobs:
           target_repo_name: ${{ inputs.target_repo_name }}
           target_repo_path: ${{ inputs.target_repo_path }}
 
-      - name: Download normalize artifacts
+      - name: Download correlate artifacts
         uses: actions/download-artifact@v4
         with:
-          name: normalized-${{ inputs.target_repo_name }}
+          name: correlated-${{ inputs.target_repo_name }}
           path: .
 
       - name: Run threshold check
