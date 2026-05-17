@@ -482,7 +482,7 @@ jobs:
           # Ensure target tables exist
           bq query --use_legacy_sql=false "
           CREATE TABLE IF NOT EXISTS \
-            \\`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized\\` ( \
+            \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized\` ( \
               finding_id STRING, tool STRING, tool_finding_id STRING, category STRING, subcategory STRING, \
               severity STRING, confidence STRING, title STRING, description STRING, recommendation STRING, \
               rule_id STRING, rule_name STRING, file_path STRING, line_start INT64, line_end INT64, \
@@ -499,7 +499,7 @@ jobs:
 
           bq query --use_legacy_sql=false "
           CREATE TABLE IF NOT EXISTS \
-            \\`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents\\` ( \
+            \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents\` ( \
               incident_id STRING, repo STRING, branch STRING, commit_sha STRING, pipeline_id INT64, \
               timestamp TIMESTAMP, summary STRING, title STRING, severity STRING, risk_score INT64, \
               confidence STRING, categories STRING, mitre_techniques STRING, related_findings STRING, \
@@ -512,7 +512,7 @@ jobs:
 
           bq query --use_legacy_sql=false "
           CREATE TABLE IF NOT EXISTS \
-            \\`${GCP_PROJECT_ID}.${BQ_DATASET}.finding_observations\\` ( \
+            \`${GCP_PROJECT_ID}.${BQ_DATASET}.finding_observations\` ( \
               finding_id STRING, repo STRING, branch STRING, commit_sha STRING, pipeline_id INT64, \
               loaded_at TIMESTAMP, observed_at TIMESTAMP, severity STRING, category STRING, tool STRING, status STRING \
             ) PARTITION BY DATE(loaded_at)
@@ -520,7 +520,7 @@ jobs:
 
           bq query --use_legacy_sql=false "
           CREATE TABLE IF NOT EXISTS \
-            \\`${GCP_PROJECT_ID}.${BQ_DATASET}.incident_observations\\` ( \
+            \`${GCP_PROJECT_ID}.${BQ_DATASET}.incident_observations\` ( \
               incident_id STRING, repo STRING, branch STRING, commit_sha STRING, pipeline_id INT64, \
               loaded_at TIMESTAMP, observed_at TIMESTAMP, severity STRING, risk_score INT64, status STRING \
             ) PARTITION BY DATE(loaded_at)
@@ -528,9 +528,9 @@ jobs:
 
           if [ "$HAS_FINDINGS" = "true" ]; then
             bq query --use_legacy_sql=false "
-            MERGE \\`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized\\` T \
+            MERGE \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized\` T \
             USING (SELECT S.*, SAFE_CAST(S.pipeline_id AS INT64) AS pipeline_id_int, CURRENT_TIMESTAMP() AS loaded_at \
-                   FROM \\`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized_staging\\` S) S \
+                   FROM \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized_staging\` S) S \
             ON T.finding_id = S.finding_id \
             WHEN MATCHED THEN UPDATE SET \
               tool = S.tool, tool_finding_id = S.tool_finding_id, category = S.category, \
@@ -573,10 +573,10 @@ jobs:
             "
 
             bq query --use_legacy_sql=false "
-            MERGE \\`${GCP_PROJECT_ID}.${BQ_DATASET}.finding_observations\\` T \
+            MERGE \`${GCP_PROJECT_ID}.${BQ_DATASET}.finding_observations\` T \
             USING (SELECT finding_id, repo, branch, commit_sha, SAFE_CAST(pipeline_id AS INT64) AS pipeline_id, \
                      CURRENT_TIMESTAMP() AS loaded_at, timestamp AS observed_at, severity, category, tool, status \
-                   FROM \\`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized_staging\\`) S \
+                   FROM \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized_staging\`) S \
             ON T.finding_id = S.finding_id AND T.pipeline_id = S.pipeline_id \
             WHEN NOT MATCHED THEN INSERT ( \
               finding_id, repo, branch, commit_sha, pipeline_id, loaded_at, observed_at, severity, category, tool, status \
@@ -588,9 +588,9 @@ jobs:
 
           if [ "$HAS_INCIDENTS" = "true" ]; then
             bq query --use_legacy_sql=false "
-            MERGE \\`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents\\` T \
+            MERGE \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents\` T \
             USING (SELECT S.*, SAFE_CAST(S.pipeline_id AS INT64) AS pipeline_id_int, CURRENT_TIMESTAMP() AS loaded_at \
-                   FROM \\`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents_staging\\` S) S \
+                   FROM \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents_staging\` S) S \
             ON T.incident_id = S.incident_id \
             WHEN MATCHED THEN UPDATE SET \
               repo = S.repo, branch = S.branch, commit_sha = S.commit_sha, \
@@ -619,10 +619,10 @@ jobs:
             "
 
             bq query --use_legacy_sql=false "
-            MERGE \\`${GCP_PROJECT_ID}.${BQ_DATASET}.incident_observations\\` T \
+            MERGE \`${GCP_PROJECT_ID}.${BQ_DATASET}.incident_observations\` T \
             USING (SELECT incident_id, repo, branch, commit_sha, SAFE_CAST(pipeline_id AS INT64) AS pipeline_id, \
                      CURRENT_TIMESTAMP() AS loaded_at, timestamp AS observed_at, severity, risk_score, status \
-                   FROM \\`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents_staging\\`) S \
+                   FROM \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents_staging\`) S \
             ON T.incident_id = S.incident_id AND T.pipeline_id = S.pipeline_id \
             WHEN NOT MATCHED THEN INSERT ( \
               incident_id, repo, branch, commit_sha, pipeline_id, loaded_at, observed_at, severity, risk_score, status \
