@@ -382,9 +382,9 @@ jobs:
       - name: Copy artifacts to GCS
         run: |
           # Robust copy: copy contents to avoid nested folders
-          gsutil -m cp -r outputs/* "gs://${GCS_BUCKET}/raw/${{ github.event.repository.name }}/${{ github.ref_name }}/${{ github.run_id }}/" || true
-          gsutil -m cp -r normalized/* "gs://${GCS_BUCKET}/normalized/${{ github.event.repository.name }}/${{ github.ref_name }}/${{ github.run_id }}/" || true
-          gsutil -m cp -r correlated/* "gs://${GCS_BUCKET}/correlated/${{ github.event.repository.name }}/${{ github.ref_name }}/${{ github.run_id }}/" || true
+          gsutil -m cp -r outputs/* "gs://${GCS_BUCKET}/raw/${{ github.event.repository.name }}/${{ github.ref_name }}/${{ github.run_id }}/"
+          gsutil -m cp -r normalized/* "gs://${GCS_BUCKET}/normalized/${{ github.event.repository.name }}/${{ github.ref_name }}/${{ github.run_id }}/"
+          gsutil -m cp -r correlated/* "gs://${GCS_BUCKET}/correlated/${{ github.event.repository.name }}/${{ github.ref_name }}/${{ github.run_id }}/"
 
   load_to_bigquery:
     name: Load to BigQuery
