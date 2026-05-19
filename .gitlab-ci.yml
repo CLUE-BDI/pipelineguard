@@ -80,7 +80,7 @@ cache:
 .multi_repo_matrix: &multi_repo_matrix
   parallel:
     matrix:
-      - TARGET_REPO_NAME: ["terragoat", "kubernetes-goat", "juice-shop", "secrets-test", "secrets-lab"]
+      - TARGET_REPO_NAME: ["terragoat", "kubernetes-goat", "juice-shop", "secrets-test", "secrets-lab", "global-tracker-spark"]
 
 scan:
   stage: scan
@@ -254,7 +254,7 @@ load_to_bigquery:
       fi
 
     - |
-      for TARGET_REPO_NAME in terragoat kubernetes-goat juice-shop secrets-test secrets-lab; do
+      for TARGET_REPO_NAME in terragoat kubernetes-goat juice-shop secrets-test secrets-lab global-tracker-spark; do
         if ! gsutil ls "$FINDINGS_GCS" >/dev/null 2>&1; then
           echo "Skipping ${TARGET_REPO_NAME}: missing findings in GCS"
           continue
