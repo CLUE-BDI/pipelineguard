@@ -1,0 +1,37 @@
+name: Centralized PipelineGuard Scheduled Scan
+
+on:
+  schedule:
+    - cron: '0 2 * * *' # Runs at 2:00 AM UTC every day
+  workflow_dispatch: # Allows manual trigger
+
+jobs:
+  scan-clue-bdi-portfolio:
+    name: Scan clue-bdi-portfolio
+    uses: CLUE-BDI/pipelineguard/.github/workflows/action.yml@main
+    with:
+      target_repo_name: 'clue-bdi-portfolio'
+      target_repository: 'CLUE-BDI/clue-bdi-portfolio'
+      target_repo_path: 'clue-bdi-portfolio'
+      gcs_bucket: 'pipelineguard-artifacts'
+    secrets: inherit
+
+  scan-blue-green-gateway:
+    name: Scan blue-green-gateway
+    uses: CLUE-BDI/pipelineguard/.github/workflows/action.yml@main
+    with:
+      target_repo_name: 'blue-green-gateway'
+      target_repository: 'CLUE-BDI/blue-green-gateway'
+      target_repo_path: 'blue-green-gateway'
+      gcs_bucket: 'pipelineguard-artifacts'
+    secrets: inherit
+
+  scan-pipelineguard:
+    name: Scan pipelineguard
+    uses: CLUE-BDI/pipelineguard/.github/workflows/action.yml@main
+    with:
+      target_repo_name: 'pipelineguard'
+      target_repository: 'CLUE-BDI/pipelineguard'
+      target_repo_path: 'pipelineguard'
+      gcs_bucket: 'pipelineguard-artifacts'
+    secrets: inherit
