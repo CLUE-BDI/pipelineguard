@@ -35,3 +35,13 @@ jobs:
       target_repo_path: 'pipelineguard'
       gcs_bucket: 'portfolio-cluebdi'
     secrets: inherit
+
+  scan-global-tracker-spark:
+    name: Scan global-tracker-spark
+    uses: CLUE-BDI/pipelineguard/.github/workflows/action.yml@main
+    with:
+      target_repo_name: 'global-tracker-spark'
+      target_repository: 'CLUE-BDI/global-tracker-spark'
+      target_repo_path: 'global-tracker-spark'
+      gcs_bucket: 'portfolio-cluebdi'
+    secrets: inherit
