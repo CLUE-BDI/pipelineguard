@@ -484,12 +484,15 @@ jobs:
           echo "skipped=false" >> $GITHUB_OUTPUT
           echo "Processing BigQuery load for ${TARGET_REPO_NAME}"
 
+          # Clean repo name for valid BQ table suffix (replace hyphens with underscores)
+          STAGING_SUFFIX=$(echo "${TARGET_REPO_NAME}" | tr '-' '_')
+
           if [ "$HAS_FINDINGS" = "true" ]; then
             bq load \
               --replace \
               --source_format=NEWLINE_DELIMITED_JSON \
               --autodetect \
-              "${GCP_PROJECT_ID}:${BQ_DATASET}.findings_normalized_staging" \
+              "${GCP_PROJECT_ID}:${BQ_DATASET}.findings_normalized_staging_${STAGING_SUFFIX}" \
               "$FINDINGS_GCS"
           fi
 
@@ -498,7 +501,7 @@ jobs:
               --replace \
               --source_format=NEWLINE_DELIMITED_JSON \
               --autodetect \
-              "${GCP_PROJECT_ID}:${BQ_DATASET}.incidents_staging" \
+              "${GCP_PROJECT_ID}:${BQ_DATASET}.incidents_staging_${STAGING_SUFFIX}" \
               "$INCIDENTS_GCS"
           fi
 
@@ -553,7 +556,7 @@ jobs:
             bq query --use_legacy_sql=false "
             MERGE \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized\` T \
             USING (SELECT S.*, SAFE_CAST(S.pipeline_id AS INT64) AS pipeline_id_int, CURRENT_TIMESTAMP() AS loaded_at \
-                   FROM \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized_staging\` S) S \
+                   FROM \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized_staging_${STAGING_SUFFIX}\` S) S \
             ON T.finding_id = S.finding_id \
             WHEN MATCHED THEN UPDATE SET \
               tool = S.tool, tool_finding_id = S.tool_finding_id, category = S.category, \
@@ -599,7 +602,7 @@ jobs:
             MERGE \`${GCP_PROJECT_ID}.${BQ_DATASET}.finding_observations\` T \
             USING (SELECT finding_id, repo, branch, commit_sha, SAFE_CAST(pipeline_id AS INT64) AS pipeline_id, \
                      CURRENT_TIMESTAMP() AS loaded_at, timestamp AS observed_at, severity, category, tool, status \
-                   FROM \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized_staging\`) S \
+                   FROM \`${GCP_PROJECT_ID}.${BQ_DATASET}.findings_normalized_staging_${STAGING_SUFFIX}\`) S \
             ON T.finding_id = S.finding_id AND T.pipeline_id = S.pipeline_id \
             WHEN NOT MATCHED THEN INSERT ( \
               finding_id, repo, branch, commit_sha, pipeline_id, loaded_at, observed_at, severity, category, tool, status \
@@ -613,7 +616,7 @@ jobs:
             bq query --use_legacy_sql=false "
             MERGE \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents\` T \
             USING (SELECT S.*, SAFE_CAST(S.pipeline_id AS INT64) AS pipeline_id_int, CURRENT_TIMESTAMP() AS loaded_at \
-                   FROM \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents_staging\` S) S \
+                   FROM \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents_staging_${STAGING_SUFFIX}\` S) S \
             ON T.incident_id = S.incident_id \
             WHEN MATCHED THEN UPDATE SET \
               repo = S.repo, branch = S.branch, commit_sha = S.commit_sha, \
@@ -645,7 +648,7 @@ jobs:
             MERGE \`${GCP_PROJECT_ID}.${BQ_DATASET}.incident_observations\` T \
             USING (SELECT incident_id, repo, branch, commit_sha, SAFE_CAST(pipeline_id AS INT64) AS pipeline_id, \
                      CURRENT_TIMESTAMP() AS loaded_at, timestamp AS observed_at, severity, risk_score, status \
-                   FROM \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents_staging\`) S \
+                   FROM \`${GCP_PROJECT_ID}.${BQ_DATASET}.incidents_staging_${STAGING_SUFFIX}\`) S \
             ON T.incident_id = S.incident_id AND T.pipeline_id = S.pipeline_id \
             WHEN NOT MATCHED THEN INSERT ( \
               incident_id, repo, branch, commit_sha, pipeline_id, loaded_at, observed_at, severity, risk_score, status \
@@ -654,6 +657,10 @@ jobs:
               S.severity, S.risk_score, S.status )
             "
           fi
+
+          # Clean up temporary staging tables
+          bq rm -f -t "${GCP_PROJECT_ID}:${BQ_DATASET}.findings_normalized_staging_${STAGING_SUFFIX}" || true
+          bq rm -f -t "${GCP_PROJECT_ID}:${BQ_DATASET}.incidents_staging_${STAGING_SUFFIX}" || true
 
       - name: Verify BigQuery tables
         if: steps.load.outputs.skipped != 'true'
