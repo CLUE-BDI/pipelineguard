@@ -1,0 +1,11 @@
+# Ignore all raw tool output, normalized, and correlated files
+outputs/*
+normalized/*
+correlated/*
+
+# Ignore old/mock secrets in history/untracked folders
+**/secrets/.env
+secrets/.env
+vulnerable-infra-project/secrets/.env
+vulnerable-infra-project/secrets/*
+**/vulnerable-infra-project/*
