@@ -1,0 +1,18 @@
+{
+  "SchemaVersion": 2,
+  "CreatedAt": "2026-05-21T08:27:40.811241576-04:00",
+  "ArtifactName": "/home/demo/global-tracker-spark",
+  "ArtifactType": "filesystem",
+  "Metadata": {
+    "ImageConfig": {
+      "architecture": "",
+      "created": "0001-01-01T00:00:00Z",
+      "os": "",
+      "rootfs": {
+        "type": "",
+        "diff_ids": null
+      },
+      "config": {}
+    }
+  }
+}

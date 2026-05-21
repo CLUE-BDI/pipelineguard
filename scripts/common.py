@@ -66,8 +66,6 @@ def ensure_parent(path: str) -> None:
 
 def write_jsonl(path: str, records: Iterable[Dict[str, Any]]) -> None:
     records_list = list(records)
-    if not records_list:
-        return
     ensure_parent(path)
     with open(path, "w", encoding="utf-8") as f:
         for r in records_list:

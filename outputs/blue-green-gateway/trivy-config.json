@@ -1,0 +1,1995 @@
+{
+  "SchemaVersion": 2,
+  "CreatedAt": "2026-05-20T22:59:46.327961558-04:00",
+  "ArtifactName": "/home/demo/blue-green-gateway",
+  "ArtifactType": "filesystem",
+  "Metadata": {
+    "ImageConfig": {
+      "architecture": "",
+      "created": "0001-01-01T00:00:00Z",
+      "os": "",
+      "rootfs": {
+        "type": "",
+        "diff_ids": null
+      },
+      "config": {}
+    }
+  },
+  "Results": [
+    {
+      "Target": ".",
+      "Class": "config",
+      "Type": "terraformplan-snapshot",
+      "MisconfSummary": {
+        "Successes": 1,
+        "Failures": 0,
+        "Exceptions": 0
+      }
+    },
+    {
+      "Target": "Dockerfile",
+      "Class": "config",
+      "Type": "dockerfile",
+      "MisconfSummary": {
+        "Successes": 26,
+        "Failures": 1,
+        "Exceptions": 0
+      },
+      "Misconfigurations": [
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS026",
+          "AVDID": "AVD-DS-0026",
+          "Title": "No HEALTHCHECK defined",
+          "Description": "You should add HEALTHCHECK instruction in your docker container images to perform the health check on running containers.",
+          "Message": "Add HEALTHCHECK instruction in your Dockerfile",
+          "Namespace": "builtin.dockerfile.DS026",
+          "Query": "data.builtin.dockerfile.DS026.deny",
+          "Resolution": "Add HEALTHCHECK instruction in Dockerfile",
+          "Severity": "LOW",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds026",
+          "References": [
+            "https://blog.aquasec.com/docker-security-best-practices",
+            "https://avd.aquasec.com/misconfig/ds026"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        }
+      ]
+    },
+    {
+      "Target": "backend/Dockerfile",
+      "Class": "config",
+      "Type": "dockerfile",
+      "MisconfSummary": {
+        "Successes": 27,
+        "Failures": 0,
+        "Exceptions": 0
+      }
+    },
+    {
+      "Target": "deploy/kubernetes/deployment.tmpl.yaml",
+      "Class": "config",
+      "Type": "kubernetes",
+      "MisconfSummary": {
+        "Successes": 109,
+        "Failures": 3,
+        "Exceptions": 0
+      },
+      "Misconfigurations": [
+        {
+          "Type": "Kubernetes Security Check",
+          "ID": "KSV013",
+          "AVDID": "AVD-KSV-0013",
+          "Title": "Image tag \":latest\" used",
+          "Description": "It is best to avoid using the ':latest' image tag when deploying containers in production. Doing so makes it hard to track which version of the image is running, and hard to roll back the version.",
+          "Message": "Container 'web' of Deployment 'web-${COLOR}' should specify an image tag",
+          "Namespace": "builtin.kubernetes.KSV013",
+          "Query": "data.builtin.kubernetes.KSV013.deny",
+          "Resolution": "Use a specific container image tag that is not 'latest'.",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv013",
+          "References": [
+            "https://kubernetes.io/docs/concepts/configuration/overview/#container-images",
+            "https://avd.aquasec.com/misconfig/ksv013"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Kubernetes",
+            "Service": "general",
+            "StartLine": 27,
+            "EndLine": 56,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 27,
+                  "Content": "      - name: web",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "      - \u001b[38;5;33mname\u001b[0m: web",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 28,
+                  "Content": "        image: ${IMAGE}",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33mimage\u001b[0m: ${IMAGE}",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 29,
+                  "Content": "        imagePullPolicy: Always",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33mimagePullPolicy\u001b[0m: Always",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 30,
+                  "Content": "        ports:",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33mports\u001b[0m:",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 31,
+                  "Content": "        - containerPort: 8080",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        - \u001b[38;5;33mcontainerPort\u001b[0m: \u001b[38;5;37m8080",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 32,
+                  "Content": "          name: http",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m          \u001b[38;5;33mname\u001b[0m: http",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 33,
+                  "Content": "        securityContext:",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33msecurityContext\u001b[0m:",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 34,
+                  "Content": "          allowPrivilegeEscalation: false",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "          \u001b[38;5;33mallowPrivilegeEscalation\u001b[0m: \u001b[38;5;166mfalse",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 35,
+                  "Content": "          readOnlyRootFilesystem: true",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m          \u001b[38;5;33mreadOnlyRootFilesystem\u001b[0m: \u001b[38;5;166mtrue",
+                  "FirstCause": false,
+                  "LastCause": true
+                },
+                {
+                  "Number": 36,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            }
+          }
+        },
+        {
+          "Type": "Kubernetes Security Check",
+          "ID": "KSV020",
+          "AVDID": "AVD-KSV-0020",
+          "Title": "Runs with UID \u003c= 10000",
+          "Description": "Force the container to run with user ID \u003e 10000 to avoid conflicts with the host’s user table.",
+          "Message": "Container 'web' of Deployment 'web-${COLOR}' should set 'securityContext.runAsUser' \u003e 10000",
+          "Namespace": "builtin.kubernetes.KSV020",
+          "Query": "data.builtin.kubernetes.KSV020.deny",
+          "Resolution": "Set 'containers[].securityContext.runAsUser' to an integer \u003e 10000.",
+          "Severity": "LOW",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv020",
+          "References": [
+            "https://kubesec.io/basics/containers-securitycontext-runasuser/",
+            "https://avd.aquasec.com/misconfig/ksv020"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Kubernetes",
+            "Service": "general",
+            "StartLine": 27,
+            "EndLine": 56,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 27,
+                  "Content": "      - name: web",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "      - \u001b[38;5;33mname\u001b[0m: web",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 28,
+                  "Content": "        image: ${IMAGE}",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33mimage\u001b[0m: ${IMAGE}",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 29,
+                  "Content": "        imagePullPolicy: Always",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33mimagePullPolicy\u001b[0m: Always",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 30,
+                  "Content": "        ports:",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33mports\u001b[0m:",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 31,
+                  "Content": "        - containerPort: 8080",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        - \u001b[38;5;33mcontainerPort\u001b[0m: \u001b[38;5;37m8080",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 32,
+                  "Content": "          name: http",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m          \u001b[38;5;33mname\u001b[0m: http",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 33,
+                  "Content": "        securityContext:",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33msecurityContext\u001b[0m:",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 34,
+                  "Content": "          allowPrivilegeEscalation: false",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "          \u001b[38;5;33mallowPrivilegeEscalation\u001b[0m: \u001b[38;5;166mfalse",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 35,
+                  "Content": "          readOnlyRootFilesystem: true",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m          \u001b[38;5;33mreadOnlyRootFilesystem\u001b[0m: \u001b[38;5;166mtrue",
+                  "FirstCause": false,
+                  "LastCause": true
+                },
+                {
+                  "Number": 36,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            }
+          }
+        },
+        {
+          "Type": "Kubernetes Security Check",
+          "ID": "KSV021",
+          "AVDID": "AVD-KSV-0021",
+          "Title": "Runs with GID \u003c= 10000",
+          "Description": "Force the container to run with group ID \u003e 10000 to avoid conflicts with the host’s user table.",
+          "Message": "Container 'web' of Deployment 'web-${COLOR}' should set 'securityContext.runAsGroup' \u003e 10000",
+          "Namespace": "builtin.kubernetes.KSV021",
+          "Query": "data.builtin.kubernetes.KSV021.deny",
+          "Resolution": "Set 'containers[].securityContext.runAsGroup' to an integer \u003e 10000.",
+          "Severity": "LOW",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv021",
+          "References": [
+            "https://kubesec.io/basics/containers-securitycontext-runasuser/",
+            "https://avd.aquasec.com/misconfig/ksv021"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Kubernetes",
+            "Service": "general",
+            "StartLine": 27,
+            "EndLine": 56,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 27,
+                  "Content": "      - name: web",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "      - \u001b[38;5;33mname\u001b[0m: web",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 28,
+                  "Content": "        image: ${IMAGE}",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33mimage\u001b[0m: ${IMAGE}",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 29,
+                  "Content": "        imagePullPolicy: Always",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33mimagePullPolicy\u001b[0m: Always",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 30,
+                  "Content": "        ports:",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33mports\u001b[0m:",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 31,
+                  "Content": "        - containerPort: 8080",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        - \u001b[38;5;33mcontainerPort\u001b[0m: \u001b[38;5;37m8080",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 32,
+                  "Content": "          name: http",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m          \u001b[38;5;33mname\u001b[0m: http",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 33,
+                  "Content": "        securityContext:",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33msecurityContext\u001b[0m:",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 34,
+                  "Content": "          allowPrivilegeEscalation: false",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "          \u001b[38;5;33mallowPrivilegeEscalation\u001b[0m: \u001b[38;5;166mfalse",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 35,
+                  "Content": "          readOnlyRootFilesystem: true",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m          \u001b[38;5;33mreadOnlyRootFilesystem\u001b[0m: \u001b[38;5;166mtrue",
+                  "FirstCause": false,
+                  "LastCause": true
+                },
+                {
+                  "Number": 36,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "Target": "deploy/kubernetes/deployment.yaml",
+      "Class": "config",
+      "Type": "kubernetes",
+      "MisconfSummary": {
+        "Successes": 109,
+        "Failures": 2,
+        "Exceptions": 0
+      },
+      "Misconfigurations": [
+        {
+          "Type": "Kubernetes Security Check",
+          "ID": "KSV020",
+          "AVDID": "AVD-KSV-0020",
+          "Title": "Runs with UID \u003c= 10000",
+          "Description": "Force the container to run with user ID \u003e 10000 to avoid conflicts with the host’s user table.",
+          "Message": "Container 'web' of Deployment 'web-blue' should set 'securityContext.runAsUser' \u003e 10000",
+          "Namespace": "builtin.kubernetes.KSV020",
+          "Query": "data.builtin.kubernetes.KSV020.deny",
+          "Resolution": "Set 'containers[].securityContext.runAsUser' to an integer \u003e 10000.",
+          "Severity": "LOW",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv020",
+          "References": [
+            "https://kubesec.io/basics/containers-securitycontext-runasuser/",
+            "https://avd.aquasec.com/misconfig/ksv020"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Kubernetes",
+            "Service": "general",
+            "StartLine": 27,
+            "EndLine": 56,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 27,
+                  "Content": "      - name: web",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "      - \u001b[38;5;33mname\u001b[0m: web",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 28,
+                  "Content": "        image: bggatewayacr.azurecr.io/blue-green-gateway:v1.4.2",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33mimage\u001b[0m: bggatewayacr.azurecr.io/blue-green-gateway:v1.4.2",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 29,
+                  "Content": "        imagePullPolicy: Always",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33mimagePullPolicy\u001b[0m: Always",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 30,
+                  "Content": "        ports:",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33mports\u001b[0m:",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 31,
+                  "Content": "        - containerPort: 8080",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        - \u001b[38;5;33mcontainerPort\u001b[0m: \u001b[38;5;37m8080",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 32,
+                  "Content": "          name: http",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m          \u001b[38;5;33mname\u001b[0m: http",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 33,
+                  "Content": "        securityContext:",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33msecurityContext\u001b[0m:",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 34,
+                  "Content": "          allowPrivilegeEscalation: false",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "          \u001b[38;5;33mallowPrivilegeEscalation\u001b[0m: \u001b[38;5;166mfalse",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 35,
+                  "Content": "          readOnlyRootFilesystem: true",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m          \u001b[38;5;33mreadOnlyRootFilesystem\u001b[0m: \u001b[38;5;166mtrue",
+                  "FirstCause": false,
+                  "LastCause": true
+                },
+                {
+                  "Number": 36,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            }
+          }
+        },
+        {
+          "Type": "Kubernetes Security Check",
+          "ID": "KSV021",
+          "AVDID": "AVD-KSV-0021",
+          "Title": "Runs with GID \u003c= 10000",
+          "Description": "Force the container to run with group ID \u003e 10000 to avoid conflicts with the host’s user table.",
+          "Message": "Container 'web' of Deployment 'web-blue' should set 'securityContext.runAsGroup' \u003e 10000",
+          "Namespace": "builtin.kubernetes.KSV021",
+          "Query": "data.builtin.kubernetes.KSV021.deny",
+          "Resolution": "Set 'containers[].securityContext.runAsGroup' to an integer \u003e 10000.",
+          "Severity": "LOW",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv021",
+          "References": [
+            "https://kubesec.io/basics/containers-securitycontext-runasuser/",
+            "https://avd.aquasec.com/misconfig/ksv021"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Kubernetes",
+            "Service": "general",
+            "StartLine": 27,
+            "EndLine": 56,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 27,
+                  "Content": "      - name: web",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "      - \u001b[38;5;33mname\u001b[0m: web",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 28,
+                  "Content": "        image: bggatewayacr.azurecr.io/blue-green-gateway:v1.4.2",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33mimage\u001b[0m: bggatewayacr.azurecr.io/blue-green-gateway:v1.4.2",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 29,
+                  "Content": "        imagePullPolicy: Always",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33mimagePullPolicy\u001b[0m: Always",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 30,
+                  "Content": "        ports:",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33mports\u001b[0m:",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 31,
+                  "Content": "        - containerPort: 8080",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        - \u001b[38;5;33mcontainerPort\u001b[0m: \u001b[38;5;37m8080",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 32,
+                  "Content": "          name: http",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m          \u001b[38;5;33mname\u001b[0m: http",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 33,
+                  "Content": "        securityContext:",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "        \u001b[38;5;33msecurityContext\u001b[0m:",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 34,
+                  "Content": "          allowPrivilegeEscalation: false",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "          \u001b[38;5;33mallowPrivilegeEscalation\u001b[0m: \u001b[38;5;166mfalse",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 35,
+                  "Content": "          readOnlyRootFilesystem: true",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m          \u001b[38;5;33mreadOnlyRootFilesystem\u001b[0m: \u001b[38;5;166mtrue",
+                  "FirstCause": false,
+                  "LastCause": true
+                },
+                {
+                  "Number": 36,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "Target": "deploy/kubernetes/ingress.yaml",
+      "Class": "config",
+      "Type": "kubernetes",
+      "MisconfSummary": {
+        "Successes": 109,
+        "Failures": 0,
+        "Exceptions": 0
+      }
+    },
+    {
+      "Target": "deploy/kubernetes/rbac.yaml",
+      "Class": "config",
+      "Type": "kubernetes",
+      "MisconfSummary": {
+        "Successes": 109,
+        "Failures": 4,
+        "Exceptions": 0
+      },
+      "Misconfigurations": [
+        {
+          "Type": "Kubernetes Security Check",
+          "ID": "KSV048",
+          "AVDID": "AVD-KSV-0048",
+          "Title": "Manage Kubernetes workloads and pods",
+          "Description": "Depending on the policies enforced by the admission controller, this permission ranges from the ability to steal compute (crypto) by running workloads or allowing for creating workloads that escape to the node as root and escalation to cluster-admin.",
+          "Message": "Role 'pod-deployer-role' should not have access to resources [\"pods\", \"deployments\", \"jobs\", \"cronjobs\", \"statefulsets\", \"daemonsets\", \"replicasets\", \"replicationcontrollers\"] for verbs [\"create\", \"update\", \"patch\", \"delete\", \"deletecollection\", \"impersonate\", \"*\"]",
+          "Namespace": "builtin.kubernetes.KSV048",
+          "Query": "data.builtin.kubernetes.KSV048.deny",
+          "Resolution": "Kubernetes workloads resources are only allowed for verbs 'list', 'watch', 'get'",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv048",
+          "References": [
+            "https://kubernetes.io/docs/concepts/security/rbac-good-practices/",
+            "https://avd.aquasec.com/misconfig/ksv048"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Kubernetes",
+            "Service": "general",
+            "StartLine": 7,
+            "EndLine": 9,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 7,
+                  "Content": "- apiGroups: [\"apps\", \"\"]",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "- \u001b[38;5;33mapiGroups\u001b[0m: [\u001b[38;5;37m\"apps\"\u001b[0m, \u001b[38;5;37m\"\"\u001b[0m]",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 8,
+                  "Content": "  resources: [\"deployments\", \"services\", \"secrets\", \"pods\"]",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;33mresources\u001b[0m: [\u001b[38;5;37m\"deployments\"\u001b[0m, \u001b[38;5;37m\"services\"\u001b[0m, \u001b[38;5;37m\"secrets\"\u001b[0m, \u001b[38;5;37m\"pods\"\u001b[0m]",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 9,
+                  "Content": "  verbs: [\"get\", \"list\", \"watch\", \"create\", \"update\", \"patch\", \"delete\"]",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;33mverbs\u001b[0m: [\u001b[38;5;37m\"get\"\u001b[0m, \u001b[38;5;37m\"list\"\u001b[0m, \u001b[38;5;37m\"watch\"\u001b[0m, \u001b[38;5;37m\"create\"\u001b[0m, \u001b[38;5;37m\"update\"\u001b[0m, \u001b[38;5;37m\"patch\"\u001b[0m, \u001b[38;5;37m\"delete\"\u001b[0m]",
+                  "FirstCause": false,
+                  "LastCause": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "Type": "Kubernetes Security Check",
+          "ID": "KSV056",
+          "AVDID": "AVD-KSV-0056",
+          "Title": "Manage Kubernetes networking",
+          "Description": "The ability to control which pods get service traffic directed to them allows for interception attacks. Controlling network policy allows for bypassing lateral movement restrictions.",
+          "Message": "Role 'pod-deployer-role' should not have access to resources [\"services\", \"endpoints\", \"endpointslices\", \"networkpolicies\", \"ingresses\"] for verbs [\"create\", \"update\", \"patch\", \"delete\", \"deletecollection\", \"impersonate\", \"*\"]",
+          "Namespace": "builtin.kubernetes.KSV056",
+          "Query": "data.builtin.kubernetes.KSV056.deny",
+          "Resolution": "Networking resources are only allowed for verbs 'list', 'watch', 'get'",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv056",
+          "References": [
+            "https://kubernetes.io/docs/concepts/security/rbac-good-practices/",
+            "https://avd.aquasec.com/misconfig/ksv056"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Kubernetes",
+            "Service": "general",
+            "StartLine": 10,
+            "EndLine": 12,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 10,
+                  "Content": "- apiGroups: [\"networking.k8s.io\"]",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "- \u001b[38;5;33mapiGroups\u001b[0m: [\u001b[38;5;37m\"networking.k8s.io\"\u001b[0m]",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 11,
+                  "Content": "  resources: [\"ingresses\"]",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;33mresources\u001b[0m: [\u001b[38;5;37m\"ingresses\"\u001b[0m]",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 12,
+                  "Content": "  verbs: [\"get\", \"list\", \"watch\", \"create\", \"update\", \"patch\"]",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;33mverbs\u001b[0m: [\u001b[38;5;37m\"get\"\u001b[0m, \u001b[38;5;37m\"list\"\u001b[0m, \u001b[38;5;37m\"watch\"\u001b[0m, \u001b[38;5;37m\"create\"\u001b[0m, \u001b[38;5;37m\"update\"\u001b[0m, \u001b[38;5;37m\"patch\"\u001b[0m]",
+                  "FirstCause": false,
+                  "LastCause": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "Type": "Kubernetes Security Check",
+          "ID": "KSV056",
+          "AVDID": "AVD-KSV-0056",
+          "Title": "Manage Kubernetes networking",
+          "Description": "The ability to control which pods get service traffic directed to them allows for interception attacks. Controlling network policy allows for bypassing lateral movement restrictions.",
+          "Message": "Role 'pod-deployer-role' should not have access to resources [\"services\", \"endpoints\", \"endpointslices\", \"networkpolicies\", \"ingresses\"] for verbs [\"create\", \"update\", \"patch\", \"delete\", \"deletecollection\", \"impersonate\", \"*\"]",
+          "Namespace": "builtin.kubernetes.KSV056",
+          "Query": "data.builtin.kubernetes.KSV056.deny",
+          "Resolution": "Networking resources are only allowed for verbs 'list', 'watch', 'get'",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv056",
+          "References": [
+            "https://kubernetes.io/docs/concepts/security/rbac-good-practices/",
+            "https://avd.aquasec.com/misconfig/ksv056"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Kubernetes",
+            "Service": "general",
+            "StartLine": 7,
+            "EndLine": 9,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 7,
+                  "Content": "- apiGroups: [\"apps\", \"\"]",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "- \u001b[38;5;33mapiGroups\u001b[0m: [\u001b[38;5;37m\"apps\"\u001b[0m, \u001b[38;5;37m\"\"\u001b[0m]",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 8,
+                  "Content": "  resources: [\"deployments\", \"services\", \"secrets\", \"pods\"]",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;33mresources\u001b[0m: [\u001b[38;5;37m\"deployments\"\u001b[0m, \u001b[38;5;37m\"services\"\u001b[0m, \u001b[38;5;37m\"secrets\"\u001b[0m, \u001b[38;5;37m\"pods\"\u001b[0m]",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 9,
+                  "Content": "  verbs: [\"get\", \"list\", \"watch\", \"create\", \"update\", \"patch\", \"delete\"]",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;33mverbs\u001b[0m: [\u001b[38;5;37m\"get\"\u001b[0m, \u001b[38;5;37m\"list\"\u001b[0m, \u001b[38;5;37m\"watch\"\u001b[0m, \u001b[38;5;37m\"create\"\u001b[0m, \u001b[38;5;37m\"update\"\u001b[0m, \u001b[38;5;37m\"patch\"\u001b[0m, \u001b[38;5;37m\"delete\"\u001b[0m]",
+                  "FirstCause": false,
+                  "LastCause": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "Type": "Kubernetes Security Check",
+          "ID": "KSV113",
+          "AVDID": "AVD-KSV-0113",
+          "Title": "Manage namespace secrets",
+          "Description": "Viewing secrets at the namespace scope can lead to escalation if another service account in that namespace has a higher privileged rolebinding or clusterrolebinding bound.",
+          "Message": "Role 'pod-deployer-role' shouldn't have access to manage secrets in namespace 'cb'",
+          "Namespace": "builtin.kubernetes.KSV113",
+          "Query": "data.builtin.kubernetes.KSV113.deny",
+          "Resolution": "Manage namespace secrets are not allowed. Remove resource 'secrets' from role",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv113",
+          "References": [
+            "https://kubernetes.io/docs/concepts/security/rbac-good-practices/",
+            "https://avd.aquasec.com/misconfig/ksv113"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Kubernetes",
+            "Service": "general",
+            "StartLine": 7,
+            "EndLine": 9,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 7,
+                  "Content": "- apiGroups: [\"apps\", \"\"]",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "- \u001b[38;5;33mapiGroups\u001b[0m: [\u001b[38;5;37m\"apps\"\u001b[0m, \u001b[38;5;37m\"\"\u001b[0m]",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 8,
+                  "Content": "  resources: [\"deployments\", \"services\", \"secrets\", \"pods\"]",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;33mresources\u001b[0m: [\u001b[38;5;37m\"deployments\"\u001b[0m, \u001b[38;5;37m\"services\"\u001b[0m, \u001b[38;5;37m\"secrets\"\u001b[0m, \u001b[38;5;37m\"pods\"\u001b[0m]",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 9,
+                  "Content": "  verbs: [\"get\", \"list\", \"watch\", \"create\", \"update\", \"patch\", \"delete\"]",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;33mverbs\u001b[0m: [\u001b[38;5;37m\"get\"\u001b[0m, \u001b[38;5;37m\"list\"\u001b[0m, \u001b[38;5;37m\"watch\"\u001b[0m, \u001b[38;5;37m\"create\"\u001b[0m, \u001b[38;5;37m\"update\"\u001b[0m, \u001b[38;5;37m\"patch\"\u001b[0m, \u001b[38;5;37m\"delete\"\u001b[0m]",
+                  "FirstCause": false,
+                  "LastCause": true
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "Target": "deploy/kubernetes/secret-provider.yaml",
+      "Class": "config",
+      "Type": "kubernetes",
+      "MisconfSummary": {
+        "Successes": 109,
+        "Failures": 0,
+        "Exceptions": 0
+      }
+    },
+    {
+      "Target": "deploy/terraform",
+      "Class": "config",
+      "Type": "terraform",
+      "MisconfSummary": {
+        "Successes": 1,
+        "Failures": 0,
+        "Exceptions": 0
+      }
+    },
+    {
+      "Target": "deploy/terraform/main.tf",
+      "Class": "config",
+      "Type": "terraform",
+      "MisconfSummary": {
+        "Successes": 4,
+        "Failures": 2,
+        "Exceptions": 0
+      },
+      "Misconfigurations": [
+        {
+          "Type": "Terraform Security Check",
+          "ID": "AVD-AZU-0040",
+          "AVDID": "AVD-AZU-0040",
+          "Title": "Ensure AKS logging to Azure Monitoring is Configured",
+          "Description": "Ensure AKS logging to Azure Monitoring is configured for containers to monitor the performance of workloads.",
+          "Message": "Cluster does not have logging enabled via OMS Agent.",
+          "Query": "data..",
+          "Resolution": "Enable logging for AKS",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-azu-0040",
+          "References": [
+            "https://docs.microsoft.com/en-us/azure/azure-monitor/insights/container-insights-onboard",
+            "https://avd.aquasec.com/misconfig/avd-azu-0040"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Resource": "azurerm_kubernetes_cluster.aks",
+            "Provider": "Azure",
+            "Service": "container",
+            "StartLine": 164,
+            "EndLine": 217,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 164,
+                  "Content": "resource \"azurerm_kubernetes_cluster\" \"aks\" {",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"azurerm_kubernetes_cluster\"\u001b[0m \u001b[38;5;37m\"aks\"\u001b[0m {",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 165,
+                  "Content": "  name                              = \"${var.prefix}-aks\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mname\u001b[0m                              = \u001b[38;5;37m\"\u001b[0m\u001b[38;5;37m${\u001b[0m\u001b[38;5;33mvar\u001b[0m.prefix\u001b[38;5;37m}\u001b[0m\u001b[38;5;37m-aks\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 166,
+                  "Content": "  location                          = azurerm_resource_group.rg.location",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m  \u001b[38;5;245mlocation\u001b[0m                          = azurerm_resource_group.rg.location",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 167,
+                  "Content": "  resource_group_name               = azurerm_resource_group.rg.name",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mresource_group_name\u001b[0m               = azurerm_resource_group.rg.name",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 168,
+                  "Content": "  dns_prefix                        = \"${var.prefix}-k8s\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mdns_prefix\u001b[0m                        = \u001b[38;5;37m\"\u001b[0m\u001b[38;5;37m${\u001b[0m\u001b[38;5;33mvar\u001b[0m.prefix\u001b[38;5;37m}\u001b[0m\u001b[38;5;37m-k8s\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 169,
+                  "Content": "  private_cluster_enabled           = false",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m  \u001b[38;5;245mprivate_cluster_enabled\u001b[0m           = \u001b[38;5;166mfalse",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 170,
+                  "Content": "  oidc_issuer_enabled               = true",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m  \u001b[38;5;245moidc_issuer_enabled\u001b[0m               = \u001b[38;5;166mtrue",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 171,
+                  "Content": "  role_based_access_control_enabled = true",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m  \u001b[38;5;245mrole_based_access_control_enabled\u001b[0m = \u001b[38;5;166mtrue",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 172,
+                  "Content": "  workload_identity_enabled         = true",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m  \u001b[38;5;245mworkload_identity_enabled\u001b[0m         = \u001b[38;5;166mtrue",
+                  "FirstCause": false,
+                  "LastCause": true
+                },
+                {
+                  "Number": 173,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            }
+          }
+        },
+        {
+          "Type": "Terraform Security Check",
+          "ID": "AVD-AZU-0041",
+          "AVDID": "AVD-AZU-0041",
+          "Title": "Ensure AKS has an API Server Authorized IP Ranges enabled",
+          "Description": "The API server is the central way to interact with and manage a cluster. To improve cluster security and minimize attacks, the API server should only be accessible from a limited set of IP address ranges.",
+          "Message": "Cluster does not limit API access to specific IP addresses.",
+          "Query": "data..",
+          "Resolution": "Limit the access to the API server to a limited IP range",
+          "Severity": "CRITICAL",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-azu-0041",
+          "References": [
+            "https://docs.microsoft.com/en-us/azure/aks/api-server-authorized-ip-ranges",
+            "https://avd.aquasec.com/misconfig/avd-azu-0041"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Resource": "azurerm_kubernetes_cluster.aks",
+            "Provider": "Azure",
+            "Service": "container",
+            "StartLine": 169,
+            "EndLine": 169,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 164,
+                  "Content": "resource \"azurerm_kubernetes_cluster\" \"aks\" {",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"azurerm_kubernetes_cluster\"\u001b[0m \u001b[38;5;37m\"aks\"\u001b[0m {",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 165,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 169,
+                  "Content": "  private_cluster_enabled           = false",
+                  "IsCause": true,
+                  "Annotation": "false",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m  \u001b[38;5;245mprivate_cluster_enabled\u001b[0m           = \u001b[38;5;166mfalse",
+                  "FirstCause": true,
+                  "LastCause": true
+                },
+                {
+                  "Number": 216,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 217,
+                  "Content": "}",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "}",
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            },
+            "Occurrences": [
+              {
+                "Resource": "azurerm_kubernetes_cluster.aks",
+                "Filename": "deploy/terraform/main.tf",
+                "Location": {
+                  "StartLine": 164,
+                  "EndLine": 217
+                }
+              }
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "Target": "frontend/Dockerfile",
+      "Class": "config",
+      "Type": "dockerfile",
+      "MisconfSummary": {
+        "Successes": 26,
+        "Failures": 1,
+        "Exceptions": 0
+      },
+      "Misconfigurations": [
+        {
+          "Type": "Dockerfile Security Check",
+          "ID": "DS026",
+          "AVDID": "AVD-DS-0026",
+          "Title": "No HEALTHCHECK defined",
+          "Description": "You should add HEALTHCHECK instruction in your docker container images to perform the health check on running containers.",
+          "Message": "Add HEALTHCHECK instruction in your Dockerfile",
+          "Namespace": "builtin.dockerfile.DS026",
+          "Query": "data.builtin.dockerfile.DS026.deny",
+          "Resolution": "Add HEALTHCHECK instruction in Dockerfile",
+          "Severity": "LOW",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ds026",
+          "References": [
+            "https://blog.aquasec.com/docker-security-best-practices",
+            "https://avd.aquasec.com/misconfig/ds026"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Provider": "Dockerfile",
+            "Service": "general",
+            "Code": {
+              "Lines": null
+            }
+          }
+        }
+      ]
+    },
+    {
+      "Target": "main.tf",
+      "Class": "config",
+      "Type": "terraformplan-snapshot",
+      "MisconfSummary": {
+        "Successes": 0,
+        "Failures": 6,
+        "Exceptions": 0
+      },
+      "Misconfigurations": [
+        {
+          "Type": "Terraform Plan Snapshot Security Check",
+          "ID": "AVD-AZU-0013",
+          "AVDID": "AVD-AZU-0013",
+          "Title": "Key vault should have the network acl block specified",
+          "Description": "Network ACLs allow you to reduce your exposure to risk by limiting what can access your key vault. \n\nThe default action of the Network ACL should be set to deny for when IPs are not matched. Azure services can be allowed to bypass.",
+          "Message": "Vault network ACL does not block access by default.",
+          "Query": "data..",
+          "Resolution": "Set a network ACL for the key vault",
+          "Severity": "CRITICAL",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-azu-0013",
+          "References": [
+            "https://docs.microsoft.com/en-us/azure/key-vault/general/network-security",
+            "https://avd.aquasec.com/misconfig/avd-azu-0013"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Resource": "azurerm_key_vault.kv",
+            "Provider": "Azure",
+            "Service": "keyvault",
+            "StartLine": 261,
+            "EndLine": 268,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 261,
+                  "Content": "resource \"azurerm_key_vault\" \"kv\" {",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"azurerm_key_vault\"\u001b[0m \u001b[38;5;37m\"kv\"\u001b[0m {",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 262,
+                  "Content": "  name                          = \"${var.prefix}-kv-prod\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mname\u001b[0m                          = \u001b[38;5;37m\"\u001b[0m\u001b[38;5;37m${\u001b[0m\u001b[38;5;33mvar\u001b[0m.prefix\u001b[38;5;37m}\u001b[0m\u001b[38;5;37m-kv-prod\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 263,
+                  "Content": "  location                      = azurerm_resource_group.rg.location",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m  \u001b[38;5;245mlocation\u001b[0m                      = azurerm_resource_group.rg.location",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 264,
+                  "Content": "  resource_group_name           = azurerm_resource_group.rg.name",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mresource_group_name\u001b[0m           = azurerm_resource_group.rg.name",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 265,
+                  "Content": "  tenant_id                     = data.azurerm_client_config.current.tenant_id",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mtenant_id\u001b[0m                     = \u001b[38;5;33mdata\u001b[0m.azurerm_client_config.current.tenant_id",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 266,
+                  "Content": "  sku_name                      = \"standard\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245msku_name\u001b[0m                      = \u001b[38;5;37m\"standard\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 267,
+                  "Content": "  public_network_access_enabled = true",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m  \u001b[38;5;245mpublic_network_access_enabled\u001b[0m = \u001b[38;5;166mtrue",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 268,
+                  "Content": "}",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m}",
+                  "FirstCause": false,
+                  "LastCause": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "Type": "Terraform Plan Snapshot Security Check",
+          "ID": "AVD-AZU-0016",
+          "AVDID": "AVD-AZU-0016",
+          "Title": "Key vault should have purge protection enabled",
+          "Description": "Purge protection is an optional Key Vault behavior and is not enabled by default.\n\nPurge protection can only be enabled once soft-delete is enabled. It can be turned on via CLI or PowerShell.",
+          "Message": "Vault does not have purge protection enabled.",
+          "Query": "data..",
+          "Resolution": "Enable purge protection for key vaults",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-azu-0016",
+          "References": [
+            "https://docs.microsoft.com/en-us/azure/key-vault/general/soft-delete-overview#purge-protection",
+            "https://avd.aquasec.com/misconfig/avd-azu-0016"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Resource": "azurerm_key_vault.kv",
+            "Provider": "Azure",
+            "Service": "keyvault",
+            "StartLine": 261,
+            "EndLine": 268,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 261,
+                  "Content": "resource \"azurerm_key_vault\" \"kv\" {",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"azurerm_key_vault\"\u001b[0m \u001b[38;5;37m\"kv\"\u001b[0m {",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 262,
+                  "Content": "  name                          = \"${var.prefix}-kv-prod\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mname\u001b[0m                          = \u001b[38;5;37m\"\u001b[0m\u001b[38;5;37m${\u001b[0m\u001b[38;5;33mvar\u001b[0m.prefix\u001b[38;5;37m}\u001b[0m\u001b[38;5;37m-kv-prod\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 263,
+                  "Content": "  location                      = azurerm_resource_group.rg.location",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m  \u001b[38;5;245mlocation\u001b[0m                      = azurerm_resource_group.rg.location",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 264,
+                  "Content": "  resource_group_name           = azurerm_resource_group.rg.name",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mresource_group_name\u001b[0m           = azurerm_resource_group.rg.name",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 265,
+                  "Content": "  tenant_id                     = data.azurerm_client_config.current.tenant_id",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mtenant_id\u001b[0m                     = \u001b[38;5;33mdata\u001b[0m.azurerm_client_config.current.tenant_id",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 266,
+                  "Content": "  sku_name                      = \"standard\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245msku_name\u001b[0m                      = \u001b[38;5;37m\"standard\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 267,
+                  "Content": "  public_network_access_enabled = true",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m  \u001b[38;5;245mpublic_network_access_enabled\u001b[0m = \u001b[38;5;166mtrue",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 268,
+                  "Content": "}",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m}",
+                  "FirstCause": false,
+                  "LastCause": true
+                }
+              ]
+            }
+          }
+        },
+        {
+          "Type": "Terraform Plan Snapshot Security Check",
+          "ID": "AVD-AZU-0040",
+          "AVDID": "AVD-AZU-0040",
+          "Title": "Ensure AKS logging to Azure Monitoring is Configured",
+          "Description": "Ensure AKS logging to Azure Monitoring is configured for containers to monitor the performance of workloads.",
+          "Message": "Cluster does not have logging enabled via OMS Agent.",
+          "Query": "data..",
+          "Resolution": "Enable logging for AKS",
+          "Severity": "MEDIUM",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-azu-0040",
+          "References": [
+            "https://docs.microsoft.com/en-us/azure/azure-monitor/insights/container-insights-onboard",
+            "https://avd.aquasec.com/misconfig/avd-azu-0040"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Resource": "azurerm_kubernetes_cluster.aks",
+            "Provider": "Azure",
+            "Service": "container",
+            "StartLine": 163,
+            "EndLine": 203,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 163,
+                  "Content": "resource \"azurerm_kubernetes_cluster\" \"aks\" {",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"azurerm_kubernetes_cluster\"\u001b[0m \u001b[38;5;37m\"aks\"\u001b[0m {",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 164,
+                  "Content": "  name                      = \"${var.prefix}-aks\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mname\u001b[0m                      = \u001b[38;5;37m\"\u001b[0m\u001b[38;5;37m${\u001b[0m\u001b[38;5;33mvar\u001b[0m.prefix\u001b[38;5;37m}\u001b[0m\u001b[38;5;37m-aks\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 165,
+                  "Content": "  location                  = azurerm_resource_group.rg.location",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m  \u001b[38;5;245mlocation\u001b[0m                  = azurerm_resource_group.rg.location",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 166,
+                  "Content": "  resource_group_name       = azurerm_resource_group.rg.name",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mresource_group_name\u001b[0m       = azurerm_resource_group.rg.name",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 167,
+                  "Content": "  dns_prefix                = \"${var.prefix}-k8s\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mdns_prefix\u001b[0m                = \u001b[38;5;37m\"\u001b[0m\u001b[38;5;37m${\u001b[0m\u001b[38;5;33mvar\u001b[0m.prefix\u001b[38;5;37m}\u001b[0m\u001b[38;5;37m-k8s\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 168,
+                  "Content": "  private_cluster_enabled   = false",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m  \u001b[38;5;245mprivate_cluster_enabled\u001b[0m   = \u001b[38;5;166mfalse",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 169,
+                  "Content": "  oidc_issuer_enabled       = true",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m  \u001b[38;5;245moidc_issuer_enabled\u001b[0m       = \u001b[38;5;166mtrue",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 170,
+                  "Content": "  workload_identity_enabled = true",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m  \u001b[38;5;245mworkload_identity_enabled\u001b[0m = \u001b[38;5;166mtrue",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 171,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": true
+                },
+                {
+                  "Number": 172,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            }
+          }
+        },
+        {
+          "Type": "Terraform Plan Snapshot Security Check",
+          "ID": "AVD-AZU-0041",
+          "AVDID": "AVD-AZU-0041",
+          "Title": "Ensure AKS has an API Server Authorized IP Ranges enabled",
+          "Description": "The API server is the central way to interact with and manage a cluster. To improve cluster security and minimize attacks, the API server should only be accessible from a limited set of IP address ranges.",
+          "Message": "Cluster does not limit API access to specific IP addresses.",
+          "Query": "data..",
+          "Resolution": "Limit the access to the API server to a limited IP range",
+          "Severity": "CRITICAL",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-azu-0041",
+          "References": [
+            "https://docs.microsoft.com/en-us/azure/aks/api-server-authorized-ip-ranges",
+            "https://avd.aquasec.com/misconfig/avd-azu-0041"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Resource": "azurerm_kubernetes_cluster.aks",
+            "Provider": "Azure",
+            "Service": "container",
+            "StartLine": 168,
+            "EndLine": 168,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 163,
+                  "Content": "resource \"azurerm_kubernetes_cluster\" \"aks\" {",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"azurerm_kubernetes_cluster\"\u001b[0m \u001b[38;5;37m\"aks\"\u001b[0m {",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 164,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 168,
+                  "Content": "  private_cluster_enabled   = false",
+                  "IsCause": true,
+                  "Annotation": "false",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m  \u001b[38;5;245mprivate_cluster_enabled\u001b[0m   = \u001b[38;5;166mfalse",
+                  "FirstCause": true,
+                  "LastCause": true
+                },
+                {
+                  "Number": 202,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 203,
+                  "Content": "}",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "}",
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            },
+            "Occurrences": [
+              {
+                "Resource": "azurerm_kubernetes_cluster.aks",
+                "Filename": "main.tf",
+                "Location": {
+                  "StartLine": 163,
+                  "EndLine": 203
+                }
+              }
+            ]
+          }
+        },
+        {
+          "Type": "Terraform Plan Snapshot Security Check",
+          "ID": "AVD-AZU-0042",
+          "AVDID": "AVD-AZU-0042",
+          "Title": "Ensure RBAC is enabled on AKS clusters",
+          "Description": "Using Kubernetes role-based access control (RBAC), you can grant users, groups, and service accounts access to only the resources they need.",
+          "Message": "Cluster has RBAC disabled",
+          "Query": "data..",
+          "Resolution": "Enable RBAC",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-azu-0042",
+          "References": [
+            "https://docs.microsoft.com/en-us/azure/aks/concepts-identity",
+            "https://avd.aquasec.com/misconfig/avd-azu-0042"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Resource": "azurerm_kubernetes_cluster.aks",
+            "Provider": "Azure",
+            "Service": "container",
+            "StartLine": 163,
+            "EndLine": 203,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 163,
+                  "Content": "resource \"azurerm_kubernetes_cluster\" \"aks\" {",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"azurerm_kubernetes_cluster\"\u001b[0m \u001b[38;5;37m\"aks\"\u001b[0m {",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 164,
+                  "Content": "  name                      = \"${var.prefix}-aks\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mname\u001b[0m                      = \u001b[38;5;37m\"\u001b[0m\u001b[38;5;37m${\u001b[0m\u001b[38;5;33mvar\u001b[0m.prefix\u001b[38;5;37m}\u001b[0m\u001b[38;5;37m-aks\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 165,
+                  "Content": "  location                  = azurerm_resource_group.rg.location",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m  \u001b[38;5;245mlocation\u001b[0m                  = azurerm_resource_group.rg.location",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 166,
+                  "Content": "  resource_group_name       = azurerm_resource_group.rg.name",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mresource_group_name\u001b[0m       = azurerm_resource_group.rg.name",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 167,
+                  "Content": "  dns_prefix                = \"${var.prefix}-k8s\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  \u001b[38;5;245mdns_prefix\u001b[0m                = \u001b[38;5;37m\"\u001b[0m\u001b[38;5;37m${\u001b[0m\u001b[38;5;33mvar\u001b[0m.prefix\u001b[38;5;37m}\u001b[0m\u001b[38;5;37m-k8s\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 168,
+                  "Content": "  private_cluster_enabled   = false",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m  \u001b[38;5;245mprivate_cluster_enabled\u001b[0m   = \u001b[38;5;166mfalse",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 169,
+                  "Content": "  oidc_issuer_enabled       = true",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m  \u001b[38;5;245moidc_issuer_enabled\u001b[0m       = \u001b[38;5;166mtrue",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 170,
+                  "Content": "  workload_identity_enabled = true",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m  \u001b[38;5;245mworkload_identity_enabled\u001b[0m = \u001b[38;5;166mtrue",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 171,
+                  "Content": "",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m",
+                  "FirstCause": false,
+                  "LastCause": true
+                },
+                {
+                  "Number": 172,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            }
+          }
+        },
+        {
+          "Type": "Terraform Plan Snapshot Security Check",
+          "ID": "AVD-AZU-0043",
+          "AVDID": "AVD-AZU-0043",
+          "Title": "Ensure AKS cluster has Network Policy configured",
+          "Description": "The Kubernetes object type NetworkPolicy should be defined to have opportunity allow or block traffic to pods, as in a Kubernetes cluster configured with default settings, all pods can discover and communicate with each other without any restrictions.",
+          "Message": "Kubernetes cluster does not have a network policy set.",
+          "Query": "data..",
+          "Resolution": "Configure a network policy",
+          "Severity": "HIGH",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/avd-azu-0043",
+          "References": [
+            "https://kubernetes.io/docs/concepts/services-networking/network-policies",
+            "https://avd.aquasec.com/misconfig/avd-azu-0043"
+          ],
+          "Status": "FAIL",
+          "Layer": {},
+          "CauseMetadata": {
+            "Resource": "azurerm_kubernetes_cluster.aks",
+            "Provider": "Azure",
+            "Service": "container",
+            "StartLine": 183,
+            "EndLine": 188,
+            "Code": {
+              "Lines": [
+                {
+                  "Number": 163,
+                  "Content": "resource \"azurerm_kubernetes_cluster\" \"aks\" {",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"azurerm_kubernetes_cluster\"\u001b[0m \u001b[38;5;37m\"aks\"\u001b[0m {",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 164,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 183,
+                  "Content": "  network_profile {",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "  network_profile {",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
+                {
+                  "Number": 184,
+                  "Content": "    network_plugin    = \"azure\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "    \u001b[38;5;245mnetwork_plugin\u001b[0m    = \u001b[38;5;37m\"azure\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 185,
+                  "Content": "    service_cidr      = local.kubernetes.services_cidr",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m    \u001b[38;5;245mservice_cidr\u001b[0m      = local.kubernetes.services_cidr",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 186,
+                  "Content": "    dns_service_ip    = local.kubernetes.dns_service_ip",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "    \u001b[38;5;245mdns_service_ip\u001b[0m    = local.kubernetes.dns_service_ip",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 187,
+                  "Content": "    load_balancer_sku = \"standard\"",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "    \u001b[38;5;245mload_balancer_sku\u001b[0m = \u001b[38;5;37m\"standard\"",
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 188,
+                  "Content": "  }",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[0m  }",
+                  "FirstCause": false,
+                  "LastCause": true
+                },
+                {
+                  "Number": 202,
+                  "Content": "",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": true,
+                  "FirstCause": false,
+                  "LastCause": false
+                },
+                {
+                  "Number": 203,
+                  "Content": "}",
+                  "IsCause": false,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "}",
+                  "FirstCause": false,
+                  "LastCause": false
+                }
+              ]
+            },
+            "Occurrences": [
+              {
+                "Resource": "azurerm_kubernetes_cluster.aks",
+                "Filename": "main.tf",
+                "Location": {
+                  "StartLine": 163,
+                  "EndLine": 203
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
