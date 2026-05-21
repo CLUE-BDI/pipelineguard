@@ -67,13 +67,14 @@ jobs:
 
       - name: Debug target repository
         run: |
-          echo "TARGET_REPO_NAME=${{ inputs.target_repo_name }}"
-          echo "TARGET_REPO_PATH=${{ inputs.target_repo_path }}"
+          echo "TARGET_REPO_NAME=$TARGET_REPO_NAME"
+          echo "TARGET_REPO_PATH=$TARGET_REPO_PATH"
           test -n "$TARGET_REPO_NAME"
           test -n "$TARGET_REPO_PATH"
           test -d "$TARGET_REPO_PATH"
           ls -la "$TARGET_REPO_PATH"
           find "$TARGET_REPO_PATH" -maxdepth 3 -type f | sort | sed -n '1,100p'
+
 
       - name: Run phase1 scan
         run: ./scripts/run_phase1.sh
@@ -401,22 +402,27 @@ jobs:
         uses: google-github-actions/setup-gcloud@v2
 
       - name: Copy artifacts to GCS
+        env:
+          REPO_NAME: ${{ github.event.repository.name }}
+          BRANCH_NAME: ${{ github.ref_name }}
+          RUN_ID: ${{ github.run_id }}
         run: |
           echo "=== DEBUG INFO ==="
           echo "Target Bucket: ${GCS_BUCKET}"
-          echo "Repo Name: ${{ github.event.repository.name }}"
-          echo "Branch: ${{ github.ref_name }}"
-          echo "Run ID: ${{ github.run_id }}"
-          echo "Raw Path: gs://${GCS_BUCKET}/raw/${{ github.event.repository.name }}/${{ github.ref_name }}/${{ github.run_id }}/"
+          echo "Repo Name: $REPO_NAME"
+          echo "Branch: $BRANCH_NAME"
+          echo "Run ID: $RUN_ID"
+          echo "Raw Path: gs://${GCS_BUCKET}/raw/$REPO_NAME/$BRANCH_NAME/$RUN_ID/"
           echo "=================="
 
           # Robust copy: copy contents to avoid nested folders
-          gsutil -m cp -r outputs/* "gs://${GCS_BUCKET}/raw/${{ github.event.repository.name }}/${{ github.ref_name }}/${{ github.run_id }}/"
-          gsutil -m cp -r normalized/* "gs://${GCS_BUCKET}/normalized/${{ github.event.repository.name }}/${{ github.ref_name }}/${{ github.run_id }}/"
-          gsutil -m cp -r correlated/* "gs://${GCS_BUCKET}/correlated/${{ github.event.repository.name }}/${{ github.ref_name }}/${{ github.run_id }}/"
+          gsutil -m cp -r outputs/* "gs://${GCS_BUCKET}/raw/$REPO_NAME/$BRANCH_NAME/$RUN_ID/"
+          gsutil -m cp -r normalized/* "gs://${GCS_BUCKET}/normalized/$REPO_NAME/$BRANCH_NAME/$RUN_ID/"
+          gsutil -m cp -r correlated/* "gs://${GCS_BUCKET}/correlated/$REPO_NAME/$BRANCH_NAME/$RUN_ID/"
           
           echo "=== VERIFICATION ==="
-          gsutil ls "gs://${GCS_BUCKET}/raw/${{ github.event.repository.name }}/${{ github.ref_name }}/${{ github.run_id }}/" || echo "Failed to list raw"
+          gsutil ls "gs://${GCS_BUCKET}/raw/$REPO_NAME/$BRANCH_NAME/$RUN_ID/" || echo "Failed to list raw"
+
           gsutil ls "gs://${GCS_BUCKET}/normalized/${{ github.event.repository.name }}/${{ github.ref_name }}/${{ github.run_id }}/" || echo "Failed to list normalized"
 
   load_to_bigquery:
@@ -449,6 +455,11 @@ jobs:
 
       - name: Load into BigQuery
         id: load
+        env:
+          TARGET_REPO_NAME: ${{ inputs.target_repo_name }}
+          REPO_NAME: ${{ github.event.repository.name }}
+          BRANCH_NAME: ${{ github.ref_name }}
+          RUN_ID: ${{ github.run_id }}
         run: |
           if bq ls "${GCP_PROJECT_ID}:${BQ_DATASET}" >/dev/null 2>&1; then
             echo "Dataset already exists: ${BQ_DATASET}"
@@ -457,11 +468,10 @@ jobs:
             bq --location=US mk --dataset "${GCP_PROJECT_ID}:${BQ_DATASET}"
           fi
 
-          TARGET_REPO_NAME="${{ inputs.target_repo_name }}"
-          
           # Use direct paths as requested, avoiding wildcards to minimize permission requirements
-          FINDINGS_GCS="gs://${GCS_BUCKET}/normalized/${{ github.event.repository.name }}/${{ github.ref_name }}/${{ github.run_id }}/${TARGET_REPO_NAME}/findings.jsonl"
-          INCIDENTS_GCS="gs://${GCS_BUCKET}/correlated/${{ github.event.repository.name }}/${{ github.ref_name }}/${{ github.run_id }}/${TARGET_REPO_NAME}/incidents.jsonl"
+          FINDINGS_GCS="gs://${GCS_BUCKET}/normalized/$REPO_NAME/$BRANCH_NAME/$RUN_ID/${TARGET_REPO_NAME}/findings.jsonl"
+          INCIDENTS_GCS="gs://${GCS_BUCKET}/correlated/$REPO_NAME/$BRANCH_NAME/$RUN_ID/${TARGET_REPO_NAME}/incidents.jsonl"
+
 
           HAS_FINDINGS=false
           if gsutil ls "$FINDINGS_GCS" >/dev/null 2>&1; then

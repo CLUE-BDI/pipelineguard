@@ -40,11 +40,19 @@ runs:
 
     - name: Set PipelineGuard environment
       shell: bash
+      env:
+        TARGET_REPO_NAME: ${{ inputs.target_repo_name }}
+        TARGET_REPO_PATH: ${{ inputs.target_repo_path }}
+        PG_REPO: ${{ inputs.target_repo_name }}
+        PG_BRANCH: ${{ github.ref_name }}
+        PG_COMMIT_SHA: ${{ github.sha }}
+        PG_PIPELINE_ID: ${{ github.run_id }}
       run: |
-        echo "TARGET_REPO_NAME=${{ inputs.target_repo_name }}" >> $GITHUB_ENV
-        echo "TARGET_REPO_PATH=${{ inputs.target_repo_path }}" >> $GITHUB_ENV
-        echo "PG_REPO=${{ inputs.target_repo_name }}" >> $GITHUB_ENV
-        echo "PG_BRANCH=${{ github.ref_name }}" >> $GITHUB_ENV
-        echo "PG_COMMIT_SHA=${{ github.sha }}" >> $GITHUB_ENV
-        echo "PG_PIPELINE_ID=${{ github.run_id }}" >> $GITHUB_ENV
+        echo "TARGET_REPO_NAME=$TARGET_REPO_NAME" >> $GITHUB_ENV
+        echo "TARGET_REPO_PATH=$TARGET_REPO_PATH" >> $GITHUB_ENV
+        echo "PG_REPO=$PG_REPO" >> $GITHUB_ENV
+        echo "PG_BRANCH=$PG_BRANCH" >> $GITHUB_ENV
+        echo "PG_COMMIT_SHA=$PG_COMMIT_SHA" >> $GITHUB_ENV
+        echo "PG_PIPELINE_ID=$PG_PIPELINE_ID" >> $GITHUB_ENV
         echo "PG_ENVIRONMENT=ci" >> $GITHUB_ENV
+
