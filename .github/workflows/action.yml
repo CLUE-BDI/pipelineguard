@@ -423,7 +423,7 @@ jobs:
           echo "=== VERIFICATION ==="
           gsutil ls "gs://${GCS_BUCKET}/raw/$REPO_NAME/$BRANCH_NAME/$RUN_ID/" || echo "Failed to list raw"
 
-          gsutil ls "gs://${GCS_BUCKET}/normalized/${{ github.event.repository.name }}/${{ github.ref_name }}/${{ github.run_id }}/" || echo "Failed to list normalized"
+          gsutil ls "gs://${GCS_BUCKET}/normalized/$REPO_NAME/$BRANCH_NAME/$RUN_ID/" || echo "Failed to list normalized"
 
   load_to_bigquery:
     name: Load to BigQuery
