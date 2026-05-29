@@ -32,3 +32,4 @@ nav:
   - Welcome: index.md
   - Developer Setup Guide: dev_guide.md
   - Deployment Guide: deploy_guide.md
+  - DefectDojo Integration Guide: defectdojo_integration_guide.md
