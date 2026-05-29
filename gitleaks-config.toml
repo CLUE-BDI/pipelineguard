@@ -1,0 +1,14 @@
+[extend]
+useDefault = true
+
+[allowlist]
+paths = [
+    '''\.venv''',
+    '''\.trivycache''',
+    '''outputs''',
+    '''normalized''',
+    '''correlated''',
+    '''node_modules''',
+    '''secrets/\.env''',
+    '''vulnerable-infra-project/secrets/\.env'''
+]
