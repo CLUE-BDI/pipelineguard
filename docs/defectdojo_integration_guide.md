@@ -7,7 +7,7 @@ This guide details how to integrate security scan results from your CLUE-BDI rep
 ## 1. Prerequisites and Authentication
 
 DefectDojo uses token-based authentication. Regardless of the pipeline system (GitLab or GitHub), you need:
-1. **DefectDojo Server URL**: The domain/IP where DefectDojo is running (e.g., `https://dojo.sans.labs` or your custom hosted URL).
+1. **DefectDojo Server URL**: The domain/IP where DefectDojo is running (e.g., `https://dojo.cluebdi.com` or your custom hosted URL).
 2. **DefectDojo API Key / Token**: A user token generated in DefectDojo (found under **User Profile** -> **API v2 Key**).
 3. **Engagement ID**: A pre-existing target engagement inside a product in DefectDojo.
 
@@ -18,13 +18,13 @@ DefectDojo uses token-based authentication. Regardless of the pipeline system (G
 
 ## 2. Option A: Integrated GitLab CI Pipeline
 
-If you are using GitLab CI (similar to the SANS lab environments), you can include the DefectDojo component directly in your pipeline.
+If you are using GitLab CI (similar to the CLUEBDI environments), you can include the DefectDojo component directly in your pipeline.
 
 Add the following component inclusion to the `.gitlab-ci.yml` file of your repository (e.g., `pipelineguard` or others):
 
 ```yaml
 include:
-  - component: gitlab.sans.labs/operations/dm-ci-templates/defect-dojo@main
+  - component: gitlab.cluebdi.com/operations/cluebdi-ci-templates/defect-dojo@main
     inputs:
       tags: docker
       stage: policy
